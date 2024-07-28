@@ -112,64 +112,19 @@ const analysisGeneration = async (
     const daysCanSkip = calculateDaysCanSkip(validDays, attendancePercentage);
     console.log("Days Can Skip:", daysCanSkip);
 
-    const subjectAttendance = calculateSubjectAttendance(
+    const subjectAttendance = await calculateSubjectAttendanceWithAI(
       timetableData,
       validDays,
-      attendancePercentage
+      attendancePercentage,
+      daysNeededToAttend,
+      daysCanSkip
     );
-    console.log("Subject Attendance:", subjectAttendance);
 
-    const prompt = `
-Given the following timetable data:
-${JSON.stringify(timetableData)}
-
-And the total number of valid working days (${validDays}):
-
-Calculate how many days the user needs to attend class to achieve an attendance percentage of ${attendancePercentage}% based on the timetable and the total number of working days.
-
-Please consider the following when calculating:
-- Count all classes for each subject.
-- Determine how many classes are required to meet the attendance percentage.
-- Provide results in the following JSON format:
-
-{
-    "daysNeededToAttend": number,
-    "daysCanSkip": number,
-    "subjectAttendance": {
-        "subjectName": {
-            "totalClasses": number,
-            "classesToAttend": number,
-            "classesToSkip": number
-        },
-        ...
-    }
-}
-`;
-
-    const response = await cohere.generate({
-      model: "command",
-      prompt: prompt,
-      max_tokens: 2000,
-      temperature: 0.3,
-    });
-
-    let analysisResult;
-    try {
-      analysisResult = JSON.parse(response.generations[0].text);
-    } catch (parseError) {
-      console.error("Error parsing JSON:", parseError);
-      console.log("Raw response:", response.generations[0].text);
-
-      // Attempt to extract JSON from the response
-      const jsonMatch = response.generations[0].text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        analysisResult = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("Unable to extract valid JSON from the response");
-      }
-    }
-
-    return analysisResult;
+    return {
+      daysNeededToAttend,
+      daysCanSkip,
+      subjectAttendance
+    };
   } catch (error) {
     console.error("Error:", error);
     return {
@@ -178,6 +133,61 @@ Please consider the following when calculating:
       rawResponse: error.rawResponse || null,
     };
   }
+};
+
+const calculateSubjectAttendanceWithAI = async (
+  timetableData,
+  validDays,
+  attendancePercentage,
+  daysNeededToAttend,
+  daysCanSkip
+) => {
+  const prompt = `
+Analyze the following timetable data:
+${JSON.stringify(timetableData.schedule, null, 2)}
+
+Given:
+- Total valid working days: ${validDays}
+- Required attendance percentage: ${attendancePercentage}%
+- Days needed to attend: ${daysNeededToAttend}
+- Days that can be skipped: ${daysCanSkip}
+
+Task:
+1. Calculate the total number of classes for each subject.
+2. Determine how many classes should be attended for each subject to meet the attendance requirement.
+3. Calculate how many classes can be skipped for each subject.
+
+Provide the results in the following JSON format:
+{
+  "subjectName": {
+    "totalClasses": number,
+    "classesToAttend": number,
+    "classesToSkip": number
+  },
+  ...
+}
+
+Ensure that the sum of classesToAttend across all subjects equals ${daysNeededToAttend},
+and the sum of classesToSkip equals ${daysCanSkip}.
+`;
+
+  const response = await cohere.generate({
+    model: "command",
+    prompt: prompt,
+    max_tokens: 2500,
+    temperature: 0.1,
+  });
+
+  let subjectAttendance;
+  try {
+    subjectAttendance = JSON.parse(response.generations[0].text);
+  } catch (parseError) {
+    console.error("Error parsing JSON:", parseError);
+    console.log("Raw response:", response.generations[0].text);
+    throw new Error("Unable to extract valid JSON from the response");
+  }
+
+  return subjectAttendance;
 };
 
 module.exports = { analysisGeneration };
