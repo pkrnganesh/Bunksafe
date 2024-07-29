@@ -6,7 +6,6 @@ const dotenv = require("dotenv");
 const { extractText } = require("../curd/textExtractor");
 const { processText } = require("../curd/textProcessor");
 const { analysisGeneration } = require("../curd/AnalysisGeneration");
-const { CohereClient } = require("cohere-ai");
 
 // Middleware
 router.use(fileUpload());
@@ -48,8 +47,18 @@ router.post("/processing", async (req, res) => {
   }
 });
 
+router.post('/analyze-attendance', async (req, res) => {
+    const { timetableResponse, fromDate, toDate, attendancePercentage } = req.body;
 
-router.post('/upload-and-process', async (req, res) => {
+    if (!timetableResponse || !fromDate || !toDate || !attendancePercentage) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+    }
+    const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, attendancePercentage);
+    res.json(basicdata);
+});
+
+
+router.post('/Basicanalysis', async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
@@ -71,21 +80,12 @@ router.post('/upload-and-process', async (req, res) => {
         const timetableResponse = await processText(extractedText);
         
         // Respond with the processed timetable response
-        res.json(timetableResponse);
+        const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, percentage);
+
+        res.json(basicdata);
     } catch (err) {
         res.status(500).send(`Error: ${err.message}`);
     }
-});
-
-
-router.post('/analyze-attendance', async (req, res) => {
-    const { timetableData, fromDate, toDate, attendancePercentage } = req.body;
-
-    if (!timetableData || !fromDate || !toDate || !attendancePercentage) {
-        return res.status(400).json({ error: 'Missing required parameters' });
-    }
-    const basicdata = await analysisGeneration(timetableData, fromDate, toDate, attendancePercentage);
-    res.json(basicdata);
 });
 
 module.exports = router;
