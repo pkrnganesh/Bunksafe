@@ -11,17 +11,22 @@ const cohere = new CohereClient({
 const ClassificationText = async (dayCountsString, timetableResponse) => {
   const response = await cohere.generate({
     model: 'command-xlarge-nightly',
-    prompt: `Calculate the number of classes for each subject based on the overall data of dayCountsString.
-    From the following text ${timetableResponse} and ${dayCountsString} and format it in JSON:
+    prompt: `Given the following timetable and day counts:
 
-For example:
+Timetable: ${JSON.stringify(timetableResponse)}
+Day Counts: ${dayCountsString}
+
+Calculate the total number of classes for each subject across the entire schedule, considering the number of occurrences of each day. Follow these steps:
+
+1. For each subject, count its occurrences on each day of the week.
+2. Multiply the count for each day by the corresponding number of occurrences of that day from the day counts.
+3. Sum up the results for each subject across all days.
+
+Present the results in JSON format, like this:
 {
-    "subject1": 5,
-    "subject2": 4,
-    "subject3": 3,
-    ...
-}
-`,
+  "SUBJECT_NAME": TOTAL_CLASS_COUNT,
+  ...
+}`,
     max_tokens: 1000,
     temperature: 0.1,
     k: 0,
@@ -30,9 +35,22 @@ For example:
   });
 
   const classifiedText = response.generations[0].text;
-  return classifiedText;
+  console.log("Raw classified text:", classifiedText); 
+  try {
+    const jsonMatch = classifiedText.match(/```json\n([\s\S]*?)```/);
+    if (jsonMatch && jsonMatch[1]) {
+      const jsonString = jsonMatch[1].trim();
+      const parsedResult = JSON.parse(jsonString);
+      return parsedResult;
+    } else {
+      console.error("No JSON found in the response");
+      return {};
+    }
+  } catch (error) {
+    console.error("Error parsing the result:", error);
+    return {};
+  }
 
- 
 };
 
 module.exports = { ClassificationText };

@@ -67,11 +67,9 @@ router.post('/countdays', async (req, res) => {
 
 router.post('/calculateSubjectCounts', async (req, res) => {
     const { dayCountsString, timetableResponse } = req.body;
-    const basicdata = calculateTotalClasses(dayCountsString, timetableResponse);
+    const basicdata = await ClassificationText(dayCountsString, timetableResponse);
     res.json(basicdata);
 });
-
-
 
 
 router.post('/analyze-attendance', async (req, res) => {
