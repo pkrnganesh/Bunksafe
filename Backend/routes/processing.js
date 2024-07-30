@@ -5,7 +5,9 @@ const path = require("path");
 const dotenv = require("dotenv");
 const { extractText } = require("../curd/textExtractor");
 const { processText } = require("../curd/textProcessor");
-const { analysisGeneration } = require("../curd/AnalysisGeneration");
+const { ClassificationText } = require("../curd/textClassification");
+const { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateTotalClasses} = require("../curd/AnalysisGeneration");
+
 
 // Middleware
 router.use(fileUpload());
@@ -47,6 +49,31 @@ router.post("/processing", async (req, res) => {
   }
 });
 
+router.post('/calculateValidDays', async (req, res) => {
+    const { fromDate, toDate} = req.body;
+
+  
+    const basicdata = await calculateValidDays(fromDate, toDate);
+    res.json(basicdata);
+});
+
+router.post('/countdays', async (req, res) => {
+    const { validdates} = req.body;
+
+  
+    const basicdata = await countDaysOfWeek(validdates);
+    res.json(basicdata);
+});
+
+router.post('/calculateSubjectCounts', async (req, res) => {
+    const { dayCountsString, timetableResponse } = req.body;
+    const basicdata = calculateTotalClasses(dayCountsString, timetableResponse);
+    res.json(basicdata);
+});
+
+
+
+
 router.post('/analyze-attendance', async (req, res) => {
     const { timetableResponse, fromDate, toDate, attendancePercentage } = req.body;
 
@@ -56,7 +83,6 @@ router.post('/analyze-attendance', async (req, res) => {
     const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, attendancePercentage);
     res.json(basicdata);
 });
-
 
 router.post('/Basicanalysis', async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -73,16 +99,21 @@ router.post('/Basicanalysis', async (req, res) => {
         // Save the uploaded file
         await file.mv(filePath);
         
-        // Extract text from the uploaded file
         const extractedText = await extractText(filePath);
         
-        // Process the extracted text along with the additional inputs
         const timetableResponse = await processText(extractedText);
-        
-        // Respond with the processed timetable response
-        const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, percentage);
 
-        res.json(basicdata);
+        const { validDays,validdates } = await analysisGeneration(fromDate, toDate);
+
+        const dayCounts = await countDaysOfWeek(validdates);
+
+        const subjectCounts = await calculateSubjectCounts(timetableResponse, dayCounts);
+
+
+        
+        // const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, percentage);
+
+        res.json(subjectCounts);
     } catch (err) {
         res.status(500).send(`Error: ${err.message}`);
     }

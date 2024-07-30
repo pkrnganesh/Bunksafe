@@ -19,17 +19,14 @@ ${truncatedText}
 
 Format the output as a JSON object with this structure:
 {
-  "class_teacher": "",
-  "room_no": "",
-  "effective_date": "",
   "schedule": {
-    "Monday": [{"subject": "", "room": "", "time": ""}],
-    "Tuesday": [{"subject": "", "room": "", "time": ""}],
-    "Wednesday": [{"subject": "", "room": "", "time": ""}],
-    "Thursday": [{"subject": "", "room": "", "time": ""}],
-    "Friday": [{"subject": "", "room": "", "time": ""}]
-  },
-  "periods": [{"period": "", "time": ""}]
+    "Monday": [{"subject": "" }],
+    "Tuesday": [{"subject": ""  }],
+    "Wednesday": [{"subject": ""  }],
+    "Thursday": [{"subject": "" }],
+    "Friday": [{"subject": ""}],
+    "Saturday": [{"subject": "" }]
+  }
 }
 
 Ensure your response contains ONLY the JSON object. Do not include any explanations or additional text.`,

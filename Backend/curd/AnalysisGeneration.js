@@ -3,8 +3,8 @@ const moment = require("moment");
 const indianHolidays = require("../utils/indianHolidays");
 const fs = require("fs");
 
-dotenv.config();
 
+dotenv.config();
 const calculateValidDays = (fromDate, toDate) => {
   const start = moment(fromDate);
   const end = moment(toDate);
@@ -23,7 +23,7 @@ const calculateValidDays = (fromDate, toDate) => {
     start.add(1, "days");
   }
   
-  fs.writeFile("./validDates.txt", validdates.join("\n"), (err) => {
+  fs.writeFile("./validDates.json", JSON.stringify(validdates), (err) => {
     if (err) {
       console.error("Error writing to file:", err);
     } else {
@@ -31,7 +31,59 @@ const calculateValidDays = (fromDate, toDate) => {
     }
   });
   
-  return { validDays, validdates };
+  return { validdates: JSON.stringify(validdates) };
+};
+
+function calculateSubjectCounts(dayCountsString, timetableResponse) {
+  const dayCounts = JSON.parse(dayCountsString);
+  const schedule = timetableResponse.schedule;
+
+  const subjectCounts = {};
+
+  Object.entries(schedule).forEach(([day, subjects]) => {
+    const dayCount = dayCounts[day];
+    subjects.forEach(subjectObj => {
+      const subject = subjectObj.subject;
+      if (!subjectCounts[subject]) {
+        subjectCounts[subject] = 0;
+      }
+      subjectCounts[subject] += dayCount;
+    });
+  });
+
+  return subjectCounts;
+}
+
+const countDaysOfWeek = (input) => {
+  const data = typeof input === 'string' ? JSON.parse(input) : input;
+  const validdate = JSON.parse(data.validdates);
+
+  const dayCounts = {
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+    Sunday: 0
+  };
+
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  validdate.forEach(dateStr => {
+    try {
+      const date = new Date(dateStr.trim());
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date');
+      }
+      const dayName = days[date.getDay()];
+      dayCounts[dayName]++;
+    } catch (error) {
+      console.error(`Error processing date ${dateStr}: ${error.message}`);
+    }
+  });
+
+  return dayCounts;
 };
 
 const calculateDaysNeededToAttend = (validDays, attendancePercentage) => {
@@ -49,10 +101,10 @@ const calculateDaysCanSkip = (validDays, attendancePercentage) => {
   return daysCanSkip;
 };
 
-const calculateNumberofClassesperSubject = (timetableResponse, validDates) => {
+const calculateNumberofClassesperSubject = (timetableResponse, validdate) => {
   const subjectCounts = {};
 
-  validDates.forEach(date => {
+  validdate.forEach(date => {
     const dayOfWeek = moment(date).format('dddd');
     const schedule = timetableResponse.schedule[dayOfWeek];
 
@@ -82,7 +134,6 @@ const analysisGeneration = async (
   attendancePercentage
 ) => {
   try {
-    // Parse the timetableResponse if it's a string
     if (typeof timetableResponse === "string") {
       timetableResponse = JSON.parse(timetableResponse);
     }
@@ -122,4 +173,46 @@ const analysisGeneration = async (
   }
 };
 
-module.exports = { analysisGeneration };
+function calculateTotalClasses(dayCountsString, timetableResponse) {
+  try {
+    const parsedDayCounts = JSON.parse(dayCountsString);
+    const schedule = parsedDayCounts.schedule;
+    const dayCounts = JSON.parse(timetableResponse);
+
+    console.log('Parsed schedule:', schedule);
+    console.log('Parsed dayCounts:', dayCounts);
+
+    const subjectTotals = {};
+
+    if (typeof schedule === 'object' && typeof dayCounts === 'object') {
+      for (const [day, subjects] of Object.entries(schedule)) {
+        const dayCount = parseInt(dayCounts[day], 10);
+
+        console.log(`Processing day: ${day}, dayCount: ${dayCount}`);
+
+        if (!isNaN(dayCount)) {
+          subjects.forEach(subjectEntry => {
+            const subject = subjectEntry.subject;
+            console.log(`Processing subject: ${subject}`);
+            if (!(subject in subjectTotals)) {
+              subjectTotals[subject] = 0;
+            }
+            subjectTotals[subject] += dayCount;
+          });
+        }
+      }
+    } else {
+      console.error('schedule or dayCounts is not an object');
+    }
+
+    console.log('Final subjectTotals:', subjectTotals);
+    return subjectTotals;
+  } catch (error) {
+    console.error('Error parsing JSON or processing data:', error);
+    return {};
+  }
+};
+
+
+
+module.exports = { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateTotalClasses };
