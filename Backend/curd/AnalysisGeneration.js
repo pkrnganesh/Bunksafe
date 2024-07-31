@@ -127,92 +127,170 @@ const calculateNumberofClassesperSubjectforpercentage = (subjectCounts,attendanc
   return subjectCountsforpercentage;
 };
 
-const analysisGeneration = async (
-  timetableResponse,
-  fromDate,
-  toDate,
-  attendancePercentage
-) => {
-  try {
-    if (typeof timetableResponse === "string") {
-      timetableResponse = JSON.parse(timetableResponse);
-    }
+// const analysisGeneration = async (
+//   timetableResponse,
+//   fromDate,
+//   toDate,
+//   attendancePercentage
+// ) => {
+//   try {
+//     if (typeof timetableResponse === "string") {
+//       timetableResponse = JSON.parse(timetableResponse);
+//     }
 
-    const { validDays, validdates } = calculateValidDays(fromDate, toDate);
+//     const { validDays, validdates } = calculateValidDays(fromDate, toDate);
 
-    const daysNeededToAttend = calculateDaysNeededToAttend(
-      validDays,
-      attendancePercentage
-    );
-    console.log("Days Needed to Attend:", daysNeededToAttend);
+//     const daysNeededToAttend = calculateDaysNeededToAttend(
+//       validDays,
+//       attendancePercentage
+//     );
+//     console.log("Days Needed to Attend:", daysNeededToAttend);
 
-    const daysCanSkip = calculateDaysCanSkip(validDays, attendancePercentage);
-    console.log("Days Can Skip:", daysCanSkip);
+//     const daysCanSkip = calculateDaysCanSkip(validDays, attendancePercentage);
+//     console.log("Days Can Skip:", daysCanSkip);
 
-    const subjectwiseclasses = calculateNumberofClassesperSubject(
-      timetableResponse,
-      validdates
-    );
+//     const subjectwiseclasses = calculateNumberofClassesperSubject(
+//       timetableResponse,
+//       validdates
+//     );
 
-    const subjectwiseclassesforpercentage = calculateNumberofClassesperSubjectforpercentage(subjectwiseclasses,attendancePercentage);
+//     const subjectwiseclassesforpercentage = calculateNumberofClassesperSubjectforpercentage(subjectwiseclasses,attendancePercentage);
 
-    console.log("Subject wise classes:", subjectwiseclasses);
-    return {
-      daysNeededToAttend,
-      daysCanSkip,
-      subjectwiseclasses,
-      subjectwiseclassesforpercentage,
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return {
-      error: "Error generating attendance analysis",
-      message: error.message,
-      rawResponse: error.rawResponse || null,
-    };
-  }
-};
+//     console.log("Subject wise classes:", subjectwiseclasses);
+//     return {
+//       daysNeededToAttend,
+//       daysCanSkip,
+//       subjectwiseclasses,
+//       subjectwiseclassesforpercentage,
+//     };
+//   } catch (error) {
+//     console.error("Error:", error);
+//     return {
+//       error: "Error generating attendance analysis",
+//       message: error.message,
+//       rawResponse: error.rawResponse || null,
+//     };
+//   }
+// };
 
-function calculateTotalClasses(dayCountsString, timetableResponse) {
-  try {
-    const parsedDayCounts = JSON.parse(dayCountsString);
-    const schedule = parsedDayCounts.schedule;
-    const dayCounts = JSON.parse(timetableResponse);
+function calculateAttendanceRequirements(input) {
+  
+  let subjectCounts;
+  subjectCounts = JSON.parse(input.subjectCountsString);
 
-    console.log('Parsed schedule:', schedule);
-    console.log('Parsed dayCounts:', dayCounts);
+  const requirements = {};
+  let totalClasses = 0;
 
-    const subjectTotals = {};
+  Object.entries(subjectCounts).forEach(([subject, count]) => {
+      totalClasses += count;
+      requirements[subject] = {
+          total: count,
+          minimum40: Math.ceil(count * 0.4),
+      };
+  });
 
-    if (typeof schedule === 'object' && typeof dayCounts === 'object') {
-      for (const [day, subjects] of Object.entries(schedule)) {
-        const dayCount = parseInt(dayCounts[day], 10);
+  const overall75 = Math.ceil(totalClasses * 0.75);
 
-        console.log(`Processing day: ${day}, dayCount: ${dayCount}`);
-
-        if (!isNaN(dayCount)) {
-          subjects.forEach(subjectEntry => {
-            const subject = subjectEntry.subject;
-            console.log(`Processing subject: ${subject}`);
-            if (!(subject in subjectTotals)) {
-              subjectTotals[subject] = 0;
-            }
-            subjectTotals[subject] += dayCount;
-          });
-        }
+  const result = {
+      subjectRequirements: requirements,
+      overallRequirement: {
+          totalClasses: totalClasses,
+          required75Percent: overall75
       }
-    } else {
-      console.error('schedule or dayCounts is not an object');
-    }
+  };
 
-    console.log('Final subjectTotals:', subjectTotals);
-    return subjectTotals;
-  } catch (error) {
-    console.error('Error parsing JSON or processing data:', error);
-    return {};
-  }
+  return result;
 };
 
+function distributeAttendance(requirements) {
+  const data = JSON.parse(requirements.percentages);
+  const { subjectRequirements, overallRequirement } = data;
+  
+  let remainingClasses = overallRequirement.required75Percent;
+  const subjects = Object.keys(subjectRequirements);
+  const subjectCount = subjects.length;
+
+  for (const subject of subjects) {
+    const subjectData = subjectRequirements[subject];
+    subjectData.allocated = subjectData.minimum40;
+    remainingClasses -= subjectData.minimum40;
+  }
+
+  let totalSpace = 0;
+  for (const subject of subjects) {
+    totalSpace += subjectRequirements[subject].total - subjectRequirements[subject].allocated;
+  }
+  if (remainingClasses > 0 && totalSpace > 0) {
+    for (const subject of subjects) {
+      const subjectData = subjectRequirements[subject];
+      const spaceLeft = subjectData.total - subjectData.allocated;
+      const share = Math.round((spaceLeft / totalSpace) * remainingClasses);
+      const toAllocate = Math.min(share, spaceLeft);
+      subjectData.allocated += toAllocate;
+      remainingClasses -= toAllocate;
+    }
+  }
+
+  while (remainingClasses > 0) {
+    let distributed = false;
+    for (const subject of subjects) {
+      const subjectData = subjectRequirements[subject];
+      if (subjectData.allocated < subjectData.total) {
+        subjectData.allocated++;
+        remainingClasses--;
+        distributed = true;
+        if (remainingClasses === 0) break;
+      }
+    }
+    if (!distributed) break;
+  }
+
+  const result = {
+    subjectRequirements: {},
+    overallRequirement: overallRequirement
+  };
+
+  for (const subject of subjects) {
+    result.subjectRequirements[subject] = {
+      total: subjectRequirements[subject].total,
+      minimum40: subjectRequirements[subject].minimum40,
+      recommended: subjectRequirements[subject].allocated
+    };
+  }
+
+  return result;
+};
+
+function reScheduling(input) {
+  
+  let parsedResponse;
+    const timetableResponse = input.timetableResponse || input;
+    
+    parsedResponse = typeof timetableResponse === 'string' 
+      ? JSON.parse(timetableResponse) 
+      : timetableResponse;
+  
 
 
-module.exports = { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateTotalClasses };
+  const schedule = parsedResponse.schedule;
+
+  const allSubjects = new Set(
+    Object.values(schedule).flatMap(day => day.map(subject => subject.subject))
+  );
+
+  const dailySubjects = [...allSubjects].filter(subject =>
+    Object.values(schedule).every(day =>
+      day.some(item => item.subject === subject)
+    )
+  );
+
+  for (const day in schedule) {
+    schedule[day] = schedule[day].filter(subject =>
+      !dailySubjects.includes(subject.subject)
+    );
+  }
+
+  return schedule;
+};
+
+module.exports = { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateAttendanceRequirements,distributeAttendance,reScheduling };

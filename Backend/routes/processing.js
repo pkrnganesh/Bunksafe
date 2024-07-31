@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const { extractText } = require("../curd/textExtractor");
 const { processText } = require("../curd/textProcessor");
 const { ClassificationText } = require("../curd/textClassification");
-const { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateTotalClasses} = require("../curd/AnalysisGeneration");
+const { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateAttendanceRequirements,distributeAttendance,reScheduling} = require("../curd/AnalysisGeneration");
 
 
 // Middleware
@@ -49,6 +49,12 @@ router.post("/processing", async (req, res) => {
   }
 });
 
+router.post('/reScheduling', async (req, res) => {
+    const timetableResponse = req.body;
+    const basicdata = await reScheduling(timetableResponse);
+    res.json(basicdata);
+});
+
 router.post('/calculateValidDays', async (req, res) => {
     const { fromDate, toDate} = req.body;
 
@@ -66,21 +72,33 @@ router.post('/countdays', async (req, res) => {
 });
 
 router.post('/calculateSubjectCounts', async (req, res) => {
-    const { dayCountsString, timetableResponse } = req.body;
-    const basicdata = await ClassificationText(dayCountsString, timetableResponse);
+    const { dayCountsString, rescheduled } = req.body;
+    const basicdata = await ClassificationText(dayCountsString, rescheduled);
+    res.json(basicdata);
+});
+
+router.post('/percentages', async (req, res) => {
+    const subjectCounts = req.body;
+    const basicdata = await calculateAttendanceRequirements(subjectCounts);
+    res.json(basicdata);
+});
+
+router.post('/distribution', async (req, res) => {
+    const percentages = req.body;
+    const basicdata = await distributeAttendance(percentages);
     res.json(basicdata);
 });
 
 
-router.post('/analyze-attendance', async (req, res) => {
-    const { timetableResponse, fromDate, toDate, attendancePercentage } = req.body;
+// router.post('/analyze-attendance', async (req, res) => {
+//     const { timetableResponse, fromDate, toDate, attendancePercentage } = req.body;
 
-    if (!timetableResponse || !fromDate || !toDate || !attendancePercentage) {
-        return res.status(400).json({ error: 'Missing required parameters' });
-    }
-    const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, attendancePercentage);
-    res.json(basicdata);
-});
+//     if (!timetableResponse || !fromDate || !toDate || !attendancePercentage) {
+//         return res.status(400).json({ error: 'Missing required parameters' });
+//     }
+//     const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, attendancePercentage);
+//     res.json(basicdata);
+// });
 
 router.post('/Basicanalysis', async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -94,24 +112,23 @@ router.post('/Basicanalysis', async (req, res) => {
     const filePath = path.resolve(__dirname, '../uploads', file.name);
 
     try {
-        // Save the uploaded file
         await file.mv(filePath);
         
         const extractedText = await extractText(filePath);
         
         const timetableResponse = await processText(extractedText);
 
-        const { validDays,validdates } = await analysisGeneration(fromDate, toDate);
+        const rescheduled = await reScheduling(timetableResponse);
 
-        const dayCounts = await countDaysOfWeek(validdates);
+        const validdates = await calculateValidDays(fromDate, toDate);
 
-        const subjectCounts = await calculateSubjectCounts(timetableResponse, dayCounts);
+        const subjectCounts = await ClassificationText(validdates, rescheduled);
 
+        const percentages = await calculateAttendanceRequirements(subjectCounts);
 
-        
-        // const basicdata = await analysisGeneration(timetableResponse, fromDate, toDate, percentage);
+        const distribution = await distributeAttendance(percentages);
 
-        res.json(subjectCounts);
+        res.json(distribution);
     } catch (err) {
         res.status(500).send(`Error: ${err.message}`);
     }
