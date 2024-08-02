@@ -39,7 +39,6 @@ Ensure your response contains ONLY the JSON object. Do not include any explanati
 
   const generatedText = response.generations[0].text;
 
-  // Attempt to extract and parse the JSON
   const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     const jsonString = jsonMatch[0];
@@ -52,5 +51,6 @@ Ensure your response contains ONLY the JSON object. Do not include any explanati
     throw new Error("No valid JSON found in the response");
   }
 };
+
 
 module.exports = { processText };
