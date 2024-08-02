@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   background: #2d2d2d;
   color: #ddd;
   display: flex;
@@ -15,6 +15,8 @@ body {
   background: #000000;
   padding: 10px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 10;
 }
 
 .header .logo {
@@ -38,10 +40,16 @@ body {
   color: #ddd;
   text-decoration: none;
   font-size: 1em;
+  position: relative;
+  padding: 5px 10px;
+  transition: transform 0.3s, background-color 0.3s;
 }
 
 .header .nav-menu a:hover {
-  text-decoration: underline;
+  background-color: #00d8ff;
+  color: #000;
+  transform: translateY(-5px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .documentation-page {
@@ -60,6 +68,8 @@ body {
   background: #000000;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 5;
 }
 
 .sidebar nav ul {
@@ -75,15 +85,23 @@ body {
   color: #00d8ff;
   text-decoration: none;
   font-size: 1.1em;
+  position: relative;
+  padding: 5px 10px;
+  transition: transform 0.3s, background-color 0.3s;
 }
 
 .sidebar nav ul li a:hover {
-  text-decoration: underline;
+  background-color: #00d8ff;
+  color: #000;
+  transform: translateX(5px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .content {
   flex: 1;
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .content-header {
@@ -114,4 +132,54 @@ body {
 
 .toggle-theme {
   cursor: pointer;
+  color: #00d8ff;
+  transition: color 0.3s;
+}
+
+.toggle-theme:hover {
+  color: #ddd;
+}
+
+.dark-mode {
+  background: #121212;
+  color: #ddd;
+}
+
+.dark-mode .header {
+  background: #121212;
+}
+
+.dark-mode .sidebar {
+  background: #121212;
+}
+
+.dark-mode .nav-menu a:hover {
+  background-color: #00d8ff;
+  color: #000;
+}
+
+.dark-mode .sidebar nav ul li a:hover {
+  background-color: #00d8ff;
+  color: #000;
+}
+
+/* 3D Effects */
+.header {
+  perspective: 1000px;
+}
+
+.header .nav-menu a {
+  transform-style: preserve-3d;
+}
+
+.header .nav-menu a:hover {
+  transform: translateY(-5px) rotateX(10deg);
+}
+
+.sidebar nav ul li a {
+  transform-style: preserve-3d;
+}
+
+.sidebar nav ul li a:hover {
+  transform: translateX(5px) rotateY(10deg);
 }
