@@ -293,4 +293,4 @@ function reScheduling(input) {
   return schedule;
 };
 
-module.exports = { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateAttendanceRequirements,distributeAttendance,reScheduling };
+module.exports = {countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateAttendanceRequirements,distributeAttendance,reScheduling };

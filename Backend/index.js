@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const Processing = require('./routes/processing');
+const user = require('./routes/incrementUserCount');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Using the routes
 app.use('/process', Processing);
+app.use('/user', user);
 
 
 app.listen(PORT, () => {

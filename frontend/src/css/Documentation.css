@@ -1,0 +1,117 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #2d2d2d;
+  color: #ddd;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #000000;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.header .logo {
+  font-size: 1.5em;
+  color: #00d8ff;
+}
+
+.header .website-name {
+  flex: 1;
+  text-align: center;
+  font-size: 1.5em;
+  color: #00d8ff;
+}
+
+.header .nav-menu {
+  display: flex;
+  gap: 20px;
+}
+
+.header .nav-menu a {
+  color: #ddd;
+  text-decoration: none;
+  font-size: 1em;
+}
+
+.header .nav-menu a:hover {
+  text-decoration: underline;
+}
+
+.documentation-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 250px;
+  background: #000000;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar nav ul li a {
+  color: #00d8ff;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.sidebar nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.content-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.content-header h1 {
+  font-size: 2.5em;
+  color: #00d8ff;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  font-size: 2em;
+  color: #00d8ff;
+  border-bottom: 1px solid #00d8ff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.section p {
+  font-size: 1.2em;
+}
+
+.toggle-theme {
+  cursor: pointer;
+}
