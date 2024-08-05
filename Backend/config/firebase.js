@@ -19,30 +19,26 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Create or update a document named "users" in Firestore
-async function setUserCount(count) {
-  try {
-    await setDoc(doc(db, "users", "usercount"), { count: count });
-    console.log("Document written successfully!");
-  } catch (e) {
-    console.error("Error writing document: ", e);
-  }
-}
-
-// Function to increment the count
-async function incrementUserCount() {
+// Function to increment the count and save IP address
+async function incrementUserCount(ipAddress) {
   const docRef = doc(db, "users", "usercount");
   const docSnap = await getDoc(docRef);
 
   let currentCount = 0;
+  let ipAddresses = [];
   if (docSnap.exists()) {
-    currentCount = docSnap.data().count;
+    currentCount = docSnap.data().count || 0;
+    ipAddresses = docSnap.data().ipAddresses || [];
   }
 
   const newCount = currentCount + 1;
+  ipAddresses.push(ipAddress); // Append the new IP address to the array
 
   try {
-    await setDoc(docRef, { count: newCount });
+    await setDoc(docRef, {
+      count: newCount,
+      ipAddresses: ipAddresses
+    });
     console.log("Document updated successfully!");
     return newCount;
   } catch (e) {
@@ -52,4 +48,4 @@ async function incrementUserCount() {
 }
 
 // Export the incrementUserCount function for use in other parts of your application
-module.exports = { incrementUserCount, setUserCount };
+module.exports = { incrementUserCount };
