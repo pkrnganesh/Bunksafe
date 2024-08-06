@@ -2,8 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const Processing = require('./routes/processing');
-const user = require('./routes/incrementUserCount');
+const Processing = require('./controllers/processing');
+const user = require('./controllers/incrementUserCount');
 
 // Load environment variables from .env file
 dotenv.config();
