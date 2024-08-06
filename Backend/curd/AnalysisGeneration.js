@@ -252,8 +252,8 @@ function distributeAttendance(requirements) {
 
   for (const subject of subjects) {
     result.subjectRequirements[subject] = {
-      total: subjectRequirements[subject].total,
-      minimum40: subjectRequirements[subject].minimum40,
+      // total: subjectRequirements[subject].total,
+      // minimum40: subjectRequirements[subject].minimum40,
       recommended: subjectRequirements[subject].allocated
     };
   }
@@ -292,5 +292,47 @@ function reScheduling(input) {
 
   return schedule;
 };
+function createCalendar(subjectRequirementsStr, weeklyScheduleStr, validDatesInputStr) {
+  let subjectRequirements, weeklySchedule, validDatesInput, validDates;
 
-module.exports = {countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateAttendanceRequirements,distributeAttendance,reScheduling };
+    subjectRequirements = JSON.parse(subjectRequirementsStr);
+    weeklySchedule = JSON.parse(weeklyScheduleStr);
+    validDatesInput = JSON.parse(validDatesInputStr);
+
+    if (validDatesInput && validDatesInput.validdates) {
+      validDates = JSON.parse(validDatesInput.validdates);
+    } 
+
+  const calendar = {};
+  const classesScheduled = {};
+
+  for (const subject in subjectRequirements.subjectRequirements) {
+    classesScheduled[subject] = 0;
+  }
+
+  validDates.forEach(dateStr => {
+    const date = new Date(dateStr);
+    const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
+    
+    if (weeklySchedule[dayOfWeek]) {
+      calendar[dateStr] = [];
+      
+      weeklySchedule[dayOfWeek].forEach(subjectObj => {
+        const subject = subjectObj.subject;
+        if (subjectRequirements.subjectRequirements[subject] && 
+            classesScheduled[subject] < subjectRequirements.subjectRequirements[subject].recommended) {
+          calendar[dateStr].push(subject);
+          classesScheduled[subject]++;
+        }
+      });
+      
+      if (calendar[dateStr].length === 0) {
+        delete calendar[dateStr];
+      }
+    }
+  });
+
+  return calendar;
+};
+
+module.exports = {countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateDaysNeededToAttend,calculateDaysCanSkip,calculateNumberofClassesperSubject,calculateNumberofClassesperSubjectforpercentage,calculateAttendanceRequirements,distributeAttendance,reScheduling,createCalendar };

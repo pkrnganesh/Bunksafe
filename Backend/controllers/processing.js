@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const { extractText } = require("../curd/textExtractor");
 const { processText } = require("../curd/textProcessor");
 const { ClassificationText } = require("../curd/textClassification");
-const { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateAttendanceRequirements,distributeAttendance,reScheduling} = require("../curd/AnalysisGeneration");
+const { analysisGeneration,countDaysOfWeek,calculateSubjectCounts,calculateValidDays,calculateAttendanceRequirements,distributeAttendance,reScheduling,createCalendar} = require("../curd/AnalysisGeneration");
 
 
 // Middleware
@@ -49,7 +49,7 @@ router.post("/processing", async (req, res) => {
   }
 });
 
-router.post('/reScheduling', async (req, res) => {
+router.post('/rescheduling', async (req, res) => {
     const timetableResponse = req.body;
     const basicdata = await reScheduling(timetableResponse);
     res.json(basicdata);
@@ -89,6 +89,12 @@ router.post('/distribution', async (req, res) => {
     res.json(basicdata);
 });
 
+router.post('/calendar', async (req, res) => {
+    const { distribution, rescheduled, validdates } = req.body;
+    const basicdata = await createCalendar(distribution, rescheduled, validdates);
+    res.json(basicdata);
+});
+
 
 // router.post('/analyze-attendance', async (req, res) => {
 //     const { timetableResponse, fromDate, toDate, attendancePercentage } = req.body;
@@ -107,7 +113,6 @@ router.post('/Basicanalysis', async (req, res) => {
 
     const file = req.files.file;
     const { percentage, fromDate, toDate } = req.body;
-
 
     const filePath = path.resolve(__dirname, '../uploads', file.name);
 
