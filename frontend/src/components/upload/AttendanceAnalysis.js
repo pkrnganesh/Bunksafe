@@ -50,32 +50,6 @@ const AttendanceAnalysis = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Paper style={{ padding: '20px' }}>
-            <UploadData />
-          </Paper>
-        </Grid>
-
-        {analysisStatus && (
-        <Paper style={{ padding: '20px', marginTop: '20px' }}>
-          <Typography variant="h6" gutterBottom>Analysis Progress</Typography>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={4}>
-              <Typography color={analysisStatus === 'uploading' ? 'primary' : 'textSecondary'}>Uploading</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography color={analysisStatus === 'processing' ? 'primary' : 'textSecondary'}>Processing</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography color={analysisStatus === 'generating' ? 'primary' : 'textSecondary'}>Generating Reports</Typography>
-            </Grid>
-          </Grid>
-          <LinearProgress style={{ marginTop: '10px' }} />
-          <Button variant="outlined" style={{ marginTop: '10px' }} onClick={() => setAnalysisStatus(null)}>
-            Cancel Analysis
-          </Button>
-        </Paper>
-      )}
-        <Grid item xs={12} md={6}>
-          <Paper style={{ padding: '20px' }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
                 <TextField
