@@ -9,7 +9,7 @@ import { styled, keyframes } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { Chart } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { BarChart, PieChart, Timeline, TrendingUp, Group, School, EventNote, Add, Delete, Edit, CloudUpload, DateRange, PercentOutlined } from '@mui/icons-material';
+import { BarChart, PieChart, Timeline, TrendingUp, Group, School, EventNote, Add, Delete, Edit, CloudUpload, DateRange, PercentOutlined, ArrowUpward } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -73,6 +73,31 @@ const AnimatedIcon = styled(motion.div)`
 const AnalysisResults = () => {
   const [dummyData, setDummyData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showTimetable, setShowTimetable] = useState(false);
+  const [editingSubject, setEditingSubject] = useState(null);
+  const [newHoliday, setNewHoliday] = useState('');
+  const [targetAttendance, setTargetAttendance] = useState(75);
+
+  // Dummy data
+  const subjectData = {
+    'Mathematics': 30,
+    'Physics': 25,
+    'Chemistry': 28,
+    'Biology': 22,
+    'English': 20
+  };
+
+  const holidays = ['New Year', 'Independence Day', 'Christmas'];
+
+  const timetable = {
+    'Monday': ['Mathematics', 'Physics', 'Chemistry'],
+    'Tuesday': ['Biology', 'English', 'Mathematics'],
+    'Wednesday': ['Physics', 'Chemistry', 'Biology'],
+    'Thursday': ['English', 'Mathematics', 'Physics'],
+    'Friday': ['Chemistry', 'Biology', 'English']
+  };
+
+  const validDays = 220;
 
   useEffect(() => {
     // Simulate data loading
@@ -86,6 +111,39 @@ const AnalysisResults = () => {
       setIsLoading(false);
     }, 2000);
   }, []);
+
+  const handleAddHoliday = () => {
+    // Add holiday logic here
+  };
+
+  const handleDeleteHoliday = (holiday) => {
+    // Delete holiday logic here
+  };
+
+  const handleEditSubject = (day, index) => {
+    // Edit subject logic here
+  };
+
+  const handleDeleteSubject = (day, index) => {
+    // Delete subject logic here
+  };
+
+  const handleAddSubject = (day) => {
+    // Add subject logic here
+  };
+
+  const handleSaveSubject = () => {
+    // Save subject logic here
+  };
+
+  const calculateRequiredClasses = (subject) => {
+    // Calculate required classes logic here
+    return Math.floor(subjectData[subject] * 0.75);
+  };
+
+  const StyledCard = styled(Card)(({ theme }) => ({
+    // ... (styled card definition)
+  }));
 
   const StatCard = ({ icon, title, value, color }) => (
     <StyledCard>
