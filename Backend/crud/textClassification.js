@@ -1,56 +1,74 @@
-const { CohereClient } = require("cohere-ai");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
-// Initialize Cohere client
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY,
-});
-
-const ClassificationText = async (dayCountsString, rescheduled) => {
-  const response = await cohere.generate({
-    model: 'command-xlarge-nightly',
-    prompt: `Given the following timetable and day counts:
-
-    Timetable: ${JSON.stringify(rescheduled)}
-    Day Counts: ${dayCountsString}
-
-    Calculate the total number of classes for each subject across the entire schedule, considering the number of occurrences of each day. Follow these steps:
-
-    1. For each subject, count its occurrences on each day of the week.
-    2. Multiply the count for each day by the corresponding number of occurrences of that day from the day counts.
-    3. Sum up the results for each subject across all days.
-
-    Present the results in JSON format, like this:
-    {
-      "SUBJECT_NAME": TOTAL_CLASS_COUNT,
-      ...
-    }`,
-    max_tokens: 1000,
-    temperature: 0.1,
-    k: 0,
-    stop_sequences: [],
-    return_likelihoods: 'NONE'
-  });
-
-  const classifiedText = response.generations[0].text;
-  console.log("Raw classified text:", classifiedText); 
-  try {
-    const jsonMatch = classifiedText.match(/```json\n([\s\S]*?)```/);
-    if (jsonMatch && jsonMatch[1]) {
-      const jsonString = jsonMatch[1].trim();
-      const parsedResult = JSON.parse(jsonString);
-      return parsedResult;
-    } else {
-      console.error("No JSON found in the response");
+function ClassificationText(countDaysOfWeekdata, DaywiseSubjectsdata) {
+  // If countDaysOfWeekdata is a JSON string, parse it
+  let dayCounts;
+  if (typeof countDaysOfWeekdata === 'string') {
+    try {
+      dayCounts = JSON.parse(countDaysOfWeekdata);
+    } catch (e) {
+      console.error('Error parsing countDaysOfWeekdata JSON:', e);
       return {};
     }
-  } catch (error) {
-    console.error("Error parsing the result:", error);
-    return {};
+  } else {
+    dayCounts = countDaysOfWeekdata;
   }
 
-};
+  // If DaywiseSubjectsdata is a JSON string, parse it
+  let rescheduled;
+  if (typeof DaywiseSubjectsdata === 'string') {
+    try {
+      rescheduled = JSON.parse(DaywiseSubjectsdata.replace(/'/g, '"'));
+    } catch (e) {
+      console.error('Error parsing DaywiseSubjectsdata JSON:', e);
+      return {};
+    }
+  } else {
+    rescheduled = DaywiseSubjectsdata;
+  }
+
+  console.log('countDaysOfWeekdata:', dayCounts);
+  console.log('DaywiseSubjectsdata:', rescheduled);
+
+  const classCounts = {};
+
+  for (const [day, classes] of Object.entries(rescheduled)) {
+    console.log(`Processing day: ${day}`);
+    const dayCount = dayCounts[day];
+    if (dayCount === undefined) {
+      console.warn(`Warning: No count found for ${day}`);
+      continue;
+    }
+
+    if (!Array.isArray(classes)) {
+      console.warn(`Warning: Classes for ${day} is not an array`);
+      continue;
+    }
+
+    for (const classObj of classes) {
+      if (typeof classObj !== 'object' || classObj === null) {
+        console.warn(`Warning: Invalid class object for ${day}:`, classObj);
+        continue;
+      }
+
+      let subject = classObj.subject;
+      if (typeof subject !== 'string') {
+        console.warn(`Warning: Invalid subject for ${day}:`, subject);
+        continue;
+      }
+
+      // Replace spaces with underscores for LAB subjects
+      if (subject.includes('LAB')) {
+        subject = subject.replace(' ', '_');
+      }
+      classCounts[subject] = (classCounts[subject] || 0) + dayCount;
+    }
+  }
+
+  // Ensure all keys are strings and values are numbers
+  const result = Object.fromEntries(
+    Object.entries(classCounts).map(([key, value]) => [String(key), Number(value)])
+  );
+
+  return result;
+}
 
 module.exports = { ClassificationText };

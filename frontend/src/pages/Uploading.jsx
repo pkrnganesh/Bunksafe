@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Grid, Paper, Typography, Button, TextField, Container, Box, Stepper, Step, StepLabel, CircularProgress, Snackbar, IconButton } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -20,11 +20,6 @@ const float = keyframes`
   0% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
   100% { transform: translateY(0px); }
-`;
-
-const rotate = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 `;
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -78,6 +73,9 @@ const UploadData = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [attendanceFile, setAttendanceFile] = useState(null);
+
+  const fileInputRef = useRef(null);
 
   const steps = ['Upload Data', 'Set Parameters', 'Generate Analysis'];
 
@@ -90,6 +88,11 @@ const UploadData = () => {
   };
 
   const handleUpload = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    setAttendanceFile(event.target.files[0]);
     setIsUploading(true);
     setTimeout(() => {
       setIsUploading(false);
@@ -106,6 +109,14 @@ const UploadData = () => {
       return;
     }
     setOpenSnackbar(false);
+  };
+
+  const handleGenerateAnalysis = () => {
+    console.log('Attendance File:', attendanceFile);
+    console.log('From Date:', fromDate);
+    console.log('To Date:', toDate);
+    console.log('Attendance Requirement:', attendanceRequirement);
+    // Perform analysis and generate report here
   };
 
   return (
@@ -161,6 +172,12 @@ const UploadData = () => {
                     }}
                     onClick={handleUpload}
                   >
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                    />
                     {isUploading ? (
                       <CircularProgress size={100} />
                     ) : uploadComplete ? (
@@ -169,7 +186,7 @@ const UploadData = () => {
                       <UploadIcon />
                     )}
                     <Typography variant="body1" gutterBottom style={{ marginTop: '20px' }}>
-                      {isUploading ? 'Uploading...' : uploadComplete ? 'Upload Complete!' : 'Click here to upload your attendance files'}
+                      {isUploading ? 'Uploading...' : uploadComplete ? 'Upload Complete!' : 'Click here to upload your attendance file'}
                     </Typography>
                   </Box>
                 </motion.div>
@@ -239,6 +256,7 @@ const UploadData = () => {
                     size="large"
                     startIcon={<Send />}
                     style={{ marginTop: '20px' }}
+                    onClick={handleGenerateAnalysis}
                   >
                     Generate Analysis
                   </StyledButton>
@@ -259,7 +277,7 @@ const UploadData = () => {
                 onClick={handleNext}
                 disabled={activeStep === steps.length - 1 || (activeStep === 0 && !uploadComplete)}
               >
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                {activeStep === steps.length - 1 ? '' : 'Next'}
               </Button>
             </Box>
           </StyledPaper>
