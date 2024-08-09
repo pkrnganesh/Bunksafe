@@ -2,15 +2,13 @@ const express = require("express");
 const router = express.Router();
 const fileUpload = require("express-fileupload");
 const path = require("path");
-const fs = require("fs");
-const dotenv = require("dotenv");
+ const dotenv = require("dotenv");
 const { extractText } = require("../crud/textExtractor");
 const { processText ,reScheduling } = require("../crud/textProcessor");
 const { ClassificationText } = require("../crud/textClassification");
 const {calculateAttendanceRequirements,createCalendar} = require("../crud/AnalysisGeneration");
-const { calculateValidDays, countDaysOfWeek } = require("../crud/filteringDays");
-const { calculateSubjectCounts } = require("../crud/subjectAnalysis");
-
+const { calculateValidDays, countDaysOfWeek,calculateDaysNeededToAttend, calculateDaysCanSkip } = require("../crud/filteringDays");
+ 
 
 
 
@@ -55,13 +53,22 @@ router.post('/basicanalysis', async (req, res) => {
       const DaywiseSubjectsdata = await reScheduling(timetableResponse);
   
       const validdates = calculateValidDays(fromDate, toDate);
+
       const countDaysOfWeekdata = countDaysOfWeek(validdates);
+
+      const daysCanSkip =calculateDaysNeededToAttend(validdates,percentage);
+
+      const daysNeededToAttend=calculateDaysCanSkip(validdates,percentage);
+
+      const Totaldays=daysNeededToAttend+daysCanSkip;
+
+      console.log("Total Days",Totaldays);
+      console.log("Days Needed to Attend",daysNeededToAttend);
+      console.log("Days Can Skip",daysCanSkip);
   
       const SubjectCountsdata = ClassificationText(JSON.stringify(countDaysOfWeekdata), DaywiseSubjectsdata);
-      console.log('SubjectCountsdata:', SubjectCountsdata); // Log the SubjectCountsdata for debugging
   
       const AttendanceRequirements = calculateAttendanceRequirements({ SubjectCountsdata }, percentage);
-      console.log('AttendanceRequirements:', AttendanceRequirements); // Log the AttendanceRequirements for debugging
   
       const basicdata = createCalendar(AttendanceRequirements, DaywiseSubjectsdata, validdates);
       console.log('Basic Data:', basicdata); // Log the basic data for debugging
@@ -74,23 +81,5 @@ router.post('/basicanalysis', async (req, res) => {
       res.status(500).send(`Error: ${err.message}`);
     }
   });
-
-
-  router.post('/calculateSubjectCounts', async (req, res) => {
-    const { countDaysOfWeekdata, DaywiseSubjectsdata } = req.body;
-
-    if (!countDaysOfWeekdata || !DaywiseSubjectsdata) {
-        return res.status(400).send('Both countDaysOfWeekdata and DaywiseSubjectsdata are required.');
-    }
-
-    try {
-        const result = ClassificationText(countDaysOfWeekdata, DaywiseSubjectsdata);
-        console.log(JSON.stringify(result, null, 2));
-        res.json(result); // Send the result back to the client
-    } catch (error) {
-        console.error('Error in calculateSubjectCounts:', error);
-        res.status(500).send(`Error: ${error.message}`);
-    }
-});
 
 module.exports = router;

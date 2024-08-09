@@ -4,7 +4,6 @@ dotenv.config();
 
 
 function calculateAttendanceRequirements(input, percentage) {
-  console.log(input);
   const subjectCounts = input.SubjectCountsdata;
   const requirements = {};
   let totalClasses = 0;
@@ -23,8 +22,9 @@ function calculateAttendanceRequirements(input, percentage) {
   const result = {
     subjectRequirements: requirements,
   };
-
+console.log("calculateAttendanceRequirements",result);
   return result;
+
 }
 
 function distributeAttendance(requirements) {
@@ -81,34 +81,79 @@ function distributeAttendance(requirements) {
   }
 
   return result;
+  console.log("distributeAttendance",result);
 };
 
 
 function createCalendar(subjectRequirementsStr, weeklyScheduleStr, validDatesInputStr) {
+  console.log( weeklyScheduleStr, validDatesInputStr);
+
   let subjectRequirements, weeklySchedule, validDatesInput, validDates;
 
-    subjectRequirements = JSON.parse(subjectRequirementsStr);
-    weeklySchedule = JSON.parse(weeklyScheduleStr);
-    validDatesInput = JSON.parse(validDatesInputStr);
+  // Parse subjectRequirementsStr if it's a JSON string
+  if (typeof subjectRequirementsStr === 'string') {
+    try {
+      subjectRequirements = JSON.parse(subjectRequirementsStr);
+    } catch (e) {
+      console.error('Error parsing subjectRequirementsStr JSON:', e);
+      return {};
+    }
+  } else {
+    subjectRequirements = subjectRequirementsStr;
+  }
 
-    if (validDatesInput && validDatesInput.validdates) {
+  // Parse weeklyScheduleStr if it's a JSON string
+  if (typeof weeklyScheduleStr === 'string') {
+    try {
+      weeklySchedule = JSON.parse(weeklyScheduleStr);
+    } catch (e) {
+      console.error('Error parsing weeklyScheduleStr JSON:', e);
+      return {};
+    }
+  } else {
+    weeklySchedule = weeklyScheduleStr;
+  }
+
+  // Parse validDatesInputStr if it's a JSON string
+  if (typeof validDatesInputStr === 'string') {
+    try {
+      validDatesInput = JSON.parse(validDatesInputStr);
+    } catch (e) {
+      console.error('Error parsing validDatesInputStr JSON:', e);
+      return {};
+    }
+  } else {
+    validDatesInput = validDatesInputStr;
+  }
+
+  // Parse validDates if it exists and is a string
+  if (validDatesInput && typeof validDatesInput.validdates === 'string') {
+    try {
       validDates = JSON.parse(validDatesInput.validdates);
-    } 
+    } catch (e) {
+      console.error('Error parsing validdates JSON:', e);
+      return {};
+    }
+  } else {
+    validDates = validDatesInput.validdates;
+  }
 
   const calendar = {};
   const classesScheduled = {};
 
+  // Initialize the class schedule counts
   for (const subject in subjectRequirements.subjectRequirements) {
     classesScheduled[subject] = 0;
   }
 
+  // Process each valid date
   validDates.forEach(dateStr => {
     const date = new Date(dateStr);
     const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
-    
+
     if (weeklySchedule[dayOfWeek]) {
       calendar[dateStr] = [];
-      
+
       weeklySchedule[dayOfWeek].forEach(subjectObj => {
         const subject = subjectObj.subject;
         if (subjectRequirements.subjectRequirements[subject] && 
@@ -117,7 +162,7 @@ function createCalendar(subjectRequirementsStr, weeklyScheduleStr, validDatesInp
           classesScheduled[subject]++;
         }
       });
-      
+
       if (calendar[dateStr].length === 0) {
         delete calendar[dateStr];
       }
@@ -125,6 +170,6 @@ function createCalendar(subjectRequirementsStr, weeklyScheduleStr, validDatesInp
   });
 
   return calendar;
-};
+}
 
 module.exports = {calculateAttendanceRequirements,distributeAttendance,createCalendar };

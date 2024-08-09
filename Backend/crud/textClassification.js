@@ -25,21 +25,15 @@ function ClassificationText(countDaysOfWeekdata, DaywiseSubjectsdata) {
     rescheduled = DaywiseSubjectsdata;
   }
 
-  console.log('countDaysOfWeekdata:', dayCounts);
-  console.log('DaywiseSubjectsdata:', rescheduled);
-
   const classCounts = {};
 
   for (const [day, classes] of Object.entries(rescheduled)) {
-    console.log(`Processing day: ${day}`);
     const dayCount = dayCounts[day];
     if (dayCount === undefined) {
-      console.warn(`Warning: No count found for ${day}`);
       continue;
     }
 
     if (!Array.isArray(classes)) {
-      console.warn(`Warning: Classes for ${day} is not an array`);
       continue;
     }
 

@@ -20,7 +20,7 @@ function calculateSubjectCounts(dayCountsString, timetableResponse) {
         subjectCounts[subject] += dayCount;
       });
     });
-  
+  console.log("calculateSubjectCounts",calculateSubjectCounts)
     return subjectCounts;
   }
   

@@ -3,9 +3,9 @@ import {
   Grid, Paper, Typography, Container, Box, 
   CircularProgress, Button, TextField, Table, TableBody, TableCell, 
   TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle, 
-  DialogContent, DialogActions, Tooltip, List, ListItem, ListItemText,Chip
+  DialogContent, DialogActions, Tooltip, List, ListItem, ListItemText, Chip
 } from '@mui/material';
-import { styled, alpha} from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
@@ -67,7 +67,6 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 // `;
 
 const AnalysisResults = () => {
-  const [dummyData, setDummyData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showTimetable, setShowTimetable] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
@@ -95,35 +94,39 @@ const AnalysisResults = () => {
     },
   };
 
-  const subjectData = {
-    'Mathematics': 30,
-    'Physics': 25,
-    'Chemistry': 28,
-    'Biology': 22,
-    'English': 20
-  };
-
   const holidays = ['New Year', 'Independence Day', 'Christmas'];
 
-  const timetable = {
-    'Monday': ['Mathematics', 'Physics', 'Chemistry'],
-    'Tuesday': ['Biology', 'English', 'Mathematics'],
-    'Wednesday': ['Physics', 'Chemistry', 'Biology'],
-    'Thursday': ['English', 'Mathematics', 'Physics'],
-    'Friday': ['Chemistry', 'Biology', 'English']
+  const subjectData = {
+    DWDM: 29,
+    OOAD: 32,
+    DML_LAB: 15,
+    DM_LAB: 18,
+    ADS_LAB: 18,
+    'OE-1': 16,
+    QA: 16,
+    SS: 16,
+    CAD: 33,
+    ML: 30
   };
 
-  const validDays = 220;
+  const timetable = {
+    Monday: ['DWDM', 'OOAD', 'DML LAB'],
+    Tuesday: ['DM LAB', 'ADS LAB'],
+    Wednesday: ['OE-1', 'QA', 'SS'],
+    Thursday: ['CAD', 'ML'],
+    Friday: ['ML', 'DWDM'],
+    Saturday: ['OOAD', 'CAD']
+  };
+
+  const validDates = JSON.parse('["2024-01-02","2024-01-03","2024-01-04","2024-01-05","2024-01-06","2024-01-08","2024-01-09","2024-01-10","2024-01-11","2024-01-12","2024-01-13","2024-01-16","2024-01-17","2024-01-18","2024-01-19","2024-01-20","2024-01-22","2024-01-23","2024-01-24","2024-01-25","2024-01-27","2024-01-29","2024-01-30","2024-01-31","2024-02-01","2024-02-02","2024-02-03","2024-02-05","2024-02-06","2024-02-07","2024-02-08","2024-02-09","2024-02-10","2024-02-12","2024-02-13","2024-02-14","2024-02-15","2024-02-16","2024-02-17","2024-02-19","2024-02-20","2024-02-21","2024-02-22","2024-02-23","2024-02-24","2024-02-26","2024-02-27","2024-02-28","2024-02-29","2024-03-01","2024-03-02","2024-03-04","2024-03-05","2024-03-06","2024-03-07","2024-03-09","2024-03-11","2024-03-12","2024-03-13","2024-03-14","2024-03-15","2024-03-16","2024-03-18","2024-03-19","2024-03-20","2024-03-21","2024-03-22","2024-03-23","2024-03-26","2024-03-27","2024-03-28","2024-03-30","2024-04-01","2024-04-02","2024-04-03","2024-04-04","2024-04-05","2024-04-06","2024-04-08","2024-04-09","2024-04-10","2024-04-12","2024-04-13","2024-04-15","2024-04-16","2024-04-18","2024-04-19","2024-04-20","2024-04-22","2024-04-23","2024-04-24","2024-04-25","2024-04-26","2024-04-27","2024-04-29","2024-04-30"]');
+
+  const totalDays = 96;
+  const daysNeededToAttend = 24;
+  const daysCanSkip = 72;
 
   useEffect(() => {
     // Simulate data loading
     setTimeout(() => {
-      const generateDummyData = () => {
-        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-        const data = labels.map(() => Math.floor(Math.random() * 100));
-        return { labels, data };
-      };
-      setDummyData(generateDummyData());
       setIsLoading(false);
     }, 2000);
   }, []);
@@ -151,8 +154,19 @@ const AnalysisResults = () => {
   };
 
   const calculateRequiredClasses = (subject) => {
-    // Calculate required classes logic here
-    return Math.floor(subjectData[subject] * 0.75);
+    const subjectRequirements = {
+      DWDM: { total: 29, asperpercentage: 22, minimum40: 12 },
+      OOAD: { total: 32, asperpercentage: 24, minimum40: 13 },
+      DML_LAB: { total: 15, asperpercentage: 12, minimum40: 6 },
+      DM_LAB: { total: 18, asperpercentage: 14, minimum40: 8 },
+      ADS_LAB: { total: 18, asperpercentage: 14, minimum40: 8 },
+      'OE-1': { total: 16, asperpercentage: 12, minimum40: 7 },
+      QA: { total: 16, asperpercentage: 12, minimum40: 7 },
+      SS: { total: 16, asperpercentage: 12, minimum40: 7 },
+      CAD: { total: 33, asperpercentage: 25, minimum40: 14 },
+      ML: { total: 30, asperpercentage: 23, minimum40: 12 }
+    };
+    return subjectRequirements[subject].minimum40;
   };
 
 
@@ -176,97 +190,81 @@ const AnalysisResults = () => {
               transition={{ duration: 0.5 }}
             >
               <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
+
+              <Grid item xs={12} sm={6} md={3}>
                   <StyledPaper>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-                      Weekly Attendance Overview
-                    </Typography>
-                    <Box height={300}>
-                      <Bar
-                        data={{
-                          labels: dummyData.labels,
-                          datasets: [
-                            {
-                              label: 'Attendance',
-                              data: dummyData.data,
-                              backgroundColor: theme.palette.primary.main,
-                            },
-                          ],
-                        }}
-                        options={chartOptions}
-                      />
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
+                      <Typography variant="h6">Total Days</Typography>
                     </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{totalDays}</Typography>
                   </StyledPaper>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6} md={3}>
                   <StyledPaper>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-                      Attendance Distribution
-                    </Typography>
-                    <Box height={300}>
-                      <Pie
-                        data={{
-                          labels: ['Present', 'Absent'],
-                          datasets: [
-                            {
-                              data: [75, 25],
-                              backgroundColor: [theme.palette.success.main, theme.palette.error.main],
-                            },
-                          ],
-                        }}
-                        options={chartOptions}
-                      />
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
+                      <Typography variant="h6">Days to Attend</Typography>
                     </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{daysCanSkip}</Typography>
                   </StyledPaper>
                 </Grid>
-
+                <Grid item xs={12} sm={6} md={3}>
+                  <StyledPaper>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
+                      <Typography variant="h6">Days Can Skip</Typography>
+                    </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{daysNeededToAttend}</Typography>
+                  </StyledPaper>
+                </Grid>
                 {/* Subject-wise Attendance */}
-            <Grid item xs={12}>
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
-                <StyledPaper>
-                  <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                    Subject-wise Attendance
-                  </Typography>
-                  <Chart
-                    type="bar"
-                    data={{
-                      labels: Object.keys(subjectData),
-                      datasets: [
-                        {
-                          label: 'Total Classes',
-                          data: Object.values(subjectData),
-                          backgroundColor: 'rgba(33, 150, 243, 0.6)',
-                          borderColor: 'rgba(33, 150, 243, 1)',
-                          borderWidth: 1,
-                        },
-                        {
-                          label: 'Required Classes',
-                          data: Object.keys(subjectData).map(calculateRequiredClasses),
-                          backgroundColor: 'rgba(255, 193, 7, 0.6)',
-                          borderColor: 'rgba(255, 193, 7, 1)',
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                    options={{
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          title: {
-                            display: true,
-                            text: 'Number of Classes',
+                <Grid item xs={12}>
+                  <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+                    <StyledPaper>
+                      <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
+                        Subject-wise Attendance
+                      </Typography>
+                      <Chart
+                        type="bar"
+                        data={{
+                          labels: Object.keys(subjectData),
+                          datasets: [
+                            {
+                              label: 'Total Classes',
+                              data: Object.values(subjectData),
+                              backgroundColor: 'rgba(33, 150, 243, 0.6)',
+                              borderColor: 'rgba(33, 150, 243, 1)',
+                              borderWidth: 1,
+                            },
+                            {
+                              label: 'Required Classes',
+                              data: Object.keys(subjectData).map(calculateRequiredClasses),
+                              backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                              borderColor: 'rgba(255, 193, 7, 1)',
+                              borderWidth: 1,
+                            },
+                          ],
+                        }}
+                        options={{
+                          scales: {
+                            y: {
+                              beginAtZero: true,
+                              title: {
+                                display: true,
+                                text: 'Number of Classes',
+                              },
+                            },
                           },
-                        },
-                      },
-                      animation: {
-                        duration: 2000,
-                        easing: 'easeOutQuart',
-                      },
-                    }}
-                  />
-                </StyledPaper>
-              </motion.div>
+                          animation: {
+                            duration: 2000,
+                            easing: 'easeOutQuart',
+                          },
+                        }}
+                      />
+                    </StyledPaper>
+                  </motion.div>
             </Grid>
 
                 {/* Holidays */}
@@ -308,35 +306,38 @@ const AnalysisResults = () => {
                 </Grid>
 
                 {/* Attendance Calculator */}
-            <Grid item xs={12} md={6}>
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}>
-                <StyledPaper>
-                  <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                    Attendance Calculator
-                  </Typography>
-                  <Box display="flex" alignItems="center" mb={2}>
-                    <TextField
-                      label="Target Attendance (%)"
-                      variant="outlined"
-                      size="small"
-                      type="number"
-                      value={targetAttendance}
-                      onChange={(e) => setTargetAttendance(Number(e.target.value))}
-                      style={{ marginRight: '10px' }}
-                      InputProps={{
-                        startAdornment: <PercentOutlined color="primary" />,
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="body1">
-                    Valid Working Days: {validDays}
-                  </Typography>
-                  <Typography variant="body1">
-                    Required Days to Attend: {Math.ceil((targetAttendance / 100) * validDays)}
-                  </Typography>
-                </StyledPaper>
-              </motion.div>
-            </Grid>
+                <Grid item xs={12} md={6}>
+                  <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}>
+                    <StyledPaper>
+                      <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
+                        Attendance Calculator
+                      </Typography>
+                      <Box display="flex" alignItems="center" mb={2}>
+                        <TextField
+                          label="Target Attendance (%)"
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          value={targetAttendance}
+                          onChange={(e) => setTargetAttendance(Number(e.target.value))}
+                          style={{ marginRight: '10px' }}
+                          InputProps={{
+                            startAdornment: <PercentOutlined color="primary" />,
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="body1">
+                        Total Days: {totalDays}
+                      </Typography>
+                      <Typography variant="body1">
+                        Days Needed to Attend: {daysNeededToAttend}
+                      </Typography>
+                      <Typography variant="body1">
+                        Days Can Skip: {daysCanSkip}
+                      </Typography>
+                    </StyledPaper>
+                  </motion.div>
+                </Grid>
 
                 {/* Timetable */}
                 <Grid item xs={12}>
@@ -356,7 +357,6 @@ const AnalysisResults = () => {
                             <TableRow>
                               <TableCell>Day</TableCell>
                               <TableCell>Subjects</TableCell>
-                              <TableCell>Actions</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -368,7 +368,6 @@ const AnalysisResults = () => {
                                     <Chip
                                       key={index}
                                       label={subject}
-                                      onDelete={() => handleDeleteSubject(day, index)}
                                       sx={{ mr: 1, mb: 1 }}
                                     />
                                   ))}
@@ -390,16 +389,8 @@ const AnalysisResults = () => {
                 </Grid>
 
                 {/* Stat Cards */}
-                <Grid item xs={12} sm={6} md={3}>
-                  <StyledPaper>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">Overall Attendance</Typography>
-                    </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>85%</Typography>
-                  </StyledPaper>
-                </Grid>
-                {/* ... (repeat for other stat cards) */}
+                
+                {/* ... (you can add more stat cards as needed) */}
               </Grid>
             </motion.div>
           )}
@@ -422,7 +413,7 @@ const AnalysisResults = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditingSubject(null)}>Cancel</Button>
-            <StyledButton onClick={handleSaveSubject}>Save</StyledButton>
+            <StyledButton >Save</StyledButton>
           </DialogActions>
         </Dialog>
       </Container>

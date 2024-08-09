@@ -4,6 +4,7 @@ import { styled, keyframes } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { CloudUpload, Send, CheckCircle, Close, BarChart, DateRange, PercentOutlined } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Generateanalysis } from '../api/Generation';
 
 const theme = createTheme({
   palette: {
@@ -116,6 +117,10 @@ const UploadData = () => {
     console.log('From Date:', fromDate);
     console.log('To Date:', toDate);
     console.log('Attendance Requirement:', attendanceRequirement);
+
+    // Call the API to generate analysis
+    Generateanalysis({ file: attendanceFile, percentage: attendanceRequirement, fromDate, toDate });
+
     // Perform analysis and generate report here
   };
 
