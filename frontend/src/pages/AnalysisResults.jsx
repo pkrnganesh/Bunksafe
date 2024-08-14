@@ -1,86 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Grid, Paper, Typography, Container, Box, 
-  CircularProgress, Button, TextField, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle, 
-  DialogContent, DialogActions, Tooltip, List, ListItem, ListItemText, Chip
-} from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
-import { DateRange, PercentOutlined, Add, Delete, School, TrendingUp } from '@mui/icons-material';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ResponsiveBar } from '@nivo/bar';
+import { ResponsiveCalendar } from '@nivo/calendar';
+import { Typography, Box, Grid, Button, TextField, List, ListItem, ListItemText, IconButton, Chip } from '@mui/material';
+import { styled } from '@mui/system';
+import { Add, Delete, DateRange } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-ChartJS.register(ArcElement, ChartTooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3f51b5',
-    },
-    secondary: {
-      main: '#f50057',
+      main: '#87CEEB', // Sky Blue
     },
     background: {
-      default: '#f5f5f5',
+      default: '#F0F8FF', // Alice Blue
     },
   },
   typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
+    fontFamily: '"Poppins", sans-serif',
   },
 });
 
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const GlassContainer = styled(Box)(({ theme }) => ({
+  background: 'rgba(255, 255, 255, 0.7)',
+  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+  backdropFilter: 'blur(4px)',
+  borderRadius: '10px',
+  border: '1px solid rgba(255, 255, 255, 0.18)',
   padding: theme.spacing(3),
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)',
-  background: '#ffffff',
   transition: 'all 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 8px 24px 0 rgba(0,0,0,0.1)',
+    boxShadow: '0 12px 48px 0 rgba(31, 38, 135, 0.5)',
   },
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
-  textTransform: 'none',
-  fontWeight: 600,
-  boxShadow: 'none',
+const FloatingButton = styled(Button)(({ theme }) => ({
+  background: 'linear-gradient(45deg, #87CEEB 30%, #00BFFF 90%)',
+  border: 0,
+  borderRadius: 3,
+  boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+  color: 'white',
+  height: 48,
+  padding: '0 30px',
+  transition: 'all 0.3s',
   '&:hover': {
-    boxShadow: '0 4px 12px 0 rgba(0,0,0,0.1)',
+    boxShadow: '0 6px 10px 4px rgba(33, 203, 243, .5)',
   },
 }));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.primary.main,
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-  },
-}));
-
 
 const AnalysisResults = () => {
-  const [showTimetable, setShowTimetable] = useState(false);
-  const [editingSubject, setEditingSubject] = useState(null);
   const [newHoliday, setNewHoliday] = useState('');
-  const [targetAttendance, setTargetAttendance] = useState(75);
-
-  const holidays = ['New Year', 'Independence Day', 'Christmas'];
 
   const subjectData = {
-    DWDM: 29,
-    OOAD: 32,
-    DML_LAB: 15,
-    DM_LAB: 18,
-    ADS_LAB: 18,
-    'OE-1': 16,
-    QA: 16,
-    SS: 16,
-    CAD: 33,
-    ML: 30
+    DWDM: { total: 29, required75: 22, required40: 12 },
+    OOAD: { total: 32, required75: 24, required40: 13 },
+    DML_LAB: { total: 15, required75: 12, required40: 6 },
+    DM_LAB: { total: 18, required75: 14, required40: 8 },
+    ADS_LAB: { total: 18, required75: 14, required40: 8 },
+    'OE-1': { total: 16, required75: 12, required40: 7 },
+    QA: { total: 16, required75: 12, required40: 7 },
+    SS: { total: 16, required75: 12, required40: 7 },
+    CAD: { total: 33, required75: 25, required40: 14 },
+    ML: { total: 30, required75: 23, required40: 12 }
   };
 
   const timetable = {
@@ -92,10 +73,14 @@ const AnalysisResults = () => {
     Saturday: ['OOAD', 'CAD']
   };
 
-
   const totalDays = 96;
-  const daysNeededToAttend = 24;
-  const daysCanSkip = 72;
+  const daysNeededToAttend = 72;
+  const daysCanSkip = 24;
+
+  const holidays = ['New Year', 'Independence Day', 'Christmas'];
+
+  const attendingdates = ['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-06', '2024-01-08', '2024-03-22', '2024-03-23', '2024-03-26', '2024-03-27', '2024-03-28'];
+  const skipingdates = ['2024-01-01', '2024-01-07', '2024-01-14', '2024-01-15', '2024-01-21'];
 
   const handleAddHoliday = () => {
     // Add holiday logic here
@@ -105,8 +90,6 @@ const AnalysisResults = () => {
     // Delete holiday logic here
   };
 
-
-
   const handleDeleteSubject = (day, index) => {
     // Delete subject logic here
   };
@@ -115,245 +98,221 @@ const AnalysisResults = () => {
     // Add subject logic here
   };
 
-  const handleSaveSubject = () => {
-    // Save subject logic here
-  };
-
-  const calculateRequiredClasses = (subject) => {
-    const subjectRequirements = {
-      DWDM: { total: 29, asperpercentage: 22, minimum40: 12 },
-      OOAD: { total: 32, asperpercentage: 24, minimum40: 13 },
-      DML_LAB: { total: 15, asperpercentage: 12, minimum40: 6 },
-      DM_LAB: { total: 18, asperpercentage: 14, minimum40: 8 },
-      ADS_LAB: { total: 18, asperpercentage: 14, minimum40: 8 },
-      'OE-1': { total: 16, asperpercentage: 12, minimum40: 7 },
-      QA: { total: 16, asperpercentage: 12, minimum40: 7 },
-      SS: { total: 16, asperpercentage: 12, minimum40: 7 },
-      CAD: { total: 33, asperpercentage: 25, minimum40: 14 },
-      ML: { total: 30, asperpercentage: 23, minimum40: 12 }
-    };
-    return {
-      asperpercentage: subjectRequirements[subject].asperpercentage,
-      minimum40: subjectRequirements[subject].minimum40
-    };
-    };
-
-    const attendingdates = JSON.parse('["2024-01-02","2024-01-03","2024-01-04","2024-01-05","2024-01-06","2024-01-08","2024-01-09","2024-01-10","2024-01-11","2024-01-12","2024-01-13","2024-01-16","2024-01-17","2024-01-18","2024-01-19","2024-01-20","2024-01-22","2024-01-23","2024-01-24","2024-01-25","2024-01-27","2024-01-29","2024-01-30","2024-01-31","2024-02-01","2024-02-02","2024-02-03","2024-02-05","2024-02-06","2024-02-07","2024-02-08","2024-02-09","2024-02-10","2024-02-12","2024-02-13","2024-02-14","2024-02-15","2024-02-16","2024-02-17","2024-02-19","2024-02-20","2024-02-21","2024-02-22","2024-02-23","2024-02-24","2024-02-26","2024-02-27","2024-02-28","2024-02-29","2024-03-01","2024-03-02","2024-03-04","2024-03-05","2024-03-06","2024-03-07","2024-03-09","2024-03-11","2024-03-12","2024-03-13","2024-03-14","2024-03-15","2024-03-16","2024-03-18","2024-03-19","2024-03-20","2024-03-21","2024-03-22","2024-03-23","2024-03-26","2024-03-27","2024-03-28","2024-03-30","2024-04-01","2024-04-02","2024-04-03","2024-04-04","2024-04-05","2024-04-06","2024-04-08","2024-04-09","2024-04-10","2024-04-12","2024-04-13","2024-04-15","2024-04-16","2024-04-18","2024-04-19","2024-04-20","2024-04-22","2024-04-23","2024-04-24","2024-04-25","2024-04-26","2024-04-27","2024-04-29","2024-04-30"]');
-const skipingdates = JSON.parse('["2024-01-01","2024-01-07","2024-01-14","2024-01-15","2024-01-21","2024-01-26","2024-01-28","2024-02-04","2024-02-11","2024-02-18","2024-02-25","2024-03-03","2024-03-08","2024-03-10","2024-03-17","2024-03-24","2024-03-25","2024-03-29","2024-03-31","2024-04-07","2024-04-11","2024-04-14","2024-04-17","2024-04-21","2024-04-28"]');
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h3" gutterBottom align="center" sx={{ fontWeight: 700, color: theme.palette.primary.main, mb: 4 }}>
-          Attendance Analysis Dashboard
-        </Typography>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          background: 'linear-gradient(120deg, #87CEEB 0%, #E0F7FA 100%)',
+          padding: 4,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Typography variant="h2" gutterBottom align="center" sx={{ color: 'white', fontWeight: 700, textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
+            Attendance Analysis Dashboard
+          </Typography>
 
-        <AnimatePresence>
-                    <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Grid container spacing={4}>
-
-              <Grid item xs={12} sm={6} md={3}>
-                  <StyledPaper>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">Total Days</Typography>
-                    </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{totalDays}</Typography>
-                  </StyledPaper>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={3}>
-                  <StyledPaper>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">Days to Attend</Typography>
-                    </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{daysCanSkip}</Typography>
-                  </StyledPaper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <StyledPaper>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <TrendingUp color="primary" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">Days Can Skip</Typography>
-                    </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>{daysNeededToAttend}</Typography>
-                  </StyledPaper>
-                </Grid>
-                {/* Subject-wise Attendance */}
-                <Grid item xs={12}>
-                  <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
-                    <StyledPaper>
-                      <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                        Subject-wise Attendance
-                      </Typography>
-                      <Chart
-                        type="bar"
-                        data={{
-                          labels: Object.keys(subjectData),
-                          datasets: [
-                            {
-                              label: 'Total Classes',
-                              data: Object.values(subjectData),
-                              backgroundColor: 'rgba(33, 150, 243, 0.6)',
-                              borderColor: 'rgba(33, 150, 243, 1)',
-                              borderWidth: 1,
-                            },
-                            {
-                              label: 'Required Classes for 75%',
-                              data: Object.keys(subjectData).map(a=>calculateRequiredClasses(a).asperpercentage),
-                              backgroundColor: 'rgba(255, 193, 7, 0.6)',
-                              borderColor: 'rgba(255, 193, 7, 1)',
-                              borderWidth: 1,
-                            },
-
-                            {
-                              label: 'Required Classes for 40%',
-                              data: Object.keys(subjectData).map(a=>calculateRequiredClasses(a).minimum40),
-                              backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                              borderColor: 'rgba(255, 0, 0, 1)',
-                              borderWidth: 1,
-                            }
-                          ],
-                        }}
-                        options={{
-                          scales: {
-                            y: {
-                              beginAtZero: true,
-                              title: {
-                                display: true,
-                                text: 'Number of Classes',
-                              },
-                            },
-                          },
-                          animation: {
-                            duration: 2000,
-                            easing: 'easeOutQuart',
-                          },
-                        }}
-                      />
-                    </StyledPaper>
-                  </motion.div>
+          <Grid container spacing={4}>
+            {/* Summary Cards */}
+            <Grid item xs={12} md={4}>
+              <GlassContainer>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Total Days</Typography>
+                <Typography variant="h2" sx={{ fontWeight: 700, color: '#333' }}>{totalDays}</Typography>
+              </GlassContainer>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <GlassContainer>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Days to Attend</Typography>
+                <Typography variant="h2" sx={{ fontWeight: 700, color: '#333' }}>{daysNeededToAttend}</Typography>
+              </GlassContainer>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <GlassContainer>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Days Can Skip</Typography>
+                <Typography variant="h2" sx={{ fontWeight: 700, color: '#333' }}>{daysCanSkip}</Typography>
+              </GlassContainer>
             </Grid>
 
-                {/* Holidays */}
-                <Grid item xs={12} md={6}>
-                  <StyledPaper>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-                      Holidays
-                    </Typography>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <TextField
-                        label="Add Holiday"
-                        variant="outlined"
-                        size="small"
-                        value={newHoliday}
-                        onChange={(e) => setNewHoliday(e.target.value)}
-                        sx={{ mr: 2, flexGrow: 1 }}
-                        InputProps={{
-                          startAdornment: <DateRange color="primary" />,
-                        }}
-                      />
-                      <StyledButton variant="contained" color="primary" onClick={handleAddHoliday}>
-                        Add
-                      </StyledButton>
-                    </Box>
-                    <List>
-                      {holidays.map((holiday) => (
-                        <ListItem key={holiday} secondaryAction={
-                          <Tooltip title="Delete Holiday">
-                            <StyledIconButton edge="end" onClick={() => handleDeleteHoliday(holiday)}>
-                              <Delete />
-                            </StyledIconButton>
-                          </Tooltip>
-                        }>
-                          <ListItemText primary={holiday} />
-                        </ListItem>
+            {/* Subject-wise Attendance */}
+            <Grid item xs={12}>
+              <GlassContainer sx={{ height: 500 }}>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Subject-wise Attendance</Typography>
+                <ResponsiveBar
+                  data={Object.entries(subjectData).map(([subject, data]) => ({
+                    subject,
+                    'Total Classes': data.total,
+                    'Required for 75%': data.required75,
+                    'Required for 40%': data.required40,
+                  }))}
+                  keys={['Total Classes', 'Required for 75%', 'Required for 40%']}
+                  indexBy="subject"
+                  margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+                  padding={0.3}
+                  valueScale={{ type: 'linear' }}
+                  indexScale={{ type: 'band', round: true }}
+                  colors={['#ff7f0e', '#2ca02c', '#d62728']}
+                  borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+                  axisTop={null}
+                  axisRight={null}
+                  axisBottom={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: -45,
+                    legend: 'Subject',
+                    legendPosition: 'middle',
+                    legendOffset: 40
+                  }}
+                  axisLeft={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Number of Classes',
+                    legendPosition: 'middle',
+                    legendOffset: -40
+                  }}
+                  labelSkipWidth={12}
+                  labelSkipHeight={12}
+                  labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+                  legends={[
+                    {
+                      dataFrom: 'keys',
+                      anchor: 'bottom-right',
+                      direction: 'column',
+                      justify: false,
+                      translateX: 120,
+                      translateY: 0,
+                      itemsSpacing: 2,
+                      itemWidth: 100,
+                      itemHeight: 20,
+                      itemDirection: 'left-to-right',
+                      itemOpacity: 0.85,
+                      symbolSize: 20,
+                      effects: [
+                        {
+                          on: 'hover',
+                          style: {
+                            itemOpacity: 1
+                          }
+                        }
+                      ]
+                    }
+                  ]}
+                  animate={true}
+                  motionStiffness={90}
+                  motionDamping={15}
+                  tooltip={({ id, value, color }) => (
+                    <strong style={{ color }}>
+                      {id}: {value}
+                    </strong>
+                  )}
+                />
+              </GlassContainer>
+            </Grid>
+
+            {/* Attendance Calendar */}
+            <Grid item xs={12}>
+              <GlassContainer sx={{ height: 300 }}>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Attendance Calendar</Typography>
+                <ResponsiveCalendar
+                  data={[
+                    ...attendingdates.map(date => ({ day: date, value: 1 })),
+                    ...skipingdates.map(date => ({ day: date, value: 0 }))
+                  ]}
+                  from={attendingdates[0]}
+                  to={attendingdates[attendingdates.length - 1]}
+                  emptyColor="#eeeeee"
+                  colors={['#ff0000', '#00ff00']}
+                  margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+                  yearSpacing={40}
+                  monthBorderColor="#ffffff"
+                  dayBorderWidth={2}
+                  dayBorderColor="#ffffff"
+                  legends={[
+                    {
+                      anchor: 'bottom-right',
+                      direction: 'row',
+                      translateY: 36,
+                      itemCount: 2,
+                      itemWidth: 42,
+                      itemHeight: 36,
+                      itemsSpacing: 14,
+                      itemDirection: 'right-to-left'
+                    }
+                  ]}
+                  tooltip={({ day, value }) => (
+                    <strong>
+                      {day}: {value === 1 ? 'Attended' : 'Skipped'}
+                    </strong>
+                  )}
+                />
+              </GlassContainer>
+            </Grid>
+
+            {/* Holidays */}
+            <Grid item xs={12} md={6}>
+              <GlassContainer>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Holidays</Typography>
+                <Box display="flex" alignItems="center" mb={2}>
+                  <TextField
+                    label="Add Holiday"
+                    variant="outlined"
+                    size="small"
+                    value={newHoliday}
+                    onChange={(e) => setNewHoliday(e.target.value)}
+                    sx={{ mr: 2, flexGrow: 1 }}
+                    InputProps={{
+                      startAdornment: <DateRange color="primary" />,
+                    }}
+                  />
+                  <FloatingButton onClick={handleAddHoliday}>
+                    Add
+                  </FloatingButton>
+                </Box>
+                <List>
+                  {holidays.map((holiday) => (
+                    <ListItem key={holiday} secondaryAction={
+                      <IconButton edge="end" onClick={() => handleDeleteHoliday(holiday)}>
+                        <Delete />
+                      </IconButton>
+                    }>
+                      <ListItemText primary={holiday} />
+                    </ListItem>
+                  ))}
+                </List>
+              </GlassContainer>
+            </Grid>
+
+            {/* Timetable */}
+            <Grid item xs={12} md={6}>
+              <GlassContainer>
+                <Typography variant="h4" gutterBottom sx={{ color: '#4A90E2' }}>Timetable</Typography>
+                {Object.entries(timetable).map(([day, subjects]) => (
+                  <Box key={day} mb={2}>
+                    <Typography variant="h6">{day}</Typography>
+                    <Box display="flex" flexWrap="wrap">
+                      {subjects.map((subject, index) => (
+                        <Chip
+                          key={index}
+                          label={subject}
+                          onDelete={() => handleDeleteSubject(day, index)}
+                          sx={{ m: 0.5 }}
+                        />
                       ))}
-                    </List>
-                  </StyledPaper>
-                </Grid>
-
-                
-
-                {/* Timetable */}
-                <Grid item xs={12}>
-                  <StyledPaper>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                      <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        Timetable
-                      </Typography>
-                      <StyledButton variant="outlined" color="primary" onClick={() => setShowTimetable(!showTimetable)}>
-                        {showTimetable ? 'Hide Timetable' : 'Show Timetable'}
-                      </StyledButton>
+                      <IconButton onClick={() => handleAddSubject(day)}>
+                        <Add />
+                      </IconButton>
                     </Box>
-                    {showTimetable && (
-                      <TableContainer>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Day</TableCell>
-                              <TableCell>Subjects</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {Object.entries(timetable).map(([day, subjects]) => (
-                              <TableRow key={day}>
-                                <TableCell>{day}</TableCell>
-                                <TableCell>
-                                  {subjects.map((subject, index) => (
-                                    <Chip
-                                      key={index}
-                                      label={subject}
-                                      sx={{ mr: 1, mb: 1 }}
-                                    />
-                                  ))}
-                                </TableCell>
-                                <TableCell>
-                                  <Tooltip title="Add Subject">
-                                    <StyledIconButton onClick={() => handleAddSubject(day)}>
-                                      <Add />
-                                    </StyledIconButton>
-                                  </Tooltip>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    )}
-                  </StyledPaper>
-                </Grid>
-
-              </Grid>
-            </motion.div>
-        </AnimatePresence>
-
-        <Dialog open={!!editingSubject} onClose={() => setEditingSubject(null)}>
-          <DialogTitle>Edit Subject</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Subject Name"
-              fullWidth
-              value={editingSubject?.subject || ''}
-              onChange={(e) => setEditingSubject({ ...editingSubject, subject: e.target.value })}
-              InputProps={{
-                startAdornment: <School color="primary" />,
-              }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setEditingSubject(null)}>Cancel</Button>
-            <StyledButton >Save</StyledButton>
-          </DialogActions>
-        </Dialog>
-      </Container>
+                  </Box>
+                ))}
+              </GlassContainer>
+            </Grid>
+          </Grid>
+        </motion.div>
+      </Box>
     </ThemeProvider>
   );
 };
