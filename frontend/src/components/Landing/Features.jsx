@@ -1,38 +1,83 @@
+
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
-import { HowToReg, Group, BarChart } from '@mui/icons-material';
-import { GlassBox, AnimatedCard } from './styles';
+import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
+import { styled } from '@mui/system';
+import  thought from './thought.svg';
+const StyledCard = styled(Card)(({ theme }) => ({
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '16px',
+  transition: 'transform 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+  },
+}));
+
+const NumberCircle = styled(Box)(({ theme }) => ({
+  width: '36px',
+  height: '36px',
+  borderRadius: '50%',
+  color: 'black',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontWeight: 'bold',
+  marginBottom: theme.spacing(2),
+}));
 
 const Features = () => {
-  const features = [
-    { icon: HowToReg, title: 'Register', description: 'Create an account for your institution' },
-    { icon: Group, title: 'Add Students', description: 'Import or manually add student data' },
-    { icon: BarChart, title: 'Track & Analyze', description: 'Generate reports and gain insights' },
+  const steps = [
+    { number: 1, title: 'Create your Account', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
+    { number: 2, title: 'Setup your Account', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
+    { number: 3, title: 'Start creating with Horizon', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
+    { number: 4, title: 'Team Management', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
   ];
 
   return (
-    <GlassBox
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      id="get-started"
-    >
-      <Typography variant="h4" gutterBottom align="center">
-        How It Works
-      </Typography>
-      <Grid container spacing={4} justifyContent="center">
-        {features.map((feature, index) => (
-          <Grid item xs={12} md={4} key={index}>
-            <AnimatedCard whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <feature.icon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-              <Typography variant="h6" gutterBottom>{feature.title}</Typography>
-              <Typography variant="body2">{feature.description}</Typography>
-            </AnimatedCard>
+    <Box sx={{ 
+      // bgcolor: '#1A0B2E', 
+      color: 'white', 
+      py: 8, 
+      px: 4,
+      // backgroundImage: 'linear-gradient(45deg, #1A0B2E 0%, #2C1250 100%)',
+    }}>
+      <Grid container spacing={4} alignItems="center">
+      <Grid item xs={12} md={5}>
+        <Box 
+        component="img" 
+        src={thought}
+        alt="Horizon Logo" 
+        sx={{ width: '100%', height: 'auto', maxWidth: 600, mx: 'auto', display: 'block' }}
+        />
+      </Grid>
+      <Grid item xs={12} md={7}>
+        <Typography variant="h3" gutterBottom fontWeight="bold" sx={{ color: 'black' }}>
+        How Horizon works?
+        </Typography>
+        <Typography variant="subtitle1" paragraph>
+        Urna duis convallis convallis tellus interdum velit laoreet pellentesque aliquam tortor consequat porta.
+        </Typography>
+        <Grid container spacing={3}>
+        {steps.map((step) => (
+          <Grid item xs={12} sm={6} key={step.number}>
+          <StyledCard>
+            <CardContent>
+            <NumberCircle>{step.number}</NumberCircle>
+            <Typography variant="h6" gutterBottom fontWeight="bold">
+              {step.title}
+            </Typography>
+            <Typography variant="body2">
+              {step.description}
+            </Typography>
+            </CardContent>
+          </StyledCard>
           </Grid>
         ))}
+        </Grid>
       </Grid>
-    </GlassBox>
-  );
+      </Grid>
+    </Box>
+    );
 };
 
 export default Features;

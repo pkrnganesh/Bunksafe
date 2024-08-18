@@ -9,7 +9,7 @@ export const GlassBox = styled(motion.div)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(3),
   border: '1px solid rgba(255, 255, 255, 0.1)',
-  marginBottom: theme.spacing(8),
+  marginBottom: theme.spacing(15),
 }));
 
 export const AnimatedCard = styled(motion(Card))(({ theme }) => ({
