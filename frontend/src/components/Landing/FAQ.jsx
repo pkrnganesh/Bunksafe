@@ -1,134 +1,151 @@
 import React, { useState } from 'react';
-import { Typography, Grid, Button, ToggleButton, ToggleButtonGroup, Box } from '@mui/material';
-import { Check } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { styled } from '@mui/system';
+import { Typography, Box, useTheme, alpha, Skeleton } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-// Default image for the first plan
-import DefaultImage from './index_banner.svg';
-
-const Container = styled(motion.div)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #f3f4f6 30%, #ffffff 100%)',
-  borderRadius: '20px',
-  padding: theme.spacing(6),
-  boxShadow: '0 12px 24px rgba(0, 0, 0, 0.15)',
-  color: 'black',
-  overflow: 'hidden',
-}));
-
-const Card = styled(motion.div)(({ theme, isPopular }) => ({
-  background: 'white',
-  borderRadius: '20px',
-  padding: theme.spacing(5),
-  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  color: isPopular ? 'black' : 'gray',
-  border: isPopular ? `2px solid ${theme.palette.primary.main}` : 'none',
-  transform: isPopular ? 'scale(1.05)' : 'scale(1)',
-  zIndex: isPopular ? 10 : 1,
-  '&:hover': {
-    boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
-    transform: 'scale(1.05)',
+const Container = styled(Box)(({ theme }) => ({
+  backdropFilter: 'blur(10px)',
+  color: theme.palette.text.primary,
+  display: 'flex',
+  gap: theme.spacing(4),
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column',
+    padding: theme.spacing(2),
   },
-  position: 'relative',
-  overflow: 'hidden',
 }));
 
-const CardImage = styled('img')({
-  width: '100%',
-  height: 'auto',
+const QuestionList = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+}));
+
+const Question = styled(motion.div)(({ theme }) => ({
+  padding: theme.spacing(1.5, 2),
+  borderRadius: '10px',
+  cursor: 'pointer',
+  transition: 'all 0.2s',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+  },
+}));
+
+const AnswerContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  position: 'relative',
+  minHeight: '300px',
   borderRadius: '15px',
-  marginBottom: '16px',
+  overflow: 'hidden',
+  boxShadow: `0 5px 15px ${alpha(theme.palette.common.black, 0.2)}`,
+}));
+
+const AnswerImage = styled(motion.img)({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  position: 'absolute',
 });
 
-const ToggleGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  background: 'rgba(0, 0, 0, 0.05)',
-  borderRadius: '20px',
-  padding: '6px',
-  marginBottom: theme.spacing(6),
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-}));
-
-const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-  color: 'black',
-  '&.Mui-selected': {
-    backgroundColor: theme.palette.primary.main,
-    color: 'white',
+const faqData = [
+  {
+    question: "Chat with AI on every website",
+    image: "https://picsum.photos/seed/chat/600/400"
   },
-}));
+  {
+    question: "Chat with 20+ top AI models",
+    image: "https://picsum.photos/seed/models/600/400"
+  },
+  {
+    question: "Get AI response on every search",
+    image: "https://picsum.photos/seed/search/600/400"
+  },
+  {
+    question: "Chat with Websites",
+    image: "https://picsum.photos/seed/websites/600/400"
+  },
+  {
+    question: "Chat with Documents",
+    image: "https://picsum.photos/seed/documents/600/400"
+  },
+];
 
-const Pricing = () => {
-  const [billingCycle, setBillingCycle] = useState('monthly');
+const FAQ = () => {
+  const [selectedQuestion, setSelectedQuestion] = useState(0);
+  const [imageLoading, setImageLoading] = useState(true);
+  const theme = useTheme();
 
-  const plans = [
-    {
-      title: 'Free',
-      price: { monthly: 0, annually: 0 },
-      features: ['Basic features', 'Limited support'],
-      image: DefaultImage, // Image for the first plan
-    },
-    {
-      title: 'Premium',
-      price: { monthly: 60, annually: 600 },
-      features: ['Advanced features', 'Priority support', 'Unlimited integrations'],
-      isPopular: true,
-    },
-  ];
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
 
-  const handleBillingCycleChange = (event, newBillingCycle) => {
-    if (newBillingCycle !== null) {
-      setBillingCycle(newBillingCycle);
-    }
+  const handleQuestionChange = (index) => {
+    setSelectedQuestion(index);
+    setImageLoading(true);
   };
 
   return (
-    <Container initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
-        <ToggleGroup
-          value={billingCycle}
-          exclusive
-          onChange={handleBillingCycleChange}
-          aria-label="billing cycle"
-        >
-          <StyledToggleButton value="monthly">Monthly</StyledToggleButton>
-          <StyledToggleButton value="annually">Annually</StyledToggleButton>
-        </ToggleGroup>
-      </Box>
-      <Grid container spacing={5}>
-        {plans.map((plan, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Card
-              isPopular={plan.isPopular}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+    <Container>
+      <QuestionList>
+        <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+          Merlin in Action
+        </Typography>
+        {faqData.map((item, index) => (
+          <Question
+            key={index}
+            onClick={() => handleQuestionChange(index)}
+            onHoverStart={() => handleQuestionChange(index)}
+            animate={{
+              backgroundColor: selectedQuestion === index ? alpha(theme.palette.primary.main, 0.2) : 'transparent',
+            }}
+          >
+            <Typography 
+              variant="body1" 
+              fontWeight={selectedQuestion === index ? 'bold' : 'normal'}
+              color={selectedQuestion === index ? 'primary' : 'text.primary'}
             >
-              {plan.image && <CardImage src={plan.image} alt={`${plan.title} plan image`} />}
-              <Typography variant="h5" gutterBottom>{plan.title}</Typography>
-              <Typography variant="h4" gutterBottom>
-                ${billingCycle === 'monthly' ? plan.price.monthly : plan.price.annually}
-                <Typography component="span" variant="h6"> USD</Typography>
-              </Typography>
-              <Typography variant="body1" gutterBottom>Billed {billingCycle}</Typography>
-              <Button
-                variant="contained"
-                color={plan.isPopular ? "primary" : "secondary"}
-                fullWidth
-                sx={{ my: 2 }}
-              >
-                {plan.title === 'Free' ? 'Get Started' : 'Buy Now'}
-              </Button>
-              {plan.features.map((feature, idx) => (
-                <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                  <Check sx={{ mr: 1, color: plan.isPopular ? 'primary.main' : 'gray' }} />
-                  <Typography variant="body2">{feature}</Typography>
-                </Box>
-              ))}
-            </Card>
-          </Grid>
+              {item.question}
+            </Typography>
+            <ArrowForwardIcon 
+              sx={{ 
+                opacity: selectedQuestion === index ? 1 : 0,
+                color: theme.palette.primary.main,
+                transition: 'opacity 0.2s'
+              }} 
+            />
+          </Question>
         ))}
-      </Grid>
+      </QuestionList>
+      <AnswerContainer>
+        <AnimatePresence mode="wait">
+          {imageLoading && (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="100%"
+              animation="wave"
+              sx={{ position: 'absolute', backgroundColor: theme.palette.action.hover }}
+            />
+          )}
+          <AnswerImage
+            key={selectedQuestion}
+            src={faqData[selectedQuestion].image}
+            alt={faqData[selectedQuestion].question}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onLoad={handleImageLoad}
+            style={{ display: imageLoading ? 'none' : 'block' }}
+          />
+        </AnimatePresence>
+      </AnswerContainer>
     </Container>
   );
 };
 
-export default Pricing;
+export default FAQ;
