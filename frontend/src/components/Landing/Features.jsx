@@ -1,131 +1,110 @@
 import React from 'react';
-import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import thought from './thought.svg';
 import { motion } from 'framer-motion';
-import Particles from 'react-tsparticles';
-import { loadFull } from 'tsparticles';
 
-const StyledCard = styled(motion.div)(({ theme }) => ({
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(10px)',
-  borderRadius: '16px',
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-  },
+const StyledCard = styled(motion(Card))(({ theme }) => ({
+  backgroundColor: '#ffffff',
+  borderRadius: '20px',
+  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+  overflow: 'hidden',
+  transition: 'all 0.3s ease-in-out',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 const NumberCircle = styled(Box)(({ theme }) => ({
-  width: '36px',
-  height: '36px',
+  width: '60px',
+  height: '60px',
   borderRadius: '50%',
-  backgroundColor: '#A983FF',
-  color: 'black',
+  background: 'linear-gradient(135deg, #6e8efb, #a777e3)',
+  color: 'white',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   fontWeight: 'bold',
+  fontSize: '1.5rem',
   marginBottom: theme.spacing(2),
+  boxShadow: '0 4px 20px rgba(110, 142, 251, 0.3)',
 }));
 
+const Background = styled(Box)({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: 'white', // Update the background color to white
+  zIndex: -1,
+});
+
+const AnimatedShape = styled(motion.div)(({ theme }) => ({
+  position: 'absolute',
+  backgroundColor: 'rgba(110, 142, 251, 0.1)',
+  borderRadius: '50%',
+}));
+
+
+// const AnimatedShape = styled(motion.div)(({ theme }) => ({
+//   position: 'absolute',
+//   backgroundColor: '#42daf5',
+//   borderRadius: '50%',
+//   opacity: 0.5, // Add opacity to create a light shade
+//   zIndex: -1, // Decrease the z-index to move the shape behind other elements
+// }));
+
 const Features = () => {
+  const theme = useTheme();
+
   const steps = [
-    { number: 1, title: 'Create your Account', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
-    { number: 2, title: 'Setup your Account', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
-    { number: 3, title: 'Start creating with Horizon', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
-    { number: 4, title: 'Team Management', description: 'Urna duis convallis convallis tellus interdum velit laoreet.' },
+    { number: 1, title: 'Input Data', description: 'Seamlessly enter your schedule and constraints with our intuitive interface.' },
+    { number: 2, title: 'Smart Analysis', description: 'Our advanced algorithms process and analyze your data with lightning speed.' },
+    { number: 3, title: 'Optimization', description: 'We optimize your timetable for maximum efficiency and productivity.' },
+    { number: 4, title: 'Dynamic Results', description: 'View and manage your optimized schedule with our interactive dashboard.' },
   ];
 
-  const particlesInit = async (main) => {
-    await loadFull(main);
-  };
+  const shapes = [
+    { size: 300, left: '-5%', top: '20%' },
+    { size: 200, right: '-5%', bottom: '10%' },
+    { size: 150, left: '50%', top: '-5%' },
+  ];
 
   return (
     <Box sx={{ 
-      color: 'white', 
-      py: 8, 
-      px: 4,
       position: 'relative',
       overflow: 'hidden',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      py: 10,
+      px: 4,
     }}>
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        options={{
-          background: {
-            color: {
-              value: "#1A0B2E",
-            },
-          },
-          fpsLimit: 120,
-          interactivity: {
-            events: {
-              onClick: {
-                enable: true,
-                mode: "push",
-              },
-              onHover: {
-                enable: true,
-                mode: "repulse",
-              },
-              resize: true,
-            },
-            modes: {
-              push: {
-                quantity: 4,
-              },
-              repulse: {
-                distance: 200,
-                duration: 0.4,
-              },
-            },
-          },
-          particles: {
-            color: {
-              value: "#A983FF",
-            },
-            links: {
-              color: "#A983FF",
-              distance: 150,
-              enable: true,
-              opacity: 0.5,
-              width: 1,
-            },
-            collisions: {
-              enable: true,
-            },
-            move: {
-              direction: "none",
-              enable: true,
-              outModes: {
-                default: "bounce",
-              },
-              random: false,
-              speed: 1,
-              straight: false,
-            },
-            number: {
-              density: {
-                enable: true,
-                area: 800,
-              },
-              value: 80,
-            },
-            opacity: {
-              value: 0.5,
-            },
-            shape: {
-              type: "circle",
-            },
-            size: {
-              value: { min: 1, max: 5 },
-            },
-          },
-          detectRetina: true,
-        }}
-      />
-      <Grid container spacing={4} alignItems="center" sx={{ position: 'relative', zIndex: 1 }}>
+      <Background />
+      {shapes.map((shape, index) => (
+        <AnimatedShape
+          key={index}
+          style={{
+            width: shape.size,
+            height: shape.size,
+            left: shape.left,
+            right: shape.right,
+            top: shape.top,
+            bottom: shape.bottom,
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      ))}
+      <Grid container spacing={6} alignItems="center">
         <Grid item xs={12} md={5}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -135,8 +114,8 @@ const Features = () => {
             <Box 
               component="img" 
               src={thought}
-              alt="Horizon Logo" 
-              sx={{ width: '100%', height: 'auto', maxWidth: 600, mx: 'auto', display: 'block' }}
+              alt="Bunksafe Logo" 
+              sx={{ width: '100%', height: 'auto', maxWidth: 500, mx: 'auto', display: 'block' }}
             />
           </motion.div>
         </Grid>
@@ -146,14 +125,14 @@ const Features = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Typography variant="h3" gutterBottom fontWeight="bold" sx={{ color: '#A983FF' }}>
-              How Bunksafe works?
+            <Typography variant="h2" gutterBottom fontWeight="bold" sx={{ color: '#333', mb: 2 }}>
+              How Bunksafe Works
             </Typography>
-            <Typography variant="subtitle1" paragraph>
-              Urna duis convallis convallis tellus interdum velit laoreet pellentesque aliquam tortor consequat porta.
+            <Typography variant="h5" sx={{ color: '#666', mb: 6 }}>
+              Revolutionizing timetable analysis and scheduling with cutting-edge algorithms.
             </Typography>
           </motion.div>
-          <Grid container spacing={3}>
+          <Grid container spacing={4}>
             {steps.map((step, index) => (
               <Grid item xs={12} sm={6} key={step.number}>
                 <motion.div
@@ -162,20 +141,21 @@ const Features = () => {
                   transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
                 >
                   <StyledCard
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                    }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <Card>
-                      <CardContent>
-                        <NumberCircle>{step.number}</NumberCircle>
-                        <Typography variant="h6" gutterBottom fontWeight="bold">
-                          {step.title}
-                        </Typography>
-                        <Typography variant="body2">
-                          {step.description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
+                    <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                      <NumberCircle>{step.number}</NumberCircle>
+                      <Typography variant="h5" gutterBottom fontWeight="bold" color="#333">
+                        {step.title}
+                      </Typography>
+                      <Typography variant="body1" color="#666" sx={{ mt: 'auto' }}>
+                        {step.description}
+                      </Typography>
+                    </CardContent>
                   </StyledCard>
                 </motion.div>
               </Grid>

@@ -72,7 +72,7 @@ const Hero = () => {
                 transition={{ duration: 1.5 }}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
+                <Typography variant="h1" component="h1" sx={{ color: '#42daf5', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
                   Bring all your work together
                 </Typography>
               </motion.div>
