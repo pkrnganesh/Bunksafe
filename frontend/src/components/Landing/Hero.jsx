@@ -1,9 +1,10 @@
 // components/Hero.js
 import React from 'react';
-import { Box, Typography, Button, Container } from '@mui/material';
+import { Box, Typography, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import referenceImage from './index_banner.svg';
+import CustomButton from './CustomButton'; // Import your custom button component
 
 const FullWidthBox = styled(Box)(({ theme }) => ({
   width: '100vw',
@@ -65,34 +66,26 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              
-              <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2 }}>
-                Bring all your work together
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'white', mb: 3, fontSize: '1.2rem', maxWidth: '80%' }}>
-                Experience seamless attendance tracking and team management like never before.
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                component={motion.button}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                sx={{
-                  backgroundColor: 'white',
-                  color: 'black',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.9)',
-                  },
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: '50px',
-                  fontWeight: 'bold',
-                  fontSize: '1.1rem',
-                }}
+              <motion.div
+                initial={{ perspective: 800, rotateX: 90 }}
+                animate={{ perspective: 800, rotateX: 0 }}
+                transition={{ duration: 1.5 }}
+                style={{ transformStyle: "preserve-3d" }}
               >
-                Try Now
-              </Button>
+                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
+                  Bring all your work together
+                </Typography>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', maxWidth: '80%' ,fontFamily:'monospace' }}>
+                  Experience seamless attendance tracking and team management like never before.
+                </Typography>
+                <CustomButton /> {/* Replace the existing button with your custom button */}
+              </motion.div>
             </motion.div>
           </Box>
           <Box

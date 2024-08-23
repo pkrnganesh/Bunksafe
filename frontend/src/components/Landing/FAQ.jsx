@@ -6,7 +6,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const Container = styled(Box)(({ theme }) => ({
   backdropFilter: 'blur(10px)',
-  color: theme.palette.text.primary,
+  color:  '#A983FF',
   display: 'flex',
   gap: theme.spacing(4),
   [theme.breakpoints.down('md')]: {
@@ -31,7 +31,7 @@ const Question = styled(motion.div)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   '&:hover': {
-    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+    backgroundColor:  '#A983FF',
   },
 }));
 
@@ -91,8 +91,8 @@ const FAQ = () => {
   return (
     <Container>
       <QuestionList>
-        <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
-          Merlin in Action
+        <Typography variant="h4" gutterBottom fontWeight="bold" color="#A983FF">
+          Frequently Asked Questions
         </Typography>
         {faqData.map((item, index) => (
           <Question
@@ -100,20 +100,20 @@ const FAQ = () => {
             onClick={() => handleQuestionChange(index)}
             onHoverStart={() => handleQuestionChange(index)}
             animate={{
-              backgroundColor: selectedQuestion === index ? alpha(theme.palette.primary.main, 0.2) : 'transparent',
+              backgroundColor: selectedQuestion === index ?   '#A983FF' : 'transparent',
             }}
           >
             <Typography 
               variant="body1" 
               fontWeight={selectedQuestion === index ? 'bold' : 'normal'}
-              color={selectedQuestion === index ? 'primary' : 'text.primary'}
+              color={selectedQuestion === index ? 'white' : 'text.primary'}
             >
               {item.question}
             </Typography>
             <ArrowForwardIcon 
               sx={{ 
                 opacity: selectedQuestion === index ? 1 : 0,
-                color: theme.palette.primary.main,
+                color: '#A983FF',
                 transition: 'opacity 0.2s'
               }} 
             />

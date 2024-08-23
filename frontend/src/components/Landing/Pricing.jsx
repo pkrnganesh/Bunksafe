@@ -84,7 +84,7 @@ const Pricing = () => {
           </Grid>
         </Box>
         <Box sx={{ width: '30%', textAlign: 'right', alignSelf: 'center' }}>
-          <Typography variant="h3" gutterBottom>Let's get started</Typography>
+          <Typography variant="h3"  gutterBottom sx={{color:'#42daf5'}}>Let's get started</Typography>
           <Typography variant="subtitle1">
             We believe security should be accessible to every company, no matter the size.
           </Typography>

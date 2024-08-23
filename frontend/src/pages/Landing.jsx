@@ -13,6 +13,7 @@ import Pricing from '../components/Landing/Pricing';
 import FAQ from '../components/Landing/FAQ';
 import Team from '../components/Landing/Team';
 import Footer from '../components/Landing/Footer';
+import UsedBy from '../components/Landing/UsedBy.jsx';
 
 function Landing() {
   const [darkMode, setDarkMode] = useState(false);
@@ -30,6 +31,7 @@ function Landing() {
               <Suspense fallback={<div>Loading...</div>}>
                 <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
                 <Hero />
+                <UsedBy />
                 <Features />
                 <Pricing />
                 <FAQ />
