@@ -1,13 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { Grid, Paper, Typography, Button, TextField, Container, Box, CircularProgress, Snackbar, IconButton, useMediaQuery } from '@mui/material';
+import { Grid, Paper, Typography, Button, TextField, Container, Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { styled, keyframes, useTheme } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CloudUpload, Send, CheckCircle, Close, DateRange, PercentOutlined, WavingHand } from '@mui/icons-material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Send, CheckCircle, DateRange, PercentOutlined } from '@mui/icons-material';
+import { ThemeProvider } from '@mui/material/styles';
 import { Generateanalysis } from '../api/Generation';
 import Header from "../components/Landing/Header";
 import Lottie from 'react-lottie';
 import uploadAnimation from '../animations/animation2.json';
+const timetableImage = require('../images/timetable.svg');
+const timetableImage2 = require('../images/timetable2.svg');
 
 
 const float = keyframes`
@@ -53,6 +55,7 @@ const SvgCurve = styled('div')({
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: 20,
+  height: '330px',
   background: 'white',
   backdropFilter: 'blur(10px)',
   boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
@@ -61,6 +64,9 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-5px)',
     boxShadow: '0 15px 30px 0 rgba(31, 38, 135, 0.5)',
+  },
+  '@media (max-width: 600px)': {
+    height: '100%',
   },
 }));
 
@@ -79,11 +85,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const UploadIcon = styled(CloudUpload)(({ theme }) => ({
-  fontSize: 100,
-  color: theme.palette.primary.main,
-  animation: `${float} 3s ease-in-out infinite`,
-}));
+
 
 const UploadData = () => {
   const [attendanceRequirement, setAttendanceRequirement] = useState(75);
@@ -91,13 +93,13 @@ const UploadData = () => {
   const [toDate, setToDate] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [attendanceFile, setAttendanceFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [isGeneratingAnalysis, setIsGeneratingAnalysis] = useState(false);
 
   const fileInputRef = useRef(null);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleUpload = () => {
     fileInputRef.current.click();
@@ -111,8 +113,7 @@ const UploadData = () => {
     setTimeout(() => {
       setIsUploading(false);
       setUploadComplete(true);
-      setOpenSnackbar(true);
-    }, 2000);
+    }, 100);
   };
 
   const handleGenerateAnalysis = () => {
@@ -146,8 +147,18 @@ const UploadData = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <Typography variant="h3" align="center" gutterBottom style={{ color: 'white', fontWeight: 'bold', marginBottom: '2rem' }}>
-              Upload Your Attendance Data
+            <Typography 
+              variant={isMobile ? "h4" : "h5"} 
+              align="left" 
+              gutterBottom 
+              style={{ 
+                color: 'white', 
+                fontWeight: 'bold', 
+                marginBottom: '2rem',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+              }}
+            >
+              Upload Your Semester Info
             </Typography>
           </motion.div>
           <motion.div
@@ -155,20 +166,19 @@ const UploadData = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <StyledPaper>
-              <Grid container spacing={4}>
+            <StyledPaper style={{ padding: isMobile ? theme.spacing(2) : theme.spacing(4) }}>
+              <Grid container spacing={isMobile ? 2 : 4}>
                 <Grid item xs={12} md={6}>
-                  
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Box
                       sx={{
                         border: '2px dashed #2196f3',
                         borderRadius: 4,
-                        p: 4,
+                        p: isMobile ? 2 : 4,
                         textAlign: 'center',
                         cursor: 'pointer',
                         '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.04)' },
-                        height: '100%',
+                        height: isMobile ? '200px' : '100%',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
@@ -224,8 +234,7 @@ const UploadData = () => {
                   </motion.div>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  
-                  <Grid container spacing={3}>
+                  <Grid container spacing={isMobile ? 2 : 3}>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="From Date"
@@ -236,6 +245,11 @@ const UploadData = () => {
                         fullWidth
                         InputProps={{
                           startAdornment: <DateRange color="primary" />,
+                        }}
+                        sx={{ 
+                          '& .MuiInputBase-root': { 
+                            fontSize: isMobile ? '0.9rem' : '1rem' 
+                          } 
                         }}
                       />
                     </Grid>
@@ -250,6 +264,11 @@ const UploadData = () => {
                         InputProps={{
                           startAdornment: <DateRange color="primary" />,
                         }}
+                        sx={{ 
+                          '& .MuiInputBase-root': { 
+                            fontSize: isMobile ? '0.9rem' : '1rem' 
+                          } 
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -263,6 +282,11 @@ const UploadData = () => {
                           startAdornment: <PercentOutlined color="primary" />,
                         }}
                         fullWidth
+                        sx={{ 
+                          '& .MuiInputBase-root': { 
+                            fontSize: isMobile ? '0.9rem' : '1rem' 
+                          } 
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -272,14 +296,18 @@ const UploadData = () => {
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <StyledButton
                     variant="contained"
-                    size="large"
+                    size={isMobile ? "medium" : "large"}
                     startIcon={isGeneratingAnalysis ? null : <Send />}
                     onClick={handleGenerateAnalysis}
                     disabled={!uploadComplete || !fromDate || !toDate || isGeneratingAnalysis}
+                    style={{ 
+                      padding: isMobile ? '8px 16px' : '12px 24px',
+                      fontSize: isMobile ? '0.9rem' : '1rem'
+                    }}
                   >
                     {isGeneratingAnalysis ? (
                       <Box display="flex" alignItems="center">
-                        <CircularProgress size={24} color="inherit" />
+                        <CircularProgress size={20} color="inherit" />
                         <Box ml={1}>Generating...</Box>
                       </Box>
                     ) : (
@@ -303,6 +331,29 @@ const UploadData = () => {
             />
           </svg>
         </SvgCurve>
+                <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            zIndex: 0,
+          }}
+        >
+          <img src={timetableImage.default} alt="Timetable" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+        </Box>
+        
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            zIndex: 0,
+            display: { xs: 'none', sm: 'block' }, // Hide on extra small screens
+          }}
+        >
+          <img src={timetableImage2.default} alt="Timetable" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+        </Box>
+
       </FullWidthBox>
      
     </ThemeProvider>
