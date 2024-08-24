@@ -4,18 +4,18 @@ import { keyframes } from "@mui/system";
 
 const UsedBy = () => {
   const companies = [
-    { name: "Mozilla", image: require("../../universitieslogo/1.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/2.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/3.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/4.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/5.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/6.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/7.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/8.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/9.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/10.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/11.svg").default },
-    { name: "Mozilla", image: require("../../universitieslogo/12.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/1.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/2.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/3.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/4.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/5.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/6.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/7.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/8.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/9.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/10.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/11.svg").default },
+    { name: "Mozilla", image: require("../../images/universitieslogo/12.svg").default },
 
   ];
 

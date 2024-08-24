@@ -1,10 +1,20 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from 'react-router-dom'; // Updated import
+
 
 const Button = () => {
+
+  const navigate = useNavigate(); // Updated hook
+
+  const handleClick = () => {
+    console.log("Button clicked");
+    navigate("/uploading"); // Updated route
+  };
+
   return (
     <StyledWrapper>
-      <button className="button">
+      <button className="button" onClick={handleClick} >
         Get started
         <span className="button-span"> - it&apos;s free</span>
       </button>

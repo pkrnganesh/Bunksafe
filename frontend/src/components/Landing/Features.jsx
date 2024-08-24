@@ -47,22 +47,16 @@ const AnimatedShape = styled(motion.div)(({ theme }) => ({
 }));
 
 
-// const AnimatedShape = styled(motion.div)(({ theme }) => ({
-//   position: 'absolute',
-//   backgroundColor: '#42daf5',
-//   borderRadius: '50%',
-//   opacity: 0.5, // Add opacity to create a light shade
-//   zIndex: -1, // Decrease the z-index to move the shape behind other elements
-// }));
+
 
 const Features = () => {
   const theme = useTheme();
 
   const steps = [
-    { number: 1, title: 'Input Data', description: 'Seamlessly enter your schedule and constraints with our intuitive interface.' },
-    { number: 2, title: 'Smart Analysis', description: 'Our advanced algorithms process and analyze your data with lightning speed.' },
-    { number: 3, title: 'Optimization', description: 'We optimize your timetable for maximum efficiency and productivity.' },
-    { number: 4, title: 'Dynamic Results', description: 'View and manage your optimized schedule with our interactive dashboard.' },
+    { number: 1, title: 'Input Timetable', description: 'Easily enter your semester timetable and attendance requirements using our user-friendly interface.' },
+    { number: 2, title: 'Track Attendance', description: 'Monitor your attendance in real-time with our advanced tracking system.' },
+    { number: 3, title: 'Get Reminders', description: 'Receive personalized reminders to help you stay on top of your attendance goals.' },
+    { number: 4, title: 'Optimize Schedule', description: 'Adjust your schedule dynamically to ensure you meet your attendance targets effortlessly.' },
   ];
 
   const shapes = [
@@ -105,20 +99,7 @@ const Features = () => {
         />
       ))}
       <Grid container spacing={6} alignItems="center">
-        <Grid item xs={12} md={5}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Box 
-              component="img" 
-              src={thought}
-              alt="Bunksafe Logo" 
-              sx={{ width: '100%', height: 'auto', maxWidth: 500, mx: 'auto', display: 'block' }}
-            />
-          </motion.div>
-        </Grid>
+       
         <Grid item xs={12} md={7}>
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -161,6 +142,20 @@ const Features = () => {
               </Grid>
             ))}
           </Grid>
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Box 
+              component="img" 
+              src={thought}
+              alt="Bunksafe Logo" 
+              sx={{ width: '100%', height: 'auto', maxWidth: 500, mx: 'auto', display: 'block' }}
+            />
+          </motion.div>
         </Grid>
       </Grid>
     </Box>

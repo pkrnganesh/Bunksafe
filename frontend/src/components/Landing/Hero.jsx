@@ -1,5 +1,5 @@
 // components/Hero.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -56,6 +56,24 @@ const SvgCurve = styled('div')({
 const symbols = ['+', '-', '×', '÷', '=', '∑', '∫', 'π', '√', '∞'];
 
 const Hero = () => {
+  const [text, setText] = useState('');
+  const fullText = "Ouur user-friendly platform automates attendance tracking, provides detailed analytics, and generates insightful reports.Start your free trial today!";
+  useEffect(() => {
+    let index = 0;
+    const typingInterval = setInterval(() => {
+      console.log(`Index: ${index}, Text: ${text}`); // Debugging line
+      if (index < fullText.length) {
+        setText((prev) => prev + fullText.charAt(index)); // Use charAt to avoid undefined
+        index++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 50);
+  
+    return () => clearInterval(typingInterval);
+  }, []);
+  
+
   return (
     <FullWidthBox>
       <ContentWrapper maxWidth="xl">
@@ -72,9 +90,9 @@ const Hero = () => {
                 transition={{ duration: 1.5 }}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <Typography variant="h1" component="h1" sx={{ color: '#42daf5', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
-                  Bring all your work together
-                </Typography>
+                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
+                Attendance
+                Management System                </Typography>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -82,7 +100,7 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
                 <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', maxWidth: '80%' ,fontFamily:'monospace' }}>
-                  Experience seamless attendance tracking and team management like never before.
+                  {text}
                 </Typography>
                 <CustomButton /> {/* Replace the existing button with your custom button */}
               </motion.div>

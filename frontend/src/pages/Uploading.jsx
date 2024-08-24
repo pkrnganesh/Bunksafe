@@ -1,21 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { Grid, Paper, Typography, Button, TextField, Container, Box, Stepper, Step, StepLabel, CircularProgress, Snackbar, IconButton } from '@mui/material';
-import { styled, keyframes } from '@mui/material/styles';
-import { motion } from 'framer-motion';
-import { CloudUpload, Send, CheckCircle, Close, BarChart, DateRange, PercentOutlined } from '@mui/icons-material';
+import { Grid, Paper, Typography, Button, TextField, Container, Box, CircularProgress, Snackbar, IconButton, useMediaQuery } from '@mui/material';
+import { styled, keyframes, useTheme } from '@mui/material/styles';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CloudUpload, Send, CheckCircle, Close, DateRange, PercentOutlined, WavingHand } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Generateanalysis } from '../api/Generation';
+import Header from "../components/Landing/Header";
+import Lottie from 'react-lottie';
+import uploadAnimation from '../animations/animation2.json';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2196f3',
-    },
-    secondary: {
-      main: '#ff4081',
-    },
-  },
-});
 
 const float = keyframes`
   0% { transform: translateY(0px); }
@@ -23,10 +16,44 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `;
 
+const FullWidthBox = styled(Box)(({ theme }) => ({
+  width: '100vw',
+  position: 'relative',
+  left: '50%',
+  right: '50%',
+  marginLeft: '-50vw',
+  marginRight: '-50vw',
+  marginTop: '-2vh',
+  background: 'linear-gradient(135deg, #42daf5 0%, #2196f3 100%)',
+  overflow: 'hidden',
+  paddingTop: theme.spacing(10),
+  paddingBottom: theme.spacing(20),
+}));
+
+const SvgCurve = styled('div')({
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  width: '100%',
+  height: '150px',
+  overflow: 'hidden',
+  lineHeight: 0,
+  transform: 'translateY(1px)',
+  '& svg': {
+    position: 'relative',
+    display: 'block',
+    width: 'calc(100% + 1.3px)',
+    height: '100%',
+  },
+  '& .shape-fill': {
+    fill: '#FFFFFF',
+  },
+});
+
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: 20,
-  background: 'rgba(255, 255, 255, 0.8)',
+  background: 'white',
   backdropFilter: 'blur(10px)',
   boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
   border: '1px solid rgba(255, 255, 255, 0.18)',
@@ -58,16 +85,7 @@ const UploadIcon = styled(CloudUpload)(({ theme }) => ({
   animation: `${float} 3s ease-in-out infinite`,
 }));
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  color: 'white',
-  '&:hover': {
-    background: theme.palette.primary.dark,
-  },
-}));
-
 const UploadData = () => {
-  const [activeStep, setActiveStep] = useState(0);
   const [attendanceRequirement, setAttendanceRequirement] = useState(75);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -75,234 +93,218 @@ const UploadData = () => {
   const [uploadComplete, setUploadComplete] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [attendanceFile, setAttendanceFile] = useState(null);
+  const [fileName, setFileName] = useState('');
+  const [isGeneratingAnalysis, setIsGeneratingAnalysis] = useState(false);
 
   const fileInputRef = useRef(null);
-
-  const steps = ['Upload Data', 'Set Parameters', 'Generate Analysis'];
-
-  const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
-  };
+  const theme = useTheme();
 
   const handleUpload = () => {
     fileInputRef.current.click();
   };
 
   const handleFileChange = (event) => {
-    setAttendanceFile(event.target.files[0]);
+    const file = event.target.files[0];
+    setAttendanceFile(file);
+    setFileName(file.name);
     setIsUploading(true);
     setTimeout(() => {
       setIsUploading(false);
       setUploadComplete(true);
       setOpenSnackbar(true);
-      setTimeout(() => {
-        handleNext();
-      }, 1000);
-    }, 3000);
-  };
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenSnackbar(false);
+    }, 2000);
   };
 
   const handleGenerateAnalysis = () => {
-    console.log('Attendance File:', attendanceFile);
-    console.log('From Date:', fromDate);
-    console.log('To Date:', toDate);
-    console.log('Attendance Requirement:', attendanceRequirement);
-
-    // Call the API to generate analysis
-    Generateanalysis({ file: attendanceFile, percentage: attendanceRequirement, fromDate, toDate });
-
-    // Perform analysis and generate report here
+    setIsGeneratingAnalysis(true);
+    // Simulate API call
+    setTimeout(() => {
+      Generateanalysis({ file: attendanceFile, percentage: attendanceRequirement, fromDate, toDate });
+      setIsGeneratingAnalysis(false);
+      // Show success message or navigate to results page
+    }, 3000);
   };
+
+  const uploadLottieOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: uploadAnimation,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    }
+  };
+
+
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="lg" style={{ marginTop: '40px', marginBottom: '40px' }}>
-        <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <Typography variant="h3" gutterBottom align="center" style={{ fontWeight: 'bold', color: '#2196f3' }}>
-            Attendance Analysis Generator
-          </Typography>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-          <Typography variant="subtitle1" gutterBottom align="center" style={{ marginBottom: '40px' }}>
-            Optimize your attendance data with our advanced analysis tool
-          </Typography>
-        </motion.div>
-
-        <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '40px' }}>
-          {steps.map((label, index) => (
-            <Step key={label}>
-              <StepLabel StepIconComponent={() => (
-                <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }}>
-                  <StyledIconButton>
-                    {index === 0 ? <CloudUpload /> : index === 1 ? <DateRange /> : <BarChart />}
-                  </StyledIconButton>
-                </motion.div>
-              )}>
-                {label}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <StyledPaper>
-            {activeStep === 0 && (
-              <Box>
-                <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                  Upload Your Data
-                </Typography>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Box
-                    sx={{
-                      border: '2px dashed #2196f3',
-                      borderRadius: 4,
-                      p: 4,
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.04)' },
-                    }}
-                    onClick={handleUpload}
-                  >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      style={{ display: 'none' }}
-                      onChange={handleFileChange}
-                    />
-                    {isUploading ? (
-                      <CircularProgress size={100} />
-                    ) : uploadComplete ? (
-                      <CheckCircle sx={{ fontSize: 100, color: 'success.main' }} />
-                    ) : (
-                      <UploadIcon />
-                    )}
-                    <Typography variant="body1" gutterBottom style={{ marginTop: '20px' }}>
-                      {isUploading ? 'Uploading...' : uploadComplete ? 'Upload Complete!' : 'Click here to upload your attendance file'}
-                    </Typography>
-                  </Box>
-                </motion.div>
-              </Box>
-            )}
-
-            {activeStep === 1 && (
-              <Box>
-                <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                  Set Analysis Parameters
-                </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="From Date"
-                      type="date"
-                      value={fromDate}
-                      onChange={(e) => setFromDate(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      fullWidth
-                      InputProps={{
-                        startAdornment: <DateRange color="primary" />,
+      <Header />
+      <FullWidthBox>
+        <Container maxWidth="lg" style={{ position: 'relative', zIndex: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <Typography variant="h3" align="center" gutterBottom style={{ color: 'white', fontWeight: 'bold', marginBottom: '2rem' }}>
+              Upload Your Attendance Data
+            </Typography>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <StyledPaper>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                  
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Box
+                      sx={{
+                        border: '2px dashed #2196f3',
+                        borderRadius: 4,
+                        p: 4,
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.04)' },
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="To Date"
-                      type="date"
-                      value={toDate}
-                      onChange={(e) => setToDate(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      fullWidth
-                      InputProps={{
-                        startAdornment: <DateRange color="primary" />,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField 
-                      label="Attendance Requirement"
-                      type="number"
-                      value={attendanceRequirement}
-                      onChange={(e) => setAttendanceRequirement(e.target.value)}
-                      InputProps={{
-                        endAdornment: '%',
-                        startAdornment: <PercentOutlined color="primary" />,
-                      }}
-                      fullWidth
-                    />
+                      onClick={handleUpload}
+                    >
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                      />
+                      <AnimatePresence>
+                        {isUploading ? (
+                          <motion.div
+                            key="uploading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            <Lottie options={uploadLottieOptions} height={200} width={200} />
+                          </motion.div>
+                        ) : uploadComplete ? (
+                          <motion.div
+                            key="complete"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          >
+                            <CheckCircle sx={{ fontSize: 100, color: 'success.main' }} />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="upload"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            <Lottie options={uploadLottieOptions} height={200} width={200} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      <Typography variant="body1" gutterBottom style={{ marginTop: '20px' }}>
+                        {isUploading ? 'Uploading...' : uploadComplete ? 'Upload Complete!' : 'Click or drag Timetable file to upload'}
+                      </Typography>
+                      {fileName && (
+                        <Typography variant="body2" color="textSecondary">
+                          {fileName}
+                        </Typography>
+                      )}
+                    </Box>
+                  </motion.div>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="From Date"
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: <DateRange color="primary" />,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="To Date"
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: <DateRange color="primary" />,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField 
+                        label="Attendance Requirement"
+                        type="number"
+                        value={attendanceRequirement}
+                        onChange={(e) => setAttendanceRequirement(e.target.value)}
+                        InputProps={{
+                          endAdornment: '%',
+                          startAdornment: <PercentOutlined color="primary" />,
+                        }}
+                        fullWidth
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Box>
-            )}
-
-            {activeStep === 2 && (
-              <Box textAlign="center">
-                <Typography variant="h5" gutterBottom style={{ fontWeight: 'bold' }}>
-                  Ready to Generate Analysis
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  Click the button below to start generating your attendance analysis.
-                </Typography>
+              </Grid>
+              <Box mt={4} display="flex" justifyContent="center">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <StyledButton
                     variant="contained"
                     size="large"
-                    startIcon={<Send />}
-                    style={{ marginTop: '20px' }}
+                    startIcon={isGeneratingAnalysis ? null : <Send />}
                     onClick={handleGenerateAnalysis}
+                    disabled={!uploadComplete || !fromDate || !toDate || isGeneratingAnalysis}
                   >
-                    Generate Analysis
+                    {isGeneratingAnalysis ? (
+                      <Box display="flex" alignItems="center">
+                        <CircularProgress size={24} color="inherit" />
+                        <Box ml={1}>Generating...</Box>
+                      </Box>
+                    ) : (
+                      'Generate Analysis'
+                    )}
                   </StyledButton>
                 </motion.div>
               </Box>
-            )}
-
-            <Box mt={4} display="flex" justifyContent="space-between">
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                disabled={activeStep === steps.length - 1 || (activeStep === 0 && !uploadComplete)}
-              >
-                {activeStep === steps.length - 1 ? '' : 'Next'}
-              </Button>
-            </Box>
-          </StyledPaper>
-        </motion.div>
-      </Container>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        message="Upload completed successfully!"
-        action={
-          <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackbar}>
-            <Close fontSize="small" />
-          </IconButton>
-        }
-      />
+            </StyledPaper>
+          </motion.div>
+        </Container>
+        <SvgCurve>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,0 C150,50 350,0 600,50 C850,100 1050,50 1200,0 L1200,120 L0,120 Z"
+              className="shape-fill"
+            />
+          </svg>
+        </SvgCurve>
+      </FullWidthBox>
+     
     </ThemeProvider>
   );
 };

@@ -1,11 +1,9 @@
 // components/Header.js
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Tooltip, useMediaQuery } from '@mui/material';
-import { School, GitHub, AttachMoney, Brightness7, Brightness4 } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/system';
 import GitHubButton from './GitHubButton'; // Import your custom button component
 import DocsButton from './DocsButton'; // Import your custom button component
-import Switch from './ThemeButton'; // Import your custom button component
 
 const Header = ({ darkMode, toggleDarkMode }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
@@ -27,8 +25,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
       <Toolbar>
         {/* <School sx={{ mr: 2, verticalAlign: 'middle', color: darkMode ? '#FFCA28' : '#3F51B5' }} /> */}
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Attendance Management System
-        </StyledTypography>
+Bunk Safe        </StyledTypography>
         {!isMobile && (
           <>
             <DocsButton />
