@@ -71,7 +71,7 @@ const Hero = () => {
     }, 50);
   
     return () => clearInterval(typingInterval);
-  }, []);
+  }, [text]);
   
 
   return (

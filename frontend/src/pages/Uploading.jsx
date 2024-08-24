@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Grid, Paper, Typography, Button, TextField, Container, Box, CircularProgress, useMediaQuery } from '@mui/material';
-import { styled, keyframes, useTheme } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, DateRange, PercentOutlined } from '@mui/icons-material';
 import { ThemeProvider } from '@mui/material/styles';
@@ -12,11 +12,6 @@ const timetableImage = require('../images/timetable.svg');
 const timetableImage2 = require('../images/timetable2.svg');
 
 
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
-`;
 
 const FullWidthBox = styled(Box)(({ theme }) => ({
   width: '100vw',

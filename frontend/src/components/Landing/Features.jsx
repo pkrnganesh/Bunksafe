@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Card, CardContent, useTheme } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
 import { styled } from '@mui/system';
 import thought from './thought.svg';
 import { motion } from 'framer-motion';
@@ -50,7 +50,6 @@ const AnimatedShape = styled(motion.div)(({ theme }) => ({
 
 
 const Features = () => {
-  const theme = useTheme();
 
   const steps = [
     { number: 1, title: 'Input Timetable', description: 'Easily enter your semester timetable and attendance requirements using our user-friendly interface.' },
