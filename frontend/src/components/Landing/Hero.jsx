@@ -61,7 +61,6 @@ const Hero = () => {
   useEffect(() => {
     let index = 0;
     const typingInterval = setInterval(() => {
-      console.log(`Index: ${index}, Text: ${text}`); // Debugging line
       if (index < fullText.length) {
         setText((prev) => prev + fullText.charAt(index)); // Use charAt to avoid undefined
         index++;

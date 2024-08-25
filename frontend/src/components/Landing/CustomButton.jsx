@@ -8,7 +8,6 @@ const Button = () => {
   const navigate = useNavigate(); // Updated hook
 
   const handleClick = () => {
-    console.log("Button clicked");
     navigate("/uploading"); // Updated route
   };
 

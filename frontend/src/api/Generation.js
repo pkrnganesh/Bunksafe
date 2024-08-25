@@ -1,6 +1,6 @@
-import axios from 'axios';
+// import axios from 'axios';
 
-const API_URL = 'http://localhost:2005';
+// const API_URL = 'http://localhost:2005';
 
 export const Generateanalysis = async ({ file, percentage, fromDate, toDate }) => {
     try {
@@ -14,13 +14,13 @@ export const Generateanalysis = async ({ file, percentage, fromDate, toDate }) =
         formData.append('toDate', toDate);
 
         // Make the POST request to the /basicanalysis endpoint
-        const response = await axios.post(`${API_URL}/process/basicanalysis`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        // const response = await axios.post(`${API_URL}/process/basicanalysis`, formData, {
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data'
+        //     }
+        // });
 
-        return response.data;
+        return ;
     } catch (error) {
         console.error('Error generating analysis:', error);
         throw error;
