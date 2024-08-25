@@ -1,100 +1,130 @@
-import React, { useState, useRef } from 'react';
-import { Grid, Paper, Typography, Button, TextField, Container, Box, CircularProgress, useMediaQuery } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, CheckCircle, DateRange, PercentOutlined } from '@mui/icons-material';
-import { ThemeProvider } from '@mui/material/styles';
-import { Generateanalysis } from '../api/Generation';
+import React, { useState, useRef } from "react";
+import {
+  Grid,
+  Paper,
+  Typography,
+  Button,
+  TextField,
+  Container,
+  Box,
+  CircularProgress,
+  useMediaQuery,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { styled, useTheme } from "@mui/material/styles";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Send,
+  CheckCircle,
+  DateRange,
+  PercentOutlined,
+} from "@mui/icons-material";
+import { ThemeProvider } from "@mui/material/styles";
+import { Generateanalysis } from "../api/Generation";
 import Header from "../components/Landing/Header";
-import Lottie from 'react-lottie';
-import uploadAnimation from '../animations/animation2.json';
-const timetableImage = require('../images/timetable.svg');
-const timetableImage2 = require('../images/timetable2.svg');
-
-
+import Lottie from "react-lottie";
+import uploadAnimation from "../animations/animation2.json";
+const timetableImage = require("../images/timetable.svg");
+const timetableImage2 = require("../images/timetable2.svg");
 
 const FullWidthBox = styled(Box)(({ theme }) => ({
-  width: '100vw',
-  position: 'relative',
-  left: '50%',
-  right: '50%',
-  marginLeft: '-50vw',
-  marginRight: '-50vw',
-  marginTop: '-2vh',
-  background: 'linear-gradient(135deg, #42daf5 0%, #2196f3 100%)',
-  overflow: 'hidden',
+  width: "100vw",
+  position: "relative",
+  left: "50%",
+  right: "50%",
+  marginLeft: "-50vw",
+  marginRight: "-50vw",
+  marginTop: "-2vh",
+  background: "linear-gradient(135deg, #42daf5 0%, #2196f3 100%)",
+  overflow: "hidden",
   paddingTop: theme.spacing(10),
   paddingBottom: theme.spacing(20),
 }));
 
-const SvgCurve = styled('div')({
-  position: 'absolute',
+const SvgCurve = styled("div")({
+  position: "absolute",
   bottom: 0,
   left: 0,
-  width: '100%',
-  height: '150px',
-  overflow: 'hidden',
+  width: "100%",
+  height: "150px",
+  overflow: "hidden",
   lineHeight: 0,
-  transform: 'translateY(1px)',
-  '& svg': {
-    position: 'relative',
-    display: 'block',
-    width: 'calc(100% + 1.3px)',
-    height: '100%',
+  transform: "translateY(1px)",
+  "& svg": {
+    position: "relative",
+    display: "block",
+    width: "calc(100% + 1.3px)",
+    height: "100%",
   },
-  '& .shape-fill': {
-    fill: '#FFFFFF',
+  "& .shape-fill": {
+    fill: "#FFFFFF",
   },
 });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: 20,
-  height: '330px',
-  background: 'white',
-  backdropFilter: 'blur(10px)',
-  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-  border: '1px solid rgba(255, 255, 255, 0.18)',
-  transition: 'all 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 15px 30px 0 rgba(31, 38, 135, 0.5)',
+  height: "330px",
+  background: "white",
+  backdropFilter: "blur(10px)",
+  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+  border: "1px solid rgba(255, 255, 255, 0.18)",
+  transition: "all 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-5px)",
+    boxShadow: "0 15px 30px 0 rgba(31, 38, 135, 0.5)",
   },
-  '@media (max-width: 600px)': {
-    height: '100%',
+  "@media (max-width: 600px)": {
+    height: "100%",
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 30,
-  padding: '12px 24px',
-  fontWeight: 'bold',
-  textTransform: 'none',
-  background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-  boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-  color: 'white',
-  transition: 'all 0.3s ease-in-out',
-  '&:hover': {
-    background: 'linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)',
-    transform: 'scale(1.05)',
+  padding: "12px 24px",
+  fontWeight: "bold",
+  textTransform: "none",
+  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+  boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
+  color: "white",
+  transition: "all 0.3s ease-in-out",
+  "&:hover": {
+    background: "linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)",
+    transform: "scale(1.05)",
   },
 }));
 
-
-
 const UploadData = () => {
   const [attendanceRequirement, setAttendanceRequirement] = useState(75);
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [attendanceFile, setAttendanceFile] = useState(null);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [isGeneratingAnalysis, setIsGeneratingAnalysis] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("error");
+
+  const showAlert = (message, severity = "error") => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlertOpen(false);
+  };
 
   const fileInputRef = useRef(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleUpload = () => {
     fileInputRef.current.click();
@@ -112,12 +142,34 @@ const UploadData = () => {
   };
 
   const handleGenerateAnalysis = () => {
+    if (!attendanceFile) {
+      showAlert("Please upload a timetable file.");
+      return;
+    }
+    if (!fromDate) {
+      showAlert("Please select a start date.");
+      return;
+    }
+    if (!toDate) {
+      showAlert("Please select an end date.");
+      return;
+    }
+    if (!attendanceRequirement) {
+      showAlert("Please enter the attendance requirement.");
+      return;
+    }
+
     setIsGeneratingAnalysis(true);
     // Simulate API call
     setTimeout(() => {
-      Generateanalysis({ file: attendanceFile, percentage: attendanceRequirement, fromDate, toDate });
+      Generateanalysis({
+        file: attendanceFile,
+        percentage: attendanceRequirement,
+        fromDate,
+        toDate,
+      });
       setIsGeneratingAnalysis(false);
-      // Show success message or navigate to results page
+      showAlert("Analysis generated successfully!", "success");
     }, 3000);
   };
 
@@ -126,31 +178,29 @@ const UploadData = () => {
     autoplay: true,
     animationData: uploadAnimation,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice'
-    }
+      preserveAspectRatio: "xMidYMid slice",
+    },
   };
-
-
 
   return (
     <ThemeProvider theme={theme}>
       <Header />
       <FullWidthBox>
-        <Container maxWidth="lg" style={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg" style={{ position: "relative", zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <Typography 
-              variant={isMobile ? "h4" : "h5"} 
-              align="left" 
-              gutterBottom 
-              style={{ 
-                color: 'white', 
-                fontWeight: 'bold', 
-                marginBottom: '2rem',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+            <Typography
+              variant={isMobile ? "h4" : "h5"}
+              align="left"
+              gutterBottom
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                marginBottom: "2rem",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
               }}
             >
               Upload Your Semester Info
@@ -161,30 +211,43 @@ const UploadData = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <StyledPaper style={{ padding: isMobile ? theme.spacing(2) : theme.spacing(4) }}>
+            <StyledPaper
+              style={{
+                padding: isMobile ? theme.spacing(2) : theme.spacing(4),
+              }}
+            >
               <Grid container spacing={isMobile ? 2 : 4}>
                 <Grid item xs={12} md={6}>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <Box
                       sx={{
-                        border: '2px dashed #2196f3',
+                        border: "2px dashed #2196f3",
                         borderRadius: 4,
                         p: isMobile ? 2 : 4,
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        '&:hover': { backgroundColor: 'rgba(33, 150, 243, 0.04)' },
-                        height: isMobile ? '200px' : '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        textAlign: "center",
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "rgba(33, 150, 243, 0.04)",
+                        },
+                        // height: isMobile ? '200px' : '100%',
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "80%",
+                        margin: "0 auto",
+                        marginTop: isMobile ? "1rem" : 0,
+                        height: "200px",
                       }}
                       onClick={handleUpload}
                     >
                       <input
                         type="file"
                         ref={fileInputRef}
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         onChange={handleFileChange}
                       />
                       <AnimatePresence>
@@ -195,16 +258,26 @@ const UploadData = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
-                            <Lottie options={uploadLottieOptions} height={200} width={200} />
+                            <Lottie
+                              options={uploadLottieOptions}
+                              height={200}
+                              width={200}
+                            />
                           </motion.div>
                         ) : uploadComplete ? (
                           <motion.div
                             key="complete"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 30,
+                            }}
                           >
-                            <CheckCircle sx={{ fontSize: 100, color: 'success.main' }} />
+                            <CheckCircle
+                              sx={{ fontSize: 100, color: "success.main" }}
+                            />
                           </motion.div>
                         ) : (
                           <motion.div
@@ -213,12 +286,24 @@ const UploadData = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
-                            <Lottie options={uploadLottieOptions} height={200} width={200} />
+                            <Lottie
+                              options={uploadLottieOptions}
+                              height={200}
+                              width={200}
+                            />
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      <Typography variant="body1" gutterBottom style={{ marginTop: '20px' }}>
-                        {isUploading ? 'Uploading...' : uploadComplete ? 'Upload Complete!' : 'Click or drag Timetable file to upload'}
+                      <Typography
+                        variant="body1"
+                        gutterBottom
+                        style={{ marginTop: "20px" }}
+                      >
+                        {isUploading
+                          ? "Uploading..."
+                          : uploadComplete
+                          ? "Upload Complete!"
+                          : "Click or drag Timetable file here"}
                       </Typography>
                       {fileName && (
                         <Typography variant="body2" color="textSecondary">
@@ -231,6 +316,9 @@ const UploadData = () => {
                 <Grid item xs={12} md={6}>
                   <Grid container spacing={isMobile ? 2 : 3}>
                     <Grid item xs={12} sm={6}>
+                      <br />
+
+                      <br />
                       <TextField
                         label="From Date"
                         type="date"
@@ -241,14 +329,17 @@ const UploadData = () => {
                         InputProps={{
                           startAdornment: <DateRange color="primary" />,
                         }}
-                        sx={{ 
-                          '& .MuiInputBase-root': { 
-                            fontSize: isMobile ? '0.9rem' : '1rem' 
-                          } 
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            fontSize: isMobile ? "0.9rem" : "1rem",
+                          },
                         }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
+                      <br />
+
+                      <br />
                       <TextField
                         label="To Date"
                         type="date"
@@ -259,28 +350,33 @@ const UploadData = () => {
                         InputProps={{
                           startAdornment: <DateRange color="primary" />,
                         }}
-                        sx={{ 
-                          '& .MuiInputBase-root': { 
-                            fontSize: isMobile ? '0.9rem' : '1rem' 
-                          } 
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            fontSize: isMobile ? "0.9rem" : "1rem",
+                          },
                         }}
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <TextField 
+                      <br />
+
+                      <br />
+                      <TextField
                         label="Attendance Requirement"
                         type="number"
                         value={attendanceRequirement}
-                        onChange={(e) => setAttendanceRequirement(e.target.value)}
+                        onChange={(e) =>
+                          setAttendanceRequirement(e.target.value)
+                        }
                         InputProps={{
-                          endAdornment: '%',
+                          endAdornment: "%",
                           startAdornment: <PercentOutlined color="primary" />,
                         }}
                         fullWidth
-                        sx={{ 
-                          '& .MuiInputBase-root': { 
-                            fontSize: isMobile ? '0.9rem' : '1rem' 
-                          } 
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            fontSize: isMobile ? "0.9rem" : "1rem",
+                          },
                         }}
                       />
                     </Grid>
@@ -288,16 +384,18 @@ const UploadData = () => {
                 </Grid>
               </Grid>
               <Box mt={4} display="flex" justifyContent="center">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
                   <StyledButton
                     variant="contained"
                     size={isMobile ? "medium" : "large"}
                     startIcon={isGeneratingAnalysis ? null : <Send />}
                     onClick={handleGenerateAnalysis}
-                    disabled={!uploadComplete || !fromDate || !toDate || isGeneratingAnalysis}
-                    style={{ 
-                      padding: isMobile ? '8px 16px' : '12px 24px',
-                      fontSize: isMobile ? '0.9rem' : '1rem'
+                    style={{
+                      padding: isMobile ? "8px 16px" : "12px 24px",
+                      fontSize: isMobile ? "0.9rem" : "1rem",
                     }}
                   >
                     {isGeneratingAnalysis ? (
@@ -306,7 +404,7 @@ const UploadData = () => {
                         <Box ml={1}>Generating...</Box>
                       </Box>
                     ) : (
-                      'Generate Analysis'
+                      "Generate Analysis"
                     )}
                   </StyledButton>
                 </motion.div>
@@ -326,31 +424,51 @@ const UploadData = () => {
             />
           </svg>
         </SvgCurve>
-                <Box
+        <Box
           sx={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 0,
             right: 0,
             zIndex: 0,
           }}
         >
-          <img src={timetableImage.default} alt="Timetable" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          <img
+            src={timetableImage.default}
+            alt="Timetable"
+            style={{ maxWidth: "100%", maxHeight: "100%" }}
+          />
         </Box>
-        
+
         <Box
           sx={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 0,
             left: 0,
             zIndex: 0,
-            display: { xs: 'none', sm: 'block' }, // Hide on extra small screens
+            display: { xs: "none", sm: "block" }, // Hide on extra small screens
           }}
         >
-          <img src={timetableImage2.default} alt="Timetable" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          <img
+            src={timetableImage2.default}
+            alt="Timetable"
+            style={{ maxWidth: "100%", maxHeight: "100%" }}
+          />
         </Box>
-
       </FullWidthBox>
-     
+
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 };
