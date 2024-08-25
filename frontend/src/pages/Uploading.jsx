@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import {
-  Typography, Container, Box, useMediaQuery
+   Container, Box, useMediaQuery
   } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
