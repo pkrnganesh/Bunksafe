@@ -7,24 +7,29 @@ function calculateAttendanceRequirements(input, percentage) {
   const subjectCounts = input.SubjectCountsdata;
   const requirements = {};
   let totalClasses = 0;
+  let totalAsPerPercentage = 0;
 
   console.log(subjectCounts, percentage);
 
   Object.entries(subjectCounts).forEach(([subject, count]) => {
     totalClasses += count;
+    const asPerPercentage = Math.ceil(count * (percentage / 100));
+    totalAsPerPercentage += asPerPercentage;
     requirements[subject] = {
       total: count,
-      asperpercentage: Math.ceil(count * (percentage / 100)),
+      asperpercentage: asPerPercentage,
       minimum40: Math.ceil(count * 0.4),
     };
   });
 
   const result = {
     subjectRequirements: requirements,
+    totalClasses: totalClasses,
+    totalAsPerPercentage: totalAsPerPercentage
   };
-console.log("calculateAttendanceRequirements",result);
-  return result;
 
+  console.log("calculateAttendanceRequirements", result);
+  return result;
 }
 
 function distributeAttendance(requirements) {
@@ -85,89 +90,84 @@ function distributeAttendance(requirements) {
 };
 
 
-function createCalendar(subjectRequirementsStr, weeklyScheduleStr, validDatesInputStr) {
-  console.log( weeklyScheduleStr, validDatesInputStr);
+function createCalendar(input) {
+  const { subjectRequirements, totalAsPerPercentage } = input.AttendanceRequirements;
+  const weeklySchedule = input.DaywiseSubjectsdata;
+  const validDates = JSON.parse(input.validdates.validdates);
 
-  let subjectRequirements, weeklySchedule, validDatesInput, validDates;
-
-  // Parse subjectRequirementsStr if it's a JSON string
-  if (typeof subjectRequirementsStr === 'string') {
-    try {
-      subjectRequirements = JSON.parse(subjectRequirementsStr);
-    } catch (e) {
-      console.error('Error parsing subjectRequirementsStr JSON:', e);
-      return {};
-    }
-  } else {
-    subjectRequirements = subjectRequirementsStr;
+  // Step 1: Initialize distribution
+  const distribution = {};
+  for (const [subject, req] of Object.entries(subjectRequirements)) {
+    distribution[subject] = {
+      remaining: req.asperpercentage,
+      minimum: Math.max(req.minimum40, Math.min(req.asperpercentage, req.minimum40))
+    };
   }
 
-  // Parse weeklyScheduleStr if it's a JSON string
-  if (typeof weeklyScheduleStr === 'string') {
-    try {
-      weeklySchedule = JSON.parse(weeklyScheduleStr);
-    } catch (e) {
-      console.error('Error parsing weeklyScheduleStr JSON:', e);
-      return {};
-    }
-  } else {
-    weeklySchedule = weeklyScheduleStr;
-  }
-
-  // Parse validDatesInputStr if it's a JSON string
-  if (typeof validDatesInputStr === 'string') {
-    try {
-      validDatesInput = JSON.parse(validDatesInputStr);
-    } catch (e) {
-      console.error('Error parsing validDatesInputStr JSON:', e);
-      return {};
-    }
-  } else {
-    validDatesInput = validDatesInputStr;
-  }
-
-  // Parse validDates if it exists and is a string
-  if (validDatesInput && typeof validDatesInput.validdates === 'string') {
-    try {
-      validDates = JSON.parse(validDatesInput.validdates);
-    } catch (e) {
-      console.error('Error parsing validdates JSON:', e);
-      return {};
-    }
-  } else {
-    validDates = validDatesInput.validdates;
-  }
-
+  // Step 2: Create a calendar
   const calendar = {};
-  const classesScheduled = {};
+  let totalAssignedClasses = 0;
 
-  // Initialize the class schedule counts
-  for (const subject in subjectRequirements.subjectRequirements) {
-    classesScheduled[subject] = 0;
-  }
+  for (const date of validDates) {
+    const dayOfWeek = new Date(date).getDay();
+    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
+    const dayClasses = weeklySchedule[dayName] || [];
 
-  // Process each valid date
-  validDates.forEach(dateStr => {
-    const date = new Date(dateStr);
-    const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
+    calendar[date] = [];
 
-    if (weeklySchedule[dayOfWeek]) {
-      calendar[dateStr] = [];
-
-      weeklySchedule[dayOfWeek].forEach(subjectObj => {
-        const subject = subjectObj.subject;
-        if (subjectRequirements.subjectRequirements[subject] && 
-            classesScheduled[subject] < subjectRequirements.subjectRequirements[subject].asperpercentage) {
-          calendar[dateStr].push(subject);
-          classesScheduled[subject]++;
-        }
-      });
-
-      if (calendar[dateStr].length === 0) {
-        delete calendar[dateStr];
+    for (const classInfo of dayClasses) {
+      const subject = classInfo.subject.replace(' ', '_');
+      if (distribution[subject].remaining > 0 && totalAssignedClasses < totalAsPerPercentage) {
+        calendar[date].push(subject);
+        distribution[subject].remaining--;
+        distribution[subject].minimum = Math.max(0, distribution[subject].minimum - 1);
+        totalAssignedClasses++;
       }
     }
-  });
+
+    if (totalAssignedClasses >= totalAsPerPercentage) {
+      break;
+    }
+  }
+
+  // Step 3: Ensure minimum requirements are met
+  const subjects = Object.keys(distribution);
+  for (const date of validDates) {
+    for (const subject of subjects) {
+      if (distribution[subject].minimum > 0 && totalAssignedClasses < totalAsPerPercentage) {
+        if (!calendar[date].includes(subject)) {
+          calendar[date].push(subject);
+          distribution[subject].minimum--;
+          totalAssignedClasses++;
+        }
+      }
+    }
+    if (totalAssignedClasses >= totalAsPerPercentage) {
+      break;
+    }
+  }
+
+  // Step 4: If there are remaining classes, distribute them evenly without exceeding asperpercentage
+  while (totalAssignedClasses < totalAsPerPercentage) {
+    let assigned = false;
+    for (const date of validDates) {
+      for (const subject of subjects) {
+        if (distribution[subject].remaining > 0 && !calendar[date].includes(subject)) {
+          calendar[date].push(subject);
+          distribution[subject].remaining--;
+          totalAssignedClasses++;
+          assigned = true;
+          break;
+        }
+      }
+      if (assigned || totalAssignedClasses >= totalAsPerPercentage) {
+        break;
+      }
+    }
+    if (!assigned) {
+      break; // Unable to assign more classes without exceeding limits
+    }
+  }
 
   return calendar;
 }
