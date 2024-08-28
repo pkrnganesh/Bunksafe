@@ -56,9 +56,9 @@ router.post('/basicanalysis', async (req, res) => {
 
       const countDaysOfWeekdata = countDaysOfWeek(validdates);
 
-      const daysCanSkip =calculateDaysNeededToAttend(validdates,percentage);
+      const daysNeededToAttend =calculateDaysNeededToAttend(validdates,percentage);
 
-      const daysNeededToAttend=calculateDaysCanSkip(validdates,percentage);
+      const daysCanSkip=calculateDaysCanSkip(validdates,percentage);
 
       const Totaldays=daysNeededToAttend+daysCanSkip;
 
@@ -70,7 +70,7 @@ router.post('/basicanalysis', async (req, res) => {
   
       const AttendanceRequirements = calculateAttendanceRequirements({ SubjectCountsdata }, percentage);
   
-      const basicdata = createCalendar(AttendanceRequirements, DaywiseSubjectsdata, validdates);
+      const basicdata = createCalendar({AttendanceRequirements, DaywiseSubjectsdata, validdates});
       console.log('Basic Data:', basicdata); // Log the basic data for debugging
   
       memoryCache.set(cacheKey, basicdata, cacheExpiration);

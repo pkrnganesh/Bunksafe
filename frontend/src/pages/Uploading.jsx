@@ -75,7 +75,7 @@ const UploadData = () => {
     }, 100);
   };
 
-  const handleGenerateAnalysis = () => {
+  const handleGenerateAnalysis = async () => {
     if (!attendanceFile) {
       showAlert("Please upload a timetable file.");
       return;
@@ -92,7 +92,7 @@ const UploadData = () => {
       showAlert("Please enter the attendance requirement.");
       return;
     }
-
+  
     setIsGeneratingAnalysis(true);
     setShowProgressBar(true);
     
@@ -103,20 +103,29 @@ const UploadData = () => {
         return prev;
       });
     }, 4000);
-
-    setTimeout(() => {
-      Generateanalysis({
+  
+    try {
+      const respoonse = await Generateanalysis({
         file: attendanceFile,
         percentage: attendanceRequirement,
         fromDate,
         toDate,
       });
+  
       setIsGeneratingAnalysis(false);
       setShowProgressBar(false);
       setCurrentStep(0);
       showAlert("Analysis generated successfully!", "success");
+  
+    } catch (error) {
+      console.error("Error generating analysis:", error);
+      showAlert("Error generating analysis. Please try again.", "error");
+    } finally {
       clearInterval(interval);
-    }, 20000);
+      setIsGeneratingAnalysis(false);
+      setShowProgressBar(false);
+      setCurrentStep(0);
+    }
   };
 
   const handleCancelAnalysis = () => {
