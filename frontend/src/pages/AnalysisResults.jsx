@@ -1,313 +1,348 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box, Grid, Typography, Paper, Chip, LinearProgress } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { PieChart, Pie, Cell } from 'recharts';
-import CalendarAndEventComponent from '../components/generation/CalendarAndEventComponent';
-import FinanceDashboard from '../components/generation/FinanceDashboard';
-import { keyframes } from '@emotion/react';
-
-
+import { Box, Grid, Typography, Paper, Chip, LinearProgress, useMediaQuery, Button, Card, CardContent } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import useAttendanceData from '../api/useAttendanceData';
+import { motion } from 'framer-motion';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { CalendarToday, TrendingUp, Book, Schedule } from '@mui/icons-material';
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#4CAF50" },
-    secondary: { main: "#FFC107" },
-    background: { default: "#F5F5F5" },
+    primary: { main: "#6200EA" },
+    secondary: { main: "#00BFA5" },
+    background: { default: "#F5F7FF" },
+    text: { primary: "#37474F", secondary: "#78909C" },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: { fontWeight: 700, fontSize: '2.5rem', color: "#37474F" },
+    h2: { fontWeight: 600, fontSize: '2rem', color: "#37474F" },
+    h3: { fontWeight: 600, fontSize: '1.75rem', color: "#37474F" },
+    h4: { fontWeight: 600, fontSize: '1.5rem', color: "#37474F" },
+    h5: { fontWeight: 600, fontSize: '1.25rem', color: "#37474F" },
+    h6: { fontWeight: 600, fontSize: '1rem', color: "#37474F" },
+    body1: { fontSize: '1rem', color: "#37474F" },
+    body2: { fontSize: '0.875rem', color: "#78909C" },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          boxShadow: '0 4px 20px 0 rgba(0,0,0,0.05)',
+        },
+      },
+    },
   },
 });
 
+const MotionCard = motion(Card);
 
+const glassStyle = {
+  background: 'rgba(255, 255, 255, 0.8)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '16px',
+  border: '1px solid rgba(255, 255, 255, 0.18)',
+  padding: '24px',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+  },
+};
 
-const AnalyticsDashboard = () => {
-  const historyData = [
-    {
-      screen: "Login Page",
-      insight:
-        'The absence of a "Remember Me" checkbox increases user friction for repeated logins.',
-      status: "Resolved",
-      boost: "+02%",
-    },
-    {
-      screen: "Account Overview",
-      insight:
-        "The use of too many contrasting colors in the overview section creates visual clutter and increases...",
-      status: "In Progress",
-      boost: "+01%",
-    },
-    {
-      screen: "Funds Transfer",
-      insight:
-        'The placement of the "Submit" button is not intuitive, causing users to spend more time finding it.',
-      status: "Resolved",
-      boost: "+02%",
-    },
+const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate));
+
+  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
 
-const audienceData = [
-  { name: 'Grocery', amount: 758.20, percentage: 48, color: '#a05dff' },
-  { name: 'Food & Drink', amount: 758.20, percentage: 32, color: '#5bc26d' },
-  { name: 'Shopping', amount: 758.20, percentage: 13, color: '#ff7477' },
-  { name: 'Transportation', amount: 758.20, percentage: 7, color: '#f5d35d' },
-];
+  const previousMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
 
+  const nextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
 
-  const competitorsData = [
-    { name: "ConvertIX", growth: "+11%" },
-    { name: "OptiFlow AI", growth: null },
-    { name: "AuditMinds", growth: "+47%" },
-    { name: "UXElevate", growth: "+24%" },
-    { name: "ProAudit AI", growth: null },
-  ];
+  const isHighlighted = (date) => {
+    return highlightedDates.some(d => d.date === date);
+  };
 
-  const bounce = keyframes`
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-`;
+  const getHighlightColor = (date) => {
+    const highlighted = highlightedDates.find(d => d.date === date);
+    return highlighted ? (highlighted.value > 0 ? theme.palette.secondary.main : theme.palette.error.main) : 'transparent';
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ minHeight: "100vh", background: "#F5F5F5", padding: 3 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <CalendarAndEventComponent />
-            <br />
-            <FinanceDashboard />
-<br/>
-            <Paper sx={{ p: 3, borderRadius: 4 }}>
-              <Box
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>{`${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`}</Typography>
+        <Box>
+          <Button onClick={previousMonth} sx={{ minWidth: 'auto', p: 1 }}><ArrowBackIosNewIcon /></Button>
+          <Button onClick={nextMonth} sx={{ minWidth: 'auto', p: 1 }}><ArrowForwardIosIcon /></Button>
+        </Box>
+      </Box>
+      <Grid container columns={7} sx={{ textAlign: 'center' }}>
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+          <Grid item xs={1} key={day}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>{day}</Typography>
+          </Grid>
+        ))}
+        {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+          <Grid item xs={1} key={`empty-${index}`} />
+        ))}
+        {Array.from({ length: daysInMonth }).map((_, index) => {
+          const date = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(index + 1).padStart(2, '0')}`;
+          return (
+            <Grid item xs={1} key={date} sx={{ p: 1 }}>
+              <Button
+                onClick={() => onDateChange(date)}
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  backgroundColor: date === selectedDate ? theme.palette.primary.main : 'transparent',
+                  color: date === selectedDate ? 'white' : theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: date === selectedDate ? theme.palette.primary.dark : theme.palette.action.hover,
+                  },
+                  position: 'relative',
                 }}
               >
-                <Typography variant="h6">History</Typography>
-                <Box>
-                  <ArrowUpwardIcon sx={{ mr: 1 }} />
-                  <ArrowForwardIcon />
-                </Box>
+                {index + 1}
+                {isHighlighted(date) && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 2,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      backgroundColor: getHighlightColor(date),
+                    }}
+                  />
+                )}
+              </Button>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Box>
+  );
+};
+
+const AttendanceDashboard = () => {
+  const { summaryData, subjectData, attendanceData, holidays, timetable, loading } = useAttendanceData();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography variant="h4" sx={{ color: theme.palette.primary.main }}>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  const SummarySection = () => (
+    <MotionCard
+      sx={{ ...glassStyle, height: '100%' }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      <CardContent>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Summary</Typography>
+        <Grid container spacing={3}>
+          {Object.entries(summaryData).map(([key, value], index) => (
+            <Grid item xs={12} sm={4} key={key}>
+              <Box sx={{
+                textAlign: 'center',
+                p: 2,
+                borderRadius: '16px',
+                background: `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
+                color: 'white',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                },
+              }}>
+                <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>{value}</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>{key}</Typography>
               </Box>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Screen
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Insight
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Status
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Boost
-                  </Typography>
-                </Grid>
-              </Grid>
-              {historyData.map((item, index) => (
-                <Grid container spacing={2} key={index} sx={{ mt: 1 }}>
-                  <Grid item xs={3}>
-                    <Typography variant="body2">
-                      {item.screen}{" "}
-                      <ArrowForwardIcon sx={{ fontSize: 14, ml: 1 }} />
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Typography variant="body2" noWrap>
-                      {item.insight}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Chip
-                      label={item.status}
-                      size="small"
-                      color={
-                        item.status === "Resolved" ? "primary" : "secondary"
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography variant="body2" color="primary">
-                      {item.boost}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              ))}
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-      <Paper
-        sx={{
-          p: 3,
-          borderRadius: 4,
-          boxShadow: 4,
-          textAlign: 'center',
-          backgroundColor: theme.palette.background.paper,
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: theme.palette.text.primary }}>
-          Weekly Expense
-        </Typography>
-        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 2 }}>
-          From 1 - 6 Apr, 2024
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 2,
-            position: 'relative',
-            height: 220,
-          }}
-        >
-          {audienceData.map((item, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: `${item.percentage * 3}px`,
-                height: `${item.percentage * 3}px`,
-                borderRadius: '50%',
-                backgroundColor: item.color,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: `${item.percentage / 4}px`,
-                color: '#fff',
-                fontWeight: 'bold',
-                boxShadow: `0px 6px 20px ${item.color}80`, // Add shadow with color tint
-                animation: `${bounce} 1.5s infinite`, // Add bounce animation
-                transition: 'transform 0.3s ease-in-out',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                },
-              }}
-            >
-              {item.percentage}%
-            </Box>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
+      </CardContent>
+    </MotionCard>
+  );
 
-        <Box sx={{ mt: 4 }}>
-          {audienceData.map((item, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 1,
-                px: 1, // Added padding for better spacing
-                backgroundColor: theme.palette.background.default,
-                borderRadius: 2,
-                py: 1,
-                transition: 'background-color 0.3s ease-in-out',
+  const AttendanceSection = () => (
+    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+      <CardContent>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Trend</Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={attendanceData}>
+            <XAxis dataKey="day" stroke={theme.palette.text.secondary} />
+            <YAxis stroke={theme.palette.text.secondary} />
+            <Tooltip 
+              contentStyle={{ ...glassStyle, background: 'rgba(255, 255, 255, 0.9)' }}
+              cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+            />
+            <Bar dataKey="value" fill={theme.palette.primary.main} radius={[8, 8, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </MotionCard>
+  );
+
+  const SubjectsSection = () => (
+    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+      <CardContent>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Subject-wise Attendance</Typography>
+        <Grid container spacing={3}>
+          {subjectData.map((subject, index) => (
+            <Grid item xs={12} sm={6} md={4} key={subject.subject}>
+              <Box sx={{
+                p: 2,
+                borderRadius: '16px',
+                background: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  backgroundColor: theme.palette.action.hover,
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                 },
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ display: 'flex', alignItems: 'center', color: theme.palette.text.primary }}
-              >
-                <Box
-                  component="span"
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    backgroundColor: item.color,
-                    mr: 1,
+              }}>
+                <Typography variant="h6" gutterBottom sx={{ color: theme.palette.primary.main }}>{subject.subject}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>Total: {subject['Total Classes']}</Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>Required: {subject['Required for 75%']}</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(subject['Required for 75%'] / subject['Total Classes']) * 100} 
+                  sx={{ 
+                    height: 8, 
+                    borderRadius: 4,
+                    backgroundColor: theme.palette.grey[200],
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 4,
+                      backgroundColor: theme.palette.secondary.main,
+                    },
                   }}
                 />
-                {item.name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>
-                ${item.amount.toFixed(2)}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </Paper>
-    </Grid>
-
-          <Grid item xs={12}>
-            <Paper sx={{ p: 3, borderRadius: 4 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6">Competitors</Typography>
-                <ArrowForwardIcon />
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                  height: 200,
-                }}
-              >
-                {competitorsData.map((item, index) => (
-                  <Box
+            </Grid>
+          ))}
+        </Grid>
+      </CardContent>
+    </MotionCard>
+  );
+
+  const TimetableSection = () => (
+    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+      <CardContent>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Weekly Timetable</Typography>
+        <Grid container spacing={2}>
+          {Object.entries(timetable).map(([day, subjects]) => (
+            <Grid item xs={12} sm={6} md={4} key={day}>
+              <Box sx={{
+                p: 2,
+                borderRadius: '16px',
+                background: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                },
+              }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>{day}</Typography>
+                {subjects.map((subject, index) => (
+                  <Chip
                     key={index}
+                    label={subject}
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      width: "18%",
+                      m: 0.5,
+                      backgroundColor: theme.palette.secondary.light,
+                      color: theme.palette.secondary.contrastText,
+                      fontWeight: 500,
+                      '&:hover': {
+                        backgroundColor: theme.palette.secondary.main,
+                      },
                     }}
-                  >
-                    <Box sx={{ width: "100%", mb: 1 }}>
-                      {item.growth && (
-                        <Chip
-                          label={item.growth}
-                          size="small"
-                          color={
-                            item.growth.includes("+") ? "primary" : "secondary"
-                          }
-                          sx={{ mb: 1 }}
-                        />
-                      )}
-                      <LinearProgress
-                        variant="determinate"
-                        value={item.growth ? parseInt(item.growth) : 0}
-                        sx={{
-                          height: 100,
-                          borderRadius: 2,
-                          backgroundColor: "#E0E0E0",
-                          "& .MuiLinearProgress-bar": {
-                            borderRadius: 2,
-                            backgroundColor: item.growth
-                              ? "#4CAF50"
-                              : "#E0E0E0",
-                          },
-                        }}
-                      />
-                    </Box>
-                    <Typography variant="body2">{item.name}</Typography>
-                  </Box>
+                  />
                 ))}
               </Box>
-            </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </CardContent>
+    </MotionCard>
+  );
+
+  const CalendarSection = () => (
+    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+      <CardContent>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Calendar</Typography>
+        <CustomCalendar
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          highlightedDates={attendanceData}
+        />
+      </CardContent>
+    </MotionCard>
+  );
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Box sx={{ 
+        minHeight: "100vh", 
+        background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
+        padding: isMobile ? 2 : 5,
+        overflowX: 'hidden',
+      }}>
+        <Typography variant="h2" gutterBottom sx={{ 
+          textAlign: 'center', 
+          mb: 6, 
+          color: theme.palette.primary.main, 
+          fontWeight: 700,
+          textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          Student Attendance Dashboard
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6} lg={4}>
+            <SummarySection />
+          </Grid>
+          <Grid item xs={12} md={6} lg={8}>
+            <AttendanceSection />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <CalendarSection />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SubjectsSection />
+          </Grid>
+          <Grid item xs={12}>
+            <TimetableSection />
           </Grid>
         </Grid>
       </Box>
@@ -315,4 +350,4 @@ const audienceData = [
   );
 };
 
-export default AnalyticsDashboard;
+export default AttendanceDashboard;
