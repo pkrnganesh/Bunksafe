@@ -380,19 +380,19 @@ const AttendanceDashboard = () => {
       }}>
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
           <Grid container spacing={isMobile ? 2 : 3}>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={4} sx={{marginBottom:'40px'}}>
               <SummarySection />
             </Grid>
-            <Grid item xs={12} md={6} lg={8}>
+            <Grid item xs={12} md={6} lg={8} sx={{marginBottom:'40px'}}>
               <AttendanceSection />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{marginBottom:'40px'}}>
               {loading ? <SkeletonCard height={400} /> : <CalendarSection />}
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} sx={{marginBottom:'40px'}}>
               {loading ? <SkeletonCard height={400} /> : <SubjectsSection />}
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{marginBottom:'40px'}}>
               {loading ? <SkeletonCard height={300} /> : <TimetableSection />}
             </Grid>
           </Grid>
