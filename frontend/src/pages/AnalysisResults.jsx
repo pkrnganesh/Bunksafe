@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box, Grid, Typography, Chip, LinearProgress, useMediaQuery, Button, Card, CardContent, Fab } from '@mui/material';
+import { Box, Grid, Typography, Chip, LinearProgress, useMediaQuery, Button, Card, CardContent, Fab, Container } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import useAttendanceData from '../api/useAttendanceData';
 import { motion } from 'framer-motion';
@@ -10,21 +10,21 @@ import { GetApp } from '@mui/icons-material';
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#6200EA" },
-    secondary: { main: "#00BFA5" },
+    primary: { main: "#42daf5" },
+    secondary: { main: "#FFD700" },
     background: { default: "#F5F7FF" },
     text: { primary: "#37474F", secondary: "#78909C" },
   },
   typography: { 
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: { fontWeight: 700, fontSize: '2.5rem', color: "#37474F" },
-    h2: { fontWeight: 600, fontSize: '2rem', color: "#37474F" },
-    h3: { fontWeight: 600, fontSize: '1.75rem', color: "#37474F" },
-    h4: { fontWeight: 600, fontSize: '1.5rem', color: "#37474F" },
-    h5: { fontWeight: 600, fontSize: '1.25rem', color: "#37474F" },
-    h6: { fontWeight: 600, fontSize: '1rem', color: "#37474F" },
-    body1: { fontSize: '1rem', color: "#37474F" },
-    body2: { fontSize: '0.875rem', color: "#78909C" },
+    h1: { fontWeight: 900, fontSize: '4rem', color: "#FFFFFF" },
+    h2: { fontWeight: 700, fontSize: '2.5rem', color: "#37474F" },
+    h3: { fontWeight: 600, fontSize: '2rem', color: "#37474F" },
+    h4: { fontWeight: 600, fontSize: '1.75rem', color: "#37474F" },
+    h5: { fontWeight: 600, fontSize: '1.5rem', color: "#37474F" },
+    h6: { fontWeight: 600, fontSize: '1.25rem', color: "#37474F" },
+    body1: { fontSize: '1.1rem', color: "#37474F" },
+    body2: { fontSize: '0.975rem', color: "#78909C" },
   },
   components: {
     MuiButton: {
@@ -32,6 +32,8 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: 8,
+          padding: '10px 20px',
+          fontWeight: 600,
         },
       },
     },
@@ -45,6 +47,10 @@ const theme = createTheme({
     },
   },
 });
+
+
+
+
 
 const MotionCard = motion(Card);
 
@@ -149,9 +155,11 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
 };
 
 const AttendanceDashboard = () => {
-  const { summaryData, subjectData, attendanceData, holidays, timetable, loading } = useAttendanceData();
+  const { summaryData, subjectData, attendanceData, timetable, loading } = useAttendanceData();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+ 
+ 
 
   if (loading) {
     return (
@@ -212,25 +220,25 @@ const AttendanceDashboard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Summary</Typography>
-        <Grid container spacing={3}>
-          {Object.entries(summaryData).map(([key, value], index) => (
-            <Grid item xs={12} sm={4} key={key}>
+      <CardContent sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Summary</Typography>
+        <Grid container spacing={2}>
+          {Object.entries(summaryData).map(([key, value]) => (
+            <Grid item xs={4} key={key}>
               <Box sx={{
                 textAlign: 'center',
-                p: 2,
-                borderRadius: '16px',
+                p: 1.5,
+                borderRadius: '12px',
                 background: `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
                 color: 'white',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                  transform: 'translateY(-3px)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 },
               }}>
-                <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>{value}</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>{key}</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>{value}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>{key}</Typography>
               </Box>
             </Grid>
           ))}
@@ -241,9 +249,9 @@ const AttendanceDashboard = () => {
 
   const AttendanceSection = () => (
     <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Trend</Typography>
-        <ResponsiveContainer width="100%" height={300}>
+      <CardContent sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Trend</Typography>
+        <ResponsiveContainer width="100%" height={200}>
           <BarChart data={attendanceData}>
             <XAxis dataKey="day" stroke={theme.palette.text.secondary} />
             <YAxis stroke={theme.palette.text.secondary} />
@@ -251,7 +259,7 @@ const AttendanceDashboard = () => {
               contentStyle={{ ...glassStyle, background: 'rgba(255, 255, 255, 0.9)' }}
               cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
             />
-            <Bar dataKey="value" fill={theme.palette.primary.main} radius={[8, 8, 0, 0]} />
+            <Bar dataKey="value" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
@@ -260,34 +268,33 @@ const AttendanceDashboard = () => {
 
   const SubjectsSection = () => (
     <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Subject-wise Attendance</Typography>
-        <Grid container spacing={3}>
-          {subjectData.map((subject, index) => (
+      <CardContent sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Subject-wise Attendance</Typography>
+        <Grid container spacing={2}>
+          {subjectData.map((subject) => (
             <Grid item xs={12} sm={6} md={4} key={subject.subject}>
               <Box sx={{
-                p: 2,
-                borderRadius: '16px',
+                p: 1.5,
+                borderRadius: '12px',
                 background: 'rgba(255, 255, 255, 0.6)',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                  transform: 'translateY(-3px)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 },
               }}>
-                <Typography variant="h6" gutterBottom sx={{ color: theme.palette.primary.main }}>{subject.subject}</Typography>
-                <Typography variant="body2" sx={{ mb: 1 }}>Total: {subject['Total Classes']}</Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>Required: {subject['Required for 75%']}</Typography>
+                <Typography variant="subtitle2" gutterBottom sx={{ color: theme.palette.primary.main }}>{subject.subject}</Typography>
+                <Typography variant="caption" sx={{ mb: 0.5, display: 'block' }}>Total: {subject['Total Classes']} | Required: {subject['Required for 75%']}</Typography>
                 <LinearProgress 
                   variant="determinate" 
                   value={(subject['Required for 75%'] / subject['Total Classes']) * 100} 
                   sx={{ 
-                    height: 8, 
-                    borderRadius: 4,
+                    height: 6, 
+                    borderRadius: 3,
                     backgroundColor: theme.palette.grey[200],
                     '& .MuiLinearProgress-bar': {
-                      borderRadius: 4,
+                      borderRadius: 3,
                       backgroundColor: theme.palette.secondary.main,
                     },
                   }}
@@ -298,31 +305,34 @@ const AttendanceDashboard = () => {
         </Grid>
       </CardContent>
     </MotionCard>
-  );  const TimetableSection = () => (
+  );
+
+  const TimetableSection = () => (
     <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Weekly Timetable</Typography>
+      <CardContent sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Weekly Timetable</Typography>
         <Grid container spacing={2}>
           {Object.entries(timetable).map(([day, subjects]) => (
             <Grid item xs={12} sm={6} md={4} key={day}>
               <Box sx={{
-                p: 2,
-                borderRadius: '16px',
+                p: 1.5,
+                borderRadius: '12px',
                 background: 'rgba(255, 255, 255, 0.6)',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                  transform: 'translateY(-3px)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 },
               }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>{day}</Typography>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 1 }}>{day}</Typography>
                 {subjects.map((subject, index) => (
                   <Chip
                     key={index}
                     label={subject}
+                    size="small"
                     sx={{
-                      m: 0.5,
+                      m: 0.3,
                       backgroundColor: theme.palette.secondary.light,
                       color: theme.palette.secondary.contrastText,
                       fontWeight: 500,
@@ -339,10 +349,11 @@ const AttendanceDashboard = () => {
       </CardContent>
     </MotionCard>
   );
+
   const CalendarSection = () => (
     <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 3 }}>Attendance Calendar</Typography>
+      <CardContent sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Calendar</Typography>
         <CustomCalendar
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
@@ -357,36 +368,35 @@ const AttendanceDashboard = () => {
       <Box sx={{ 
         minHeight: "100vh", 
         background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
-        padding: isMobile ? 2 : 5,
         overflowX: 'hidden',
       }}>
-        <Typography variant="h2" gutterBottom sx={{ 
-          textAlign: 'center', 
-          mb: 6, 
-          color: theme.palette.primary.main, 
-          fontWeight: 700,
-          textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-          fontSize: isMobile ? '2rem' : '2.5rem',
-        }}>
-          Student Attendance Dashboard
-        </Typography>
-        <Grid container spacing={isMobile ? 2 : 4}>
-          <Grid item xs={12} md={6} lg={4}>
-            <SummarySection />
+                
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+          <Grid container spacing={isMobile ? 2 : 3}>
+            <Grid item xs={12} md={6} lg={4}>
+              <SummarySection />
+            </Grid>
+            <Grid item xs={12} md={6} lg={8}>
+              <AttendanceSection />
+            </Grid>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <Grid item xs={12} md={6}>
+              <CalendarSection />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <SubjectsSection />
+            </Grid>
+            <Grid item xs={12}>
+              <TimetableSection />
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={6} lg={8}>
-            <AttendanceSection />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <CalendarSection />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <SubjectsSection />
-          </Grid>
-          <Grid item xs={12}>
-            <TimetableSection />
-          </Grid>
-        </Grid>
+        </Container>
+        
         <Fab 
           color="primary" 
           aria-label="download" 
@@ -402,9 +412,7 @@ const AttendanceDashboard = () => {
         >
           <GetApp />
           {!isMobile && (
-            <Typography variant="caption" sx={{ mt: 0.5 }}>
-              Download Analysis
-            </Typography>
+            <Typography variant="caption" sx={{ fontWeight: 600 }}> </Typography>
           )}
         </Fab>
       </Box>
