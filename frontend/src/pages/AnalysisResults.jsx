@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box, Grid, Typography, Chip, LinearProgress, useMediaQuery, Button, Card, CardContent, Fab, Container } from '@mui/material';
+import { Box, Grid, Typography, Chip, LinearProgress, useMediaQuery, Button, Card, CardContent, Fab, Container, Skeleton } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import useAttendanceData from '../api/useAttendanceData';
 import { motion } from 'framer-motion';
@@ -60,11 +60,6 @@ const glassStyle = {
   borderRadius: '16px',
   border: '1px solid rgba(255, 255, 255, 0.18)',
   padding: '24px',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-  },
 };
 
 const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
@@ -154,21 +149,21 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
   );
 };
 
+const SkeletonCard = ({ height }) => (
+  <Card sx={{ ...glassStyle, height }}>
+    <CardContent>
+      <Skeleton variant="text" width="60%" height={32} />
+      <Skeleton variant="rectangular" width="100%" height={height - 80} sx={{ mt: 2 }} />
+    </CardContent>
+  </Card>
+);
+
 const AttendanceDashboard = () => {
   const { summaryData, subjectData, attendanceData, timetable, loading } = useAttendanceData();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
- 
- 
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Typography variant="h4" sx={{ color: theme.palette.primary.main }}>Loading...</Typography>
-      </Box>
-    );
-  }
-
+  
   const handleDownload = () => {
     // Generate the analysis report
     const report = generateAnalysisReport(summaryData, subjectData, attendanceData);
@@ -214,155 +209,168 @@ const AttendanceDashboard = () => {
   };
 
   const SummarySection = () => (
-    <MotionCard
-      sx={{ ...glassStyle, height: '100%' }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-    >
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Summary</Typography>
-        <Grid container spacing={2}>
-          {Object.entries(summaryData).map(([key, value]) => (
-            <Grid item xs={4} key={key}>
-              <Box sx={{
-                textAlign: 'center',
-                p: 1.5,
-                borderRadius: '12px',
-                background: `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-                color: 'white',
+    loading ? (
+      <SkeletonCard height={200} />
+    ) : (
+      <Card sx={{ ...glassStyle, height: '100%' }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Summary</Typography>
+          <Grid container spacing={2}>
+            {Object.entries(summaryData).map(([key, value]) => (
+              <Grid item xs={4} key={key}>
+                <Box sx={{
+                  textAlign: 'center',
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
+                  color: 'white',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-3px)',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 },
-              }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>{value}</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>{key}</Typography>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </MotionCard>
+                }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>{value}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{key}</Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </Card>
+    )
   );
 
   const AttendanceSection = () => (
-    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Trend</Typography>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={attendanceData}>
-            <XAxis dataKey="day" stroke={theme.palette.text.secondary} />
-            <YAxis stroke={theme.palette.text.secondary} />
-            <Tooltip 
-              contentStyle={{ ...glassStyle, background: 'rgba(255, 255, 255, 0.9)' }}
-              cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
-            />
-            <Bar dataKey="value" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </MotionCard>
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <Card sx={{ ...glassStyle, height: '100%' }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Trend</Typography>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={attendanceData}>
+              <XAxis dataKey="day" stroke={theme.palette.text.secondary} />
+              <YAxis stroke={theme.palette.text.secondary} />
+              <Tooltip 
+                contentStyle={{ ...glassStyle, background: 'rgba(255, 255, 255, 0.9)' }}
+                cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+              />
+              <Bar dataKey="value" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    )
   );
-
-  const SubjectsSection = () => (
-    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Subject-wise Attendance</Typography>
-        <Grid container spacing={2}>
-          {subjectData.map((subject) => (
-            <Grid item xs={12} sm={6} md={4} key={subject.subject}>
-              <Box sx={{
-                p: 1.5,
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-3px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ color: theme.palette.primary.main }}>{subject.subject}</Typography>
-                <Typography variant="caption" sx={{ mb: 0.5, display: 'block' }}>Total: {subject['Total Classes']} | Required: {subject['Required for 75%']}</Typography>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={(subject['Required for 75%'] / subject['Total Classes']) * 100} 
-                  sx={{ 
-                    height: 6, 
-                    borderRadius: 3,
-                    backgroundColor: theme.palette.grey[200],
-                    '& .MuiLinearProgress-bar': {
+    const SubjectsSection = () => (
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Subject-wise Attendance</Typography>
+          <Grid container spacing={2}>
+            {subjectData.map((subject) => (
+              <Grid item xs={12} sm={6} md={4} key={subject.subject}>
+                <Box sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  },
+                }}>
+                  <Typography variant="subtitle2" gutterBottom sx={{ color: theme.palette.primary.main }}>{subject.subject}</Typography>
+                  <Typography variant="caption" sx={{ mb: 0.5, display: 'block' }}>Total: {subject['Total Classes']} | Required: {subject['Required for 75%']}</Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={(subject['Required for 75%'] / subject['Total Classes']) * 100} 
+                    sx={{ 
+                      height: 6, 
                       borderRadius: 3,
-                      backgroundColor: theme.palette.secondary.main,
-                    },
-                  }}
-                />
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </MotionCard>
-  );
-
-  const TimetableSection = () => (
-    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Weekly Timetable</Typography>
-        <Grid container spacing={2}>
-          {Object.entries(timetable).map(([day, subjects]) => (
-            <Grid item xs={12} sm={6} md={4} key={day}>
-              <Box sx={{
-                p: 1.5,
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-3px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 1 }}>{day}</Typography>
-                {subjects.map((subject, index) => (
-                  <Chip
-                    key={index}
-                    label={subject}
-                    size="small"
-                    sx={{
-                      m: 0.3,
-                      backgroundColor: theme.palette.secondary.light,
-                      color: theme.palette.secondary.contrastText,
-                      fontWeight: 500,
-                      '&:hover': {
+                      backgroundColor: theme.palette.grey[200],
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 3,
                         backgroundColor: theme.palette.secondary.main,
                       },
                     }}
                   />
-                ))}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </MotionCard>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </MotionCard>
+    )
+  );
+
+  const TimetableSection = () => (
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Weekly Timetable</Typography>
+          <Grid container spacing={2}>
+            {Object.entries(timetable).map(([day, subjects]) => (
+              <Grid item xs={12} sm={6} md={4} key={day}>
+                <Box sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  },
+                }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 1 }}>{day}</Typography>
+                  {subjects.map((subject, index) => (
+                    <Chip
+                      key={index}
+                      label={subject}
+                      size="small"
+                      sx={{
+                        m: 0.3,
+                        backgroundColor: theme.palette.secondary.light,
+                        color: theme.palette.secondary.contrastText,
+                        fontWeight: 500,
+                        '&:hover': {
+                          backgroundColor: theme.palette.secondary.main,
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </MotionCard>
+    )
   );
 
   const CalendarSection = () => (
-    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Calendar</Typography>
-        <CustomCalendar
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          highlightedDates={attendanceData}
-        />
-      </CardContent>
-    </MotionCard>
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Attendance Calendar</Typography>
+          <CustomCalendar
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+            highlightedDates={attendanceData}
+          />
+        </CardContent>
+      </MotionCard>
+    )
   );
-
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ 
@@ -370,7 +378,6 @@ const AttendanceDashboard = () => {
         background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
         overflowX: 'hidden',
       }}>
-                
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
           <Grid container spacing={isMobile ? 2 : 3}>
             <Grid item xs={12} md={6} lg={4}>
@@ -379,20 +386,14 @@ const AttendanceDashboard = () => {
             <Grid item xs={12} md={6} lg={8}>
               <AttendanceSection />
             </Grid>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
             <Grid item xs={12} md={6}>
-              <CalendarSection />
+              {loading ? <SkeletonCard height={400} /> : <CalendarSection />}
             </Grid>
             <Grid item xs={12} md={6}>
-              <SubjectsSection />
+              {loading ? <SkeletonCard height={400} /> : <SubjectsSection />}
             </Grid>
             <Grid item xs={12}>
-              <TimetableSection />
+              {loading ? <SkeletonCard height={300} /> : <TimetableSection />}
             </Grid>
           </Grid>
         </Container>
