@@ -52,11 +52,14 @@ const AnimatedShape = styled(motion.div)(({ theme }) => ({
 const Features = () => {
 
   const steps = [
-    { number: 1, title: 'Input Timetable', description: 'Easily enter your semester timetable and attendance requirements using our user-friendly interface.' },
-    { number: 2, title: 'Track Attendance', description: 'Monitor your attendance in real-time with our advanced tracking system.' },
-    { number: 3, title: 'Get Reminders', description: 'Receive personalized reminders to help you stay on top of your attendance goals.' },
-    { number: 4, title: 'Optimize Schedule', description: 'Adjust your schedule dynamically to ensure you meet your attendance targets effortlessly.' },
-  ];
+    { number: 1, title: 'Student Guidance', description: 'Access comprehensive resources and personalized sessions to navigate your career path effectively.' },
+    { number: 2, title: 'Mentorship Booking', description: 'Book sessions with experienced mentors either offline or online to get tailored advice and insights.' },
+    { number: 3, title: 'AI Guidance', description: 'Leverage AI-driven tools to receive automated, data-backed career advice tailored to your skills and interests.' },
+    { number: 4, title: 'Become Mentor', description: 'Join our platform as a mentor to guide students using your expertise and real-world experience.' },
+];
+
+  
+  
 
   const shapes = [
     { size: 300, left: '-5%', top: '20%' },
@@ -106,11 +109,12 @@ const Features = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Typography variant="h2" gutterBottom fontWeight="bold" sx={{ color: '#333', mb: 2 }}>
-              How Bunksafe Works
-            </Typography>
-            <Typography variant="h5" sx={{ color: '#666', mb: 6 }}>
-              Revolutionizing timetable analysis and scheduling with cutting-edge algorithms.
-            </Typography>
+  How Career Guidance Works
+</Typography>
+<Typography variant="h5" sx={{ color: '#666', mb: 6 }}>
+  Empowering students with personalized career insights and mentorship, driven by data and expert advice.
+</Typography>
+
           </motion.div>
           <Grid container spacing={4}>
             {steps.map((step, index) => (

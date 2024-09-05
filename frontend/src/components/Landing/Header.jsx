@@ -25,7 +25,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
       <Toolbar>
         {/* <School sx={{ mr: 2, verticalAlign: 'middle', color: darkMode ? '#FFCA28' : '#3F51B5' }} /> */}
         <StyledTypography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-Bunk Safe        </StyledTypography>
+title       </StyledTypography>
         {!isMobile && (
           <>
             <DocsButton />
