@@ -105,7 +105,7 @@ const Hero = () => {
               </motion.div>
             </motion.div>
           </Box>
-          <Box
+          {/* <Box
             component={motion.img}
             src={referenceImage}
             alt="Person using the app"
@@ -117,7 +117,7 @@ const Hero = () => {
               borderRadius: '15px',
               boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
             }}
-          />
+          /> */}
         </Box>
       </ContentWrapper>
       {symbols.map((symbol, index) => (
