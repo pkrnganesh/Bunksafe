@@ -4,7 +4,7 @@
   "description": "Backend for the Attendance analysis using expressjs and firebase",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js"
   },
   "author": "Swapanth Vakapalli",
   "license": "MIT",
