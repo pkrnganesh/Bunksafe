@@ -1,10 +1,6 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 
-
-dotenv.config();
-
-const API_URL = process.env.SERVER_PORT;
+const API_URL = process.env.REACT_APP_SERVER_PORT;
 
 export const Generateanalysis = async ({ file, percentage, fromDate, toDate }) => {
     try {
