@@ -37,6 +37,7 @@ router.post('/basicanalysis', async (req, res) => {
   
     const file = req.files.file;
     const { percentage, fromDate, toDate } = req.body;
+    console.log(percentage, fromDate, toDate);
     const filePath = path.resolve(__dirname, '../uploads', file.name);
   
     try {
