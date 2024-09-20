@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const { CohereClient } = require("cohere-ai");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -6,9 +6,10 @@ dotenv.config();
 const memoryCache = new Map(); // In-memory cache
 const cacheExpiration = 3600000; // 1 hour in milliseconds
 
-const token = process.env.GITHUB_TOKEN;
-const endpoint = "https://models.inference.ai.azure.com"; // Replace with your actual endpoint
-const modelName = "gpt-4o"; // Ensure that the model is correctly set
+// Initialize Cohere client
+const cohere = new CohereClient({
+  token: process.env.COHERE_API_KEY,
+});
 
 const processText = async (extractedText) => {
   const truncatedText = extractedText.slice(0, 1000); // Adjust as needed
@@ -18,7 +19,8 @@ const processText = async (extractedText) => {
     return memoryCache.get(cacheKey);
   }
 
-  const body = JSON.stringify({
+  const response = await cohere.generate({
+    model: 'command-xlarge-nightly',
     prompt: `Extract timetable information from the following text and format it as valid JSON:
 
 ${truncatedText}
@@ -27,10 +29,10 @@ Format the output as a JSON object with this structure:
 {
   "schedule": {
     "Monday": [{"subject": "" }],
-    "Tuesday": [{"subject": "" }],
-    "Wednesday": [{"subject": "" }],
+    "Tuesday": [{"subject": ""  }],
+    "Wednesday": [{"subject": ""  }],
     "Thursday": [{"subject": "" }],
-    "Friday": [{"subject": "" }],
+    "Friday": [{"subject": ""}],
     "Saturday": [{"subject": "" }]
   }
 }
@@ -38,23 +40,12 @@ Format the output as a JSON object with this structure:
 Ensure your response contains ONLY the JSON object. Do not include any explanations or additional text.`,
     max_tokens: 1000,
     temperature: 0.3,
+    k: 0,
+    stop_sequences: [],
+    return_likelihoods: 'NONE'
   });
 
-  const response = await fetch(`${endpoint}/v1/models/${modelName}/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: body,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error with status ${response.status}: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const generatedText = data.choices[0].text; // Adjust based on response structure
+  const generatedText = response.generations[0].text;
 
   const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
@@ -72,12 +63,15 @@ Ensure your response contains ONLY the JSON object. Do not include any explanati
 };
 
 function reScheduling(input) {
-  let parsedResponse;
-  const timetableResponse = input.timetableResponse || input;
   
-  parsedResponse = typeof timetableResponse === 'string' 
-    ? JSON.parse(timetableResponse) 
-    : timetableResponse;
+  let parsedResponse;
+    const timetableResponse = input.timetableResponse || input;
+    
+    parsedResponse = typeof timetableResponse === 'string' 
+      ? JSON.parse(timetableResponse) 
+      : timetableResponse;
+  
+
 
   const schedule = parsedResponse.schedule;
 
@@ -98,6 +92,7 @@ function reScheduling(input) {
   }
 
   return schedule;
-}
+};
+
 
 module.exports = { processText, reScheduling };
