@@ -27,4 +27,5 @@ app.use('/user', user);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log("Happy Coding guys");
 });
