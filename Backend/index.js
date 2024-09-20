@@ -14,6 +14,10 @@ const PORT = process.env.PORT;
 const app = express();
 
 app.use(cors());
+app.use(cors({
+  origin: 'https://bunksafe.vercel.app'
+}));
+
 app.use(express.json());
 
 // Using the routes
