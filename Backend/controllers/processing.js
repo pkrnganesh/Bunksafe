@@ -63,11 +63,6 @@ router.post('/basicanalysis', async (req, res) => {
 
         const basicdata = createCalendar({ AttendanceRequirements, DaywiseSubjectsdata, validdates });
 
-        console.log("Total Days", Totaldays);
-        console.log("Days Needed to Attend", daysNeededToAttend);
-        console.log("Days Can Skip", daysCanSkip);
-        console.log('Basic Data:', basicdata);
-
         // Store the result in cache
         memoryCache.set(cacheKey, {
             Totaldays,
