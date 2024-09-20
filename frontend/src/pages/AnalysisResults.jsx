@@ -156,55 +156,34 @@ const AttendanceDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedData = localStorage.getItem('analysisResponse');
-    console.log(storedData);
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setAnalysisData(parsedData.data);
-      setLoading(false);
-    } else {
-      console.error("No analysis data found.");
-      setLoading(false);
-    }
+    const fetchData = () => {
+      const storedData = localStorage.getItem('analysisResponse');
+      console.log("Stored data:", storedData);
+
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData);
+          console.log("Parsed data:", parsedData);
+          
+          if (parsedData && parsedData.Totaldays) {
+            setAnalysisData(parsedData);
+            setLoading(false);
+          } else {
+            console.error("Parsed data is missing expected properties");
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error("Error parsing stored data:", error);
+          setLoading(false);
+        }
+      } else {
+        console.error("No analysis data found in localStorage");
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
-
-  const handleDownload = () => {
-    if (!analysisData) return;
-    
-    const report = generateAnalysisReport(analysisData);
-    const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'attendance_analysis.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const generateAnalysisReport = (data) => {
-    let report = "Attendance Analysis Report\n\n";
-
-    report += "Summary:\n";
-    report += `Total Days: ${data.Totaldays}\n`;
-    report += `Days Needed to Attend: ${data.daysNeededToAttend}\n`;
-    report += `Days Can Skip: ${data.daysCanSkip}\n\n`;
-
-    report += "Subject-wise Attendance:\n";
-    for (const [subject, counts] of Object.entries(data.SubjectCountsdata)) {
-      report += `${subject}: ${counts} classes\n`;
-    }
-    report += "\n";
-
-    report += "Attendance Requirements:\n";
-    for (const [subject, requirements] of Object.entries(data.AttendanceRequirements.subjectRequirements)) {
-      report += `${subject}:\n`;
-      report += `  Total Classes: ${requirements.total}\n`;
-      report += `  Required for 75%: ${requirements.asperpercentage}\n`;
-      report += `  Minimum 40%: ${requirements.minimum40}\n\n`;
-    }
-
-    return report;
-  };
 
   const SummarySection = () => (
     loading ? (
@@ -260,7 +239,7 @@ const AttendanceDashboard = () => {
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       transform: 'translateY(-3px)',
-                      boxShadow: '0 4 20px rgba(0,0,0,0.1)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                     },
                   }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>{analysisData.daysCanSkip}</Typography>
@@ -322,54 +301,52 @@ const AttendanceDashboard = () => {
     )
   );
 
-  // ... (previous code remains the same)
-
-const TimetableSection = () => (
-  loading ? (
-    <SkeletonCard height={300} />
-  ) : (
-    <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-      <CardContent sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Weekly Timetable</Typography>
-        <Grid container spacing={2}>
-          {analysisData && analysisData.timetableResponse && Object.entries(analysisData.timetableResponse.schedule).map(([day, subjects]) => (
-            <Grid item xs={12} sm={6} md={4} key={day}>
-              <Box sx={{
-                p: 1.5,
-                borderRadius: '12px',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-3px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 1 }}>{day}</Typography>
-                {subjects.map((subjectObj, index) => (
-                  <Chip
-                    key={index}
-                    label={subjectObj.subject}
-                    size="small"
-                    sx={{
-                      m: 0.3,
-                      backgroundColor: theme.palette.secondary.light,
-                      color: theme.palette.secondary.contrastText,
-                      fontWeight: 500,
-                      '&:hover': {
-                        backgroundColor: theme.palette.secondary.main,
-                      },
-                    }}
-                  />
-                ))}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </CardContent>
-    </MotionCard>
-  )
-);
+  const TimetableSection = () => (
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard sx={{ ...glassStyle, height: '100%' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}>Weekly Timetable</Typography>
+          <Grid container spacing={2}>
+            {analysisData && analysisData.timetableResponse && Object.entries(analysisData.timetableResponse.schedule).map(([day, subjects]) => (
+              <Grid item xs={12} sm={6} md={4} key={day}>
+                <Box sx={{
+                  p: 1.5,
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  },
+                }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 1 }}>{day}</Typography>
+                  {subjects.map((subjectObj, index) => (
+                    <Chip
+                      key={index}
+                      label={subjectObj.subject}
+                      size="small"
+                      sx={{
+                        m: 0.3,
+                        backgroundColor: theme.palette.secondary.light,
+                        color: theme.palette.secondary.contrastText,
+                        fontWeight: 500,
+                        '&:hover': {
+                          backgroundColor: theme.palette.secondary.main,
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </MotionCard>
+    )
+  );
 
   return (
     <ThemeProvider theme={theme}>
