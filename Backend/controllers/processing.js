@@ -1,113 +1,91 @@
-const express = require("express");
-const router = express.Router();
-const fileUpload = require("express-fileupload");
-const dotenv = require("dotenv");
-const NodeCache = require("node-cache");
+const express = require("express"); 
+const router = express.Router(); 
+const fileUpload = require("express-fileupload"); 
+const path = require("path"); 
+const dotenv = require("dotenv"); 
+const NodeCache = require("node-cache");  // Using node-cache for cache management 
 
-// Import custom modules
-const { extractText } = require("../crud/textExtractor");
-const { processText, reScheduling } = require("../crud/textProcessor");
-const { ClassificationText } = require("../crud/textClassification");
-const { calculateAttendanceRequirements, createCalendar } = require("../crud/AnalysisGeneration");
-const { calculateValidDays, countDaysOfWeek, calculateDaysNeededToAttend, calculateDaysCanSkip } = require("../crud/filteringDays");
+// Import custom modules 
+const { extractText } = require("../crud/textExtractor"); 
+const { processText, reScheduling } = require("../crud/textProcessor"); 
+const { ClassificationText } = require("../crud/textClassification"); 
+const { calculateAttendanceRequirements, createCalendar } = require("../crud/AnalysisGeneration"); 
+const { calculateValidDays, countDaysOfWeek, calculateDaysNeededToAttend, calculateDaysCanSkip } = require("../crud/filteringDays"); 
 
-router.use(fileUpload());
+// Middleware 
+router.use(fileUpload()); 
 
-dotenv.config();
+dotenv.config(); 
 
-const memoryCache = new NodeCache({ stdTTL: 3600 }); // 1 hour TTL
+let workflowStatus = 'Processing'; 
 
-// Initiate analysis
-router.post('/initiate-analysis', async (req, res) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
+// Initialize memory cache with expiration 
+const memoryCache = new NodeCache({ stdTTL: 3600 });  // Cache expiration time set to 1 hour 
 
-    const file = req.files.file;
-    const { percentage, fromDate, toDate } = req.body;
+// Route to get the current status 
+router.get('/status', (req, res) => { 
+    res.json({ status: workflowStatus }); 
+}); 
 
-    try {
-        const jobId = Date.now().toString();
-        memoryCache.set(jobId, { status: 'extracting' });
+// Route to perform basic analysis 
+router.post('/basicanalysis', async (req, res) => { 
+    if (!req.files || Object.keys(req.files).length === 0) { 
+        return res.status(400).send('No files were uploaded.'); 
+    } 
 
-        // Start the first step
-        const extractedText = await extractText(file);
-        memoryCache.set(jobId, { status: 'processing', extractedText });
+    const file = req.files.file; 
+    const { percentage, fromDate, toDate } = req.body; 
 
-        res.json({ jobId, message: 'Analysis initiated. Use this jobId to continue the process.' });
-    } catch (err) {
-        res.status(500).send(`Error: ${err.message}`);
-    }
-});
+    try { 
+        const cacheKey = ${file.name}-${fromDate}-${toDate}-${percentage}; 
+        if (memoryCache.has(cacheKey)) { 
+            const cachedResult = memoryCache.get(cacheKey); 
+            console.log('Serving from cache'); 
+            return res.json(cachedResult); 
+        } 
 
-// Continue analysis
-router.post('/continue-analysis/:jobId', async (req, res) => {
-    const jobId = req.params.jobId;
-    const job = memoryCache.get(jobId);
+        // Extract text directly from the file buffer without saving 
+        const extractedText = await extractText(file); 
 
-    if (!job) {
-        return res.status(404).json({ message: 'Job not found' });
-    }
+        const timetableResponse = await processText(extractedText); 
+        const DaywiseSubjectsdata = await reScheduling(timetableResponse); 
 
-    const { percentage, fromDate, toDate } = req.body;
+        const validdates = calculateValidDays(fromDate, toDate); 
+        const countDaysOfWeekdata = countDaysOfWeek(validdates); 
+        const daysNeededToAttend = calculateDaysNeededToAttend(validdates, percentage); 
+        const daysCanSkip = calculateDaysCanSkip(validdates, percentage); 
+        const Totaldays = daysNeededToAttend + daysCanSkip; 
 
-    try {
-        switch (job.status) {
-            case 'processing':
-                const timetableResponse = await processText(job.extractedText);
-                const DaywiseSubjectsdata = await reScheduling(timetableResponse);
-                memoryCache.set(jobId, { status: 'calculating', timetableResponse, DaywiseSubjectsdata });
-                break;
+        const SubjectCountsdata = ClassificationText(JSON.stringify(countDaysOfWeekdata), DaywiseSubjectsdata); 
+        const AttendanceRequirements = calculateAttendanceRequirements({ SubjectCountsdata }, percentage); 
 
-            case 'calculating':
-                const validdates = calculateValidDays(fromDate, toDate);
-                const countDaysOfWeekdata = countDaysOfWeek(validdates);
-                const daysNeededToAttend = calculateDaysNeededToAttend(validdates, percentage);
-                const daysCanSkip = calculateDaysCanSkip(validdates, percentage);
-                const Totaldays = daysNeededToAttend + daysCanSkip;
+        const basicdata = createCalendar({ AttendanceRequirements, DaywiseSubjectsdata, validdates }); 
 
-                const SubjectCountsdata = ClassificationText(JSON.stringify(countDaysOfWeekdata), job.DaywiseSubjectsdata);
-                const AttendanceRequirements = calculateAttendanceRequirements({ SubjectCountsdata }, percentage);
+        // Store the result in cache 
+        memoryCache.set(cacheKey, { 
+            Totaldays, 
+            daysNeededToAttend, 
+            daysCanSkip, 
+            timetableResponse, 
+            SubjectCountsdata, 
+            AttendanceRequirements, 
+            basicdata 
+        }); 
 
-                const basicdata = createCalendar({ AttendanceRequirements, DaywiseSubjectsdata: job.DaywiseSubjectsdata, validdates });
+        workflowStatus = 'Thanks for waiting, Calendar is ready'; 
+        res.json({ 
+            Totaldays, 
+            daysNeededToAttend, 
+            daysCanSkip, 
+            timetableResponse, 
+            SubjectCountsdata, 
+            AttendanceRequirements, 
+            basicdata 
+        }); 
+    } catch (err) { 
+        res.status(500).send(Error: ${err.message}); 
+    } 
+}); 
 
-                const result = {
-                    Totaldays,
-                    daysNeededToAttend,
-                    daysCanSkip,
-                    timetableResponse: job.timetableResponse,
-                    SubjectCountsdata,
-                    AttendanceRequirements,
-                    basicdata
-                };
+module.exports = router; 
 
-                memoryCache.set(jobId, { status: 'completed', result });
-                break;
-
-            case 'completed':
-                return res.json({ status: 'completed', result: job.result });
-
-            default:
-                return res.status(400).json({ message: 'Invalid job status' });
-        }
-
-        res.json({ status: memoryCache.get(jobId).status });
-    } catch (err) {
-        memoryCache.set(jobId, { status: 'error', error: err.message });
-        res.status(500).send(`Error: ${err.message}`);
-    }
-});
-
-// Get analysis status
-router.get('/analysis-status/:jobId', (req, res) => {
-    const jobId = req.params.jobId;
-    const job = memoryCache.get(jobId);
-
-    if (!job) {
-        return res.status(404).json({ message: 'Job not found' });
-    }
-
-    res.json({ status: job.status, result: job.status === 'completed' ? job.result : null });
-});
-
-module.exports = router;
