@@ -12,7 +12,7 @@ import SvgCurve from "../components/uploading/SvgCurve";
 import UploadForm from "../components/uploading/UploadForm";
 import AlertSnackbar from "../components/uploading/AlertSnackbar";
 import ProgressContent from "../components/uploading/ProgressContent";
-import { Generateanalysis } from "../api/Generation";
+import { GenerateAnalysis } from "../api/Generation";
 
 const timetableImage = require("../images/timetable.svg");
 const timetableImage2 = require("../images/timetable2.svg");
@@ -103,7 +103,7 @@ const UploadData = () => {
     }, 1000);
   
     try {
-      const response = await Generateanalysis({
+      const response = await GenerateAnalysis({
         file: attendanceFile,
         percentage: attendanceRequirement,
         fromDate,
