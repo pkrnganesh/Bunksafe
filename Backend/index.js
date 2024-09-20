@@ -8,7 +8,7 @@ const user = require('./controllers/incrementUserCount');
 dotenv.config();
 
 // Retrieve PORT from environment variables or set a default value
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000; // Default to 5000 if PORT is not set
 
 const app = express();
 
@@ -17,9 +17,11 @@ const corsOptions = {
   origin: 'https://bunksafe.vercel.app',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  credentials: true // Allow credentials if needed
 };
 
+// Use CORS middleware
 app.use(cors(corsOptions));
 
 // Increase payload size limit if necessary
@@ -28,8 +30,11 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+  console.error('Error occurred:', err.stack);
+  res.status(500).json({
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something broke!'
+  });
 });
 
 // Using the routes
@@ -40,12 +45,13 @@ app.use('/user', user);
 app.use((req, res, next) => {
   res.setTimeout(120000, () => {
     console.log('Request has timed out.');
-    res.status(408).send('Request Timeout');
+    res.status(408).json({ message: 'Request Timeout' });
   });
   next();
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log("Happy Coding guys");
+  console.log("Happy Coding, guys!");
 });
