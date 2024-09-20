@@ -9,6 +9,7 @@ dotenv.config();
 // Create an endpoint to increment the count and save IP address
 router.get('/increment-count', async (req, res) => {
   const ipAddress = req.ip; // Capture the IP address of the user
+  console.log("ipAddress");
 
   try {
     const newCount = await incrementUserCount(ipAddress);
