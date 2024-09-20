@@ -37,7 +37,7 @@ router.post('/basicanalysis', async (req, res) => {
     const { percentage, fromDate, toDate } = req.body; 
 
     try { 
-        const cacheKey = ${file.name}-${fromDate}-${toDate}-${percentage}; 
+        const cacheKey = `${file.name}-${fromDate}-${toDate}-${percentage}`; 
         if (memoryCache.has(cacheKey)) { 
             const cachedResult = memoryCache.get(cacheKey); 
             console.log('Serving from cache'); 
@@ -83,9 +83,9 @@ router.post('/basicanalysis', async (req, res) => {
             basicdata 
         }); 
     } catch (err) { 
-        res.status(500).send(Error: ${err.message}); 
+        res.status(500).send(`Error: ${err.message}`); 
     } 
-}); 
+});
 
 module.exports = router; 
 
