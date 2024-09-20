@@ -29,8 +29,6 @@ router.get('/status', (req, res) => {
 
 // Route to perform basic analysis
 router.post('/basicanalysis', async (req, res) => {
-    console.log("Request Received");
-
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
