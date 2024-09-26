@@ -1,7 +1,7 @@
 import React, { useState, useEffect,useRef } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ClassScheduleSection from '../components/generation/ClassScheduleSection';
-
+import ResultsGraph from '../components/generation/ResultsGraph'
 import {
   Box,
   Grid,
@@ -119,27 +119,31 @@ const AttendanceDashboard = () => {
     fetchData();
   }, []);
 
+  
+
   const SummarySection = () =>
     loading ? (
-      <SkeletonCard height={200} />
+      <SkeletonCard height={300} />
     ) : (
       <Card
         sx={{
           ...glassStyle,
-          height: "50%",
+          height: "32%",
           position: "relative",
           background: "linear-gradient(to right, gold, white)",
         }}
       >
+        
         <CardContent sx={{ p: 2 }}>
           <Typography
             variant="h6"
             gutterBottom
-            sx={{ fontWeight: 600, color: "black", mb: 2,zIndex: 2 }}
+            sx={{ fontWeight: 600, color: "black", mb: 2, zIndex: 2 }}
           >
-            Attendance Summary
+            Attendance <br/>
+            Summary
           </Typography>
-
+  
           <Box
             component="img"
             src={thinking}
@@ -152,10 +156,10 @@ const AttendanceDashboard = () => {
               position: "absolute",
               marginBottom: "20px",
               bottom: 90,
-              right: "10px", // You can adjust the positioning as needed
+              right: "10px",
             }}
           />
-
+  
           <Grid container spacing={2}>
             {analysisData && (
               <>
@@ -167,8 +171,7 @@ const AttendanceDashboard = () => {
             )}
           </Grid>
         </CardContent>
-
-        {/* The content box now placed at the bottom */}
+  
         <Box
           sx={{
             textAlign: "center",
@@ -187,6 +190,8 @@ const AttendanceDashboard = () => {
             bottom: 10,
             margin: "auto",
             marginLeft: "-1%",
+            marginBottom: "2%",
+
             width: "86%",
             backgroundColor: "black",
             height: "90px",
@@ -200,10 +205,7 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.Totaldays}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, color: "green" }}
-              >
+              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
                 100%
               </Typography>
             </Box>
@@ -219,10 +221,7 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.daysNeededToAttend}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, color: "green" }}
-              >
+              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
                 100%
               </Typography>
             </Box>
@@ -238,10 +237,7 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.daysCanSkip}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, color: "green" }}
-              >
+              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
                 100%
               </Typography>
             </Box>
@@ -252,109 +248,38 @@ const AttendanceDashboard = () => {
         </Box>
       </Card>
     );
+  
+  
 
-  const SubjectsSection = () =>
-    loading ? (
-      <SkeletonCard height={300} />
-    ) : (
-      <MotionCard
-        sx={{ ...glassStyle, height: "100%",width: "100%" }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <CardContent sx={{ p: 2 }}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}
-          >
-            Subject-wise Attendance
-          </Typography>
-          <Grid container spacing={2}>
-            {analysisData &&
-              Object.entries(
-                analysisData.AttendanceRequirements.subjectRequirements
-              ).map(([subject, requirements]) => (
-                <Grid item xs={12} sm={6} md={4} key={subject}>
-                  <Box
-                    sx={{
-                      p: 1.5,
-                      borderRadius: "12px",
-                      background: "rgba(255, 255, 255, 0.6)",
-                      backdropFilter: "blur(10px)",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-3px)",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      gutterBottom
-                      sx={{ color: theme.palette.primary.main }}
-                    >
-                      {subject}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ mb: 0.5, display: "block" }}
-                    >
-                      Total: {requirements.total} | Required:{" "}
-                      {requirements.asperpercentage} | Minimum:{" "}
-                      {requirements.minimum40}
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={
-                        (requirements.asperpercentage / requirements.total) *
-                        100
-                      }
-                      sx={{
-                        height: 6,
-                        borderRadius: 3,
-                        backgroundColor: theme.palette.grey[200],
-                        "& .MuiLinearProgress-bar": {
-                          borderRadius: 3,
-                          backgroundColor: theme.palette.secondary.main,
-                        },
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              ))}
-          </Grid>
-        </CardContent>
-      </MotionCard>
-    );
-
-  const TimetableSection = () =>
-    loading ? (
-      <SkeletonCard height={300} />
-    ) : (
-      <MotionCard
-        sx={{ ...glassStyle, height: "100%" }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <CardContent sx={{ p: 2 }}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}
-          >
-            Weekly Timetable
-          </Typography>
-          <Grid container spacing={2}>
-            {analysisData &&
-              analysisData.timetableResponse &&
-              Object.entries(analysisData.timetableResponse.schedule).map(
-                ([day, subjects]) => (
-                  <Grid item xs={12} sm={6} md={4} key={day}>
+    const SubjectsSection = () =>
+      loading ? (
+        <SkeletonCard height={300} />
+      ) : (
+        <MotionCard
+          sx={{ ...glassStyle, height: "57%", width: "100%" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <CardContent sx={{ p: 2 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}
+            >
+              Subject-wise Attendance
+            </Typography>
+            <Grid container spacing={2}>
+              {analysisData &&
+                Object.entries(
+                  analysisData.AttendanceRequirements.subjectRequirements
+                ).map(([subject, requirements]) => (
+                  <Grid item xs={12} key={subject}>
                     <Box
                       sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                         p: 1.5,
                         borderRadius: "12px",
                         background: "rgba(255, 255, 255, 0.6)",
@@ -368,67 +293,189 @@ const AttendanceDashboard = () => {
                     >
                       <Typography
                         variant="subtitle2"
-                        sx={{
-                          fontWeight: 600,
-                          color: theme.palette.primary.main,
-                          mb: 1,
-                        }}
+                        sx={{ color: theme.palette.primary.main, flex: 1 }}
                       >
-                        {day}
+                        {subject}
                       </Typography>
-                      {subjects.map((subjectObj, index) => (
-                        <Chip
-                          key={index}
-                          label={subjectObj.subject}
-                          size="small"
-                          sx={{
-                            m: 0.3,
-                            backgroundColor: theme.palette.secondary.light,
-                            color: theme.palette.secondary.contrastText,
-                            fontWeight: 500,
-                            "&:hover": {
-                              backgroundColor: theme.palette.secondary.main,
-                            },
-                          }}
-                        />
-                      ))}
+                      <Typography
+                        variant="caption"
+                        sx={{ flex: 1, textAlign: "center" }}
+                      >
+                        Total: {requirements.total} | Required:{" "}
+                        {requirements.asperpercentage} | Minimum:{" "}
+                        {requirements.minimum40}
+                      </Typography>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          (requirements.asperpercentage / requirements.total) * 100
+                        }
+                        sx={{
+                          height: 6,
+                          borderRadius: 3,
+                          flex: 1,
+                          backgroundColor: theme.palette.grey[200],
+                          "& .MuiLinearProgress-bar": {
+                            borderRadius: 3,
+                            backgroundColor: theme.palette.secondary.main,
+                          },
+                        }}
+                      />
                     </Box>
                   </Grid>
-                )
-              )}
-          </Grid>
-        </CardContent>
-      </MotionCard>
-    );
+                ))}
+            </Grid>
+          </CardContent>
+        </MotionCard>
+      );
+    
+    
+
+      const TimetableSection = () =>
+        loading ? (
+          <SkeletonCard height={300} />
+        ) : (
+          <MotionCard
+      sx={{ ...glassStyle, height: "80%", overflow: 'auto' }} // Add overflow
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+    >
+            <CardContent sx={{ p: 2 }}> {/* Matching the padding from SummarySection */}
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ fontWeight: 600, color: theme.palette.primary.main, mb: 2 }}
+              >
+                Weekly Timetable
+              </Typography>
+              <Grid container spacing={2}> {/* Matching the grid spacing from SummarySection */}
+                {analysisData?.timetableResponse?.schedule &&
+                  Object.entries(analysisData.timetableResponse.schedule).map(
+                    ([day, subjects]) => (
+                      <Grid item xs={12} sm={6} md={4} key={day}>
+                        <Box
+                          sx={{
+                            p: 1.5, // Increased padding for better spacing
+                            borderRadius: "12px",
+                            background: "rgba(255, 255, 255, 0.6)",
+                            "&:hover": {
+                              transform: "translateY(-3px)",
+                              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ fontWeight: 600, mb: 1, color: theme.palette.primary.main }}
+                          >
+                            {day}
+                          </Typography>
+                          {subjects.map((subjectObj, index) => (
+                            <Chip
+                              key={index}
+                              label={subjectObj.subject}
+                              size="small"
+                              sx={{
+                                m: 0.3, // Slightly increased margin for a more balanced look
+                                backgroundColor: theme.palette.secondary.light,
+                                color: theme.palette.secondary.contrastText,
+                                fontWeight: 500,
+                                "&:hover": { backgroundColor: theme.palette.secondary.main },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Grid>
+                    )
+                  )}
+              </Grid>
+            </CardContent>
+          </MotionCard>
+        );
+      
+      
+
+  
+  
+  // return (
+  //   <ThemeProvider theme={theme}>
+  //     <Box
+  //       sx={{
+  //         minHeight: "100vh",
+  //         background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
+  //         overflowX: "hidden",
+  //       }}
+  //     >
+  //       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+  //         <Grid container spacing={isMobile ? 2 : 3}>
+  //           {/* SummarySection and SubjectsSection in the same column */}
+  //           <Grid item xs={12} md={6} lg={4} sx={{ marginBottom: "40px" }}>
+  //             <SummarySection />
+  //             <SubjectsSection />
+  //             <ResultsGraph analysisData={analysisData} loading={loading} theme={theme}  />
+
+  //           </Grid>
+
+  
+  //           <Grid item xs={12} md={6} sx={{ marginBottom: "40px" }}>
+  //             <TimetableSection />
+  //             <ClassScheduleSection analysisData={analysisData} loading={loading} theme={theme} />
+
+  //           </Grid>
+  
+  //           <Grid item xs={12} sx={{ marginBottom: "40px" }}>
+  //             {/* <ClassScheduleSection analysisData={analysisData} loading={loading} theme={theme} /> */}
+  //           </Grid>
+  //         </Grid>
+  //       </Container>
+  //     </Box>
+  //   </ThemeProvider>
+  // );
+  
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
-          overflowX: "hidden",
-        }}
-      >
-        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={isMobile ? 2 : 3}>
-            <Grid item xs={12} md={6} lg={4} sx={{ marginBottom: "40px" }}>
-              <SummarySection />
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ marginBottom: "40px" }}>
-              <SubjectsSection />
-            </Grid>
-            <Grid item xs={12} sx={{ marginBottom: "40px" }}>
-              <TimetableSection />
-            </Grid>
-            <Grid item xs={12} sx={{ marginBottom: "40px" }}>
-            <ClassScheduleSection analysisData={analysisData} loading={loading} theme={theme} />  
-            </Grid>
+  <ThemeProvider theme={theme}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #F5F7FF 0%, #C3CEFE 100%)",
+        overflowX: "hidden",
+      }}
+    >
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Grid container spacing={isMobile ? 2 : 3}>
+          {/* SummarySection and SubjectsSection in the same column */}
+          <Grid item xs={12} md={6} lg={4} sx={{ marginBottom: "40px" }}>
+            <SummarySection />
+            <SubjectsSection />
           </Grid>
-        </Container>
-      </Box>
-    </ThemeProvider>
-  );
+
+          {/* TimetableSection and ResultsGraph in the same column */}
+          <Grid item xs={12} md={6} sx={{ marginBottom: "40px" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}> {/* Adjust width as needed */}
+                <TimetableSection />
+              </Grid>
+              <Grid item xs={12} md={4}> {/* Adjust width as needed */}
+                <ResultsGraph analysisData={analysisData} loading={loading} theme={theme} />
+              </Grid>
+            </Grid>
+            <ClassScheduleSection analysisData={analysisData} loading={loading} theme={theme} />
+          </Grid>
+
+          <Grid item xs={12} sx={{ marginBottom: "40px" }}>
+            {/* Any additional content can be placed here */}
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
+  </ThemeProvider>
+);
+
+
+  
 };
+
 
 export default AttendanceDashboard;

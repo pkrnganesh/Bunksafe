@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.13",
+    "express": "^4.21.0",
     "framer-motion": "^11.3.30",
     "gsap": "^3.12.5",
     "install": "^0.13.0",
@@ -38,6 +39,7 @@
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.3",
     "react-intersection-observer": "^9.13.0",
+    "react-loading-skeleton": "^3.5.0",
     "react-lottie": "^1.2.4",
     "react-router-dom": "^6.26.0",
     "react-scripts": "^5.0.1",
@@ -82,5 +84,12 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
-  }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC"
 }
