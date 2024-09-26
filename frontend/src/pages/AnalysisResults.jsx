@@ -1,6 +1,6 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import ClassScheduleSection from '../components/generation/ClassScheduleSection';
+import ClassScheduleSection from "../components/generation/ClassScheduleSection";
 
 import {
   Box,
@@ -13,10 +13,10 @@ import {
   CardContent,
   Container,
   Skeleton,
-
 } from "@mui/material";
 import { motion } from "framer-motion";
 import thinking from "../images/thinking.svg";
+import crown from "../images/crown.svg";
 
 const theme = createTheme({
   palette: {
@@ -87,7 +87,7 @@ const AttendanceDashboard = () => {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   useEffect(() => {
     const fetchData = () => {
@@ -135,7 +135,7 @@ const AttendanceDashboard = () => {
           <Typography
             variant="h6"
             gutterBottom
-            sx={{ fontWeight: 600, color: "black", mb: 2,zIndex: 2 }}
+            sx={{ fontWeight: 600, color: "black", mb: 2, zIndex: 2 }}
           >
             Attendance Summary
           </Typography>
@@ -258,7 +258,7 @@ const AttendanceDashboard = () => {
       <SkeletonCard height={300} />
     ) : (
       <MotionCard
-        sx={{ ...glassStyle, height: "100%",width: "100%" }}
+        sx={{ ...glassStyle, height: "100%", width: "100%" }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -325,6 +325,78 @@ const AttendanceDashboard = () => {
                 </Grid>
               ))}
           </Grid>
+        </CardContent>
+      </MotionCard>
+    );
+
+  const PremiumSection = () =>
+    loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard
+        sx={{
+          ...glassStyle,
+          height: "100%",
+          width: "20%",
+          backgroundColor: "#95CC81",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <CardContent sx={{ p: 2 }}>
+          <Box
+            component="img"
+            src={crown}
+            alt="crown"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            sx={{
+              maxWidth: { xs: "60%", md: "60px" },
+              position: "absolute",
+              marginBottom: "20px",
+              top: 0,
+              left: "10px",
+            }}
+          />
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{ fontWeight: 600, color: "black", mb: 1 }}
+          >
+            Level-Up your Managment with Premium
+          </Typography>
+          <Typography
+            variant="p"
+            gutterBottom
+            sx={{
+              fontWeight: 300,
+              fontFamily: "sans-serif",
+              color: "black",
+              mb: 2,
+            }}
+          >
+            Get access to more features and improve your management, with our
+            premium subscription.
+          </Typography>
+          <button
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              borderRadius: "20px",
+              padding: "20px",
+              border: "none",
+              fontWeight: "bold",
+              width: "100%",
+              marginTop: "30px",
+              marginBottom: "-800px",
+
+              cursor: "pointer",
+            }}
+          >
+            Upgrade to Premium
+          </button>
         </CardContent>
       </MotionCard>
     );
@@ -422,7 +494,14 @@ const AttendanceDashboard = () => {
               <TimetableSection />
             </Grid>
             <Grid item xs={12} sx={{ marginBottom: "40px" }}>
-            <ClassScheduleSection analysisData={analysisData} loading={loading} theme={theme} />  
+              <ClassScheduleSection
+                analysisData={analysisData}
+                loading={loading}
+                theme={theme}
+              />
+            </Grid>
+            <Grid item xs={12} sx={{ marginBottom: "40px" }}>
+              <PremiumSection />
             </Grid>
           </Grid>
         </Container>
