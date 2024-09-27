@@ -1,6 +1,5 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:2005';
-
+const API_URL = process.env.REACT_APP_SERVER_URL;
 export const GenerateAnalysis = async ({ file, percentage, fromDate, toDate }) => {
     console.log("Data received:", { file, percentage, fromDate, toDate });
 
