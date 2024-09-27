@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import ClassScheduleSection from "../components/generation/ClassScheduleSection";
 import ResultsGraph from "../components/generation/ResultsGraph";
+import Aiassistance from "../components/generation/Aiassistance";
 import {
   Box,
   Grid,
@@ -126,7 +126,7 @@ const AttendanceDashboard = () => {
         sx={{
           ...glassStyle,
           height: "56%",
-          width:"26%",
+          width: "26%",
           position: "relative",
           background: "linear-gradient(to right, gold, white)",
           overflow: "visible", // Allow the image to overflow outside
@@ -140,7 +140,7 @@ const AttendanceDashboard = () => {
           >
             Attendance Summary
           </Typography>
-  
+
           <Box
             component="img"
             src={thinking}
@@ -158,7 +158,7 @@ const AttendanceDashboard = () => {
               transform: "translateY(-20%)", // Adjust the position to move it outside
             }}
           />
-  
+
           <Grid container spacing={2}>
             {analysisData && (
               <>
@@ -169,7 +169,7 @@ const AttendanceDashboard = () => {
             )}
           </Grid>
         </CardContent>
-  
+
         <Box
           sx={{
             textAlign: "center",
@@ -202,7 +202,10 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.Totaldays}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "green" }}
+              >
                 100%
               </Typography>
             </Box>
@@ -218,7 +221,10 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.daysNeededToAttend}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "green" }}
+              >
                 100%
               </Typography>
             </Box>
@@ -234,7 +240,10 @@ const AttendanceDashboard = () => {
               >
                 {analysisData.daysCanSkip}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: "green" }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "green" }}
+              >
                 100%
               </Typography>
             </Box>
@@ -245,180 +254,121 @@ const AttendanceDashboard = () => {
         </Box>
       </Card>
     );
-  
 
-    const SubjectsSection = () => {
-      const maxSubjectsToShow = 5; // Set the max number of subjects to show at once
-    
-      return loading ? (
-        <SkeletonCard height={300} />
-      ) : (
-        <MotionCard
-          sx={{
-            ...glassStyle,
-            height: "100%",
-            width: "26%",
-            position: "relative",
-            marginLeft: "15px",
-            marginTop: "-120px",
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <CardContent sx={{ p: 2 }}>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ fontWeight: 600, color: "black", mb: 2 }}
-            >
-              Student-wise Attendance
-            </Typography>
-    
-            <Box
-          sx={{
-            maxHeight: 450, // Adjust height to show 5 subjects
-            overflowY: "auto", // Enable vertical scrolling
-            // Custom scrollbar styles
-            "&::-webkit-scrollbar": {
-              width: "8px", // Width of the scrollbar
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "rgba(255, 255, 255, 0.2)", // Scrollbar track color
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "rgba(0, 0, 0, 0.5)", // Scrollbar thumb color
-              borderRadius: "10px",
-              "&:hover": {
-                background: "rgba(0, 0, 0, 0.7)", // Darker on hover
+  const SubjectsSection = () => {
+    const maxSubjectsToShow = 5; // Set the max number of subjects to show at once
+
+    return loading ? (
+      <SkeletonCard height={300} />
+    ) : (
+      <MotionCard
+        sx={{
+          ...glassStyle,
+          height: "100%",
+          width: "26%",
+          position: "relative",
+          marginLeft: "15px",
+          marginTop: "-120px",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <CardContent sx={{ p: 2 }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontWeight: 600, color: "black", mb: 2 }}
+          >
+            Student-wise Attendance
+          </Typography>
+
+          <Box
+            sx={{
+              maxHeight: 450, // Adjust height to show 5 subjects
+              overflowY: "auto", // Enable vertical scrolling
+              // Custom scrollbar styles
+              "&::-webkit-scrollbar": {
+                width: "8px", // Width of the scrollbar
               },
-            },
-          }}
-        >
-              <Grid container spacing={2}>
-                {analysisData &&
-                  Object.entries(
-                    analysisData.AttendanceRequirements.subjectRequirements
-                  )
-                    .slice(0, maxSubjectsToShow) // Limit to max 5 subjects
-                    .map(([subject, requirements]) => (
-                      <Grid item xs={12} key={subject}>
-                        <Box
+              "&::-webkit-scrollbar-track": {
+                background: "rgba(255, 255, 255, 0.2)", // Scrollbar track color
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "rgba(0, 0, 0, 0.5)", // Scrollbar thumb color
+                borderRadius: "10px",
+                "&:hover": {
+                  background: "rgba(0, 0, 0, 0.7)", // Darker on hover
+                },
+              },
+            }}
+          >
+            <Grid container spacing={2}>
+              {analysisData &&
+                Object.entries(
+                  analysisData.AttendanceRequirements.subjectRequirements
+                )
+                  .slice(0, maxSubjectsToShow) // Limit to max 5 subjects
+                  .map(([subject, requirements]) => (
+                    <Grid item xs={12} key={subject}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          p: 1.5,
+                          borderRadius: "12px",
+                          background: "rgba(255, 255, 255, 0.6)",
+                          backdropFilter: "blur(10px)",
+                          transition: "all 0.3s ease",
+                          "&:hover": {
+                            transform: "translateY(-3px)",
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ color: theme.palette.primary.main, flex: 1 }}
+                        >
+                          {subject}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ flex: 1, textAlign: "center" }}
+                        >
+                          Total: {requirements.total} | Required:{" "}
+                          {requirements.asperpercentage} | Minimum:{" "}
+                          {requirements.minimum40}
+                        </Typography>
+                        <LinearProgress
+                          variant="determinate"
+                          value={
+                            (requirements.asperpercentage /
+                              requirements.total) *
+                            100
+                          }
                           sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            p: 1.5,
-                            borderRadius: "12px",
-                            background: "rgba(255, 255, 255, 0.6)",
-                            backdropFilter: "blur(10px)",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                              transform: "translateY(-3px)",
-                              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                            height: 6,
+                            borderRadius: 3,
+                            flex: 1,
+                            backgroundColor: theme.palette.grey[200],
+                            "& .MuiLinearProgress-bar": {
+                              borderRadius: 3,
+                              backgroundColor: theme.palette.secondary.main,
                             },
                           }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ color: theme.palette.primary.main, flex: 1 }}
-                          >
-                            {subject}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ flex: 1, textAlign: "center" }}
-                          >
-                            Total: {requirements.total} | Required:{" "}
-                            {requirements.asperpercentage} | Minimum:{" "}
-                            {requirements.minimum40}
-                          </Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={
-                              (requirements.asperpercentage / requirements.total) * 100
-                            }
-                            sx={{
-                              height: 6,
-                              borderRadius: 3,
-                              flex: 1,
-                              backgroundColor: theme.palette.grey[200],
-                              "& .MuiLinearProgress-bar": {
-                                borderRadius: 3,
-                                backgroundColor: theme.palette.secondary.main,
-                              },
-                            }}
-                          />
-                        </Box>
-                      </Grid>
-                    ))}
-              </Grid>
-            </Box>
-          </CardContent>
-        </MotionCard>
-      );
-    };
-    
-
-
-    const Aiassitance = () => {
-      return loading ? (
-        <SkeletonCard height={300} />
-      ) : (
-        <MotionCard
-          sx={{ ...glassStyle, height: "42%", width: "41%", position: "relative",marginLeft:'15px',marginTop:'-120px' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <CardContent sx={{ p: 2 }}>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ fontWeight: 600, color: "black", mb: 2 }}
-            >
-              Ask for Assistance
-            </Typography>
-            <Typography
-              variant="p"
-              gutterBottom
-              sx={{
-                fontWeight: 300,
-                fontFamily: "sans-serif",
-                color: "black",
-                mb: 2,
-              }}
-            >
-              If you have any queries or need assistance, feel free to ask us about it.
-            </Typography>
-
-            <button
-
-              style={{
-                backgroundColor: "white",
-                color: "black",
-                borderRadius: "20px",
-                padding: "20px",
-                border: "none",
-                fontWeight: "bold",
-                width: "100%",
-                marginTop: "30px",
-                marginBottom: "-800px",
-                cursor: "pointer",
-              }}
-            >
-              Ask for Assistance
-            </button>
-          
-    
-            <Box sx={{ maxHeight: '100%', overflow: "auto" }}>
-              
-            </Box>
-          </CardContent>
-        </MotionCard>
-      );
-    };
+                        />
+                      </Box>
+                    </Grid>
+                  ))}
+            </Grid>
+          </Box>
+        </CardContent>
+      </MotionCard>
+    );
+  };
 
   const PremiumSection = () =>
     loading ? (
@@ -429,8 +379,8 @@ const AttendanceDashboard = () => {
           ...glassStyle,
           height: "70%",
           width: "17%",
-          marginLeft:'15px',
-          marginTop:'10px',
+          marginLeft: "15px",
+          marginTop: "10px",
           backgroundColor: "white",
         }}
         initial={{ opacity: 0, y: 20 }}
@@ -499,15 +449,15 @@ const AttendanceDashboard = () => {
       <SkeletonCard height={300} />
     ) : (
       <Card
-      sx={{
-        ...glassStyle,
-        height: "56%",
-        width:"41%",
-        position: "relative",
-        background: "white",
-        overflow: "visible", // Allow the image to overflow outside
-      }}
-    >
+        sx={{
+          ...glassStyle,
+          height: "56%",
+          width: "41%",
+          position: "relative",
+          background: "white",
+          overflow: "visible", // Allow the image to overflow outside
+        }}
+      >
         <CardContent sx={{ p: 2 }}>
           {" "}
           {/* Matching the padding from SummarySection */}
@@ -582,32 +532,32 @@ const AttendanceDashboard = () => {
       >
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
           <Grid container spacing={isMobile ? 2 : 3}>
-            <Box >
+            <Box>
               <Typography
                 variant="h6"
-                sx={{ fontWeight: 700, color: 'black', mb: 2 }}
+                sx={{ fontWeight: 700, color: "black", mb: 2 }}
               >
-               Analysis Dashboard
+                Analysis Dashboard
               </Typography>
               {/* <Typography variant="p" sx={{ fontWeight: 400,fontFamily:'sans-serif', color: 'black', mb: 2  }}>
                 Here you can view your attendance summary !
               </Typography> */}
             </Box>
-            <Grid sx={{ display:"flex",justifyContent:'space-evenly' }}>
+            <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
               <SummarySection />
 
               <TimetableSection />
               <ResultsGraph
-                    analysisData={analysisData}
-                    loading={loading}
-                    theme={theme}
-                  />
+                analysisData={analysisData}
+                loading={loading}
+                theme={theme}
+              />
             </Grid>
 
-            <Grid sx={{ display:"flex",justifyContent:'space-evenly' }}>
-            <SubjectsSection />
-<Aiassitance />
-            <PremiumSection />
+            <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
+              <SubjectsSection />
+              <Aiassistance analysisData={analysisData} loading={loading} />
+              <PremiumSection />
             </Grid>
           </Grid>
         </Container>

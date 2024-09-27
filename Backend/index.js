@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const Processing = require('./controllers/processing');
 const user = require('./controllers/incrementUserCount');
+const  attendanceManagementAdvisor  = require('./controllers/ai_chat');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -40,6 +41,7 @@ app.use((err, req, res, next) => {
 // Using the routes
 app.use('/process', Processing);
 app.use('/user', user);
+app.use('/ai', attendanceManagementAdvisor);
 
 // Timeout middleware
 app.use((req, res, next) => {
