@@ -425,7 +425,7 @@ const AttendanceDashboard = () => {
           </Typography>
           <button
             style={{
-              backgroundColor: "white",
+              backgroundColor: "gold",
               color: "black",
               borderRadius: "20px",
               padding: "20px",
