@@ -136,7 +136,7 @@ const Aiassistance = ({ analysisData }) => {
 
   return (
     <MotionCard
-      sx={{ height: "110%", width: "41%", marginLeft: '15px', marginTop: '-120px' }}
+      sx={{ height: "40%", width: "41%", marginLeft: '15px', marginTop: '20px',minWidth: '400px', borderRadius: '10px' }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

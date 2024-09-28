@@ -13,11 +13,14 @@ import {
   CardContent,
   Container,
   Skeleton,
+  Button,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import thinking from "../images/thinking.svg";
 import crown from "../images/crown.svg";
 import { blue } from "@mui/material/colors";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const theme = createTheme({
   palette: {
@@ -87,19 +90,31 @@ const AttendanceDashboard = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [highlightedDates, setHighlightedDates] = useState([]);
 
   useEffect(() => {
     const fetchData = () => {
       const storedData = localStorage.getItem("analysisResponse");
       console.log("Stored data:", storedData);
-
+  
       if (storedData) {
         try {
           const parsedData = JSON.parse(storedData);
           console.log("Parsed data:", parsedData);
-
+  
           if (parsedData && parsedData.Totaldays) {
             setAnalysisData(parsedData);
+  
+            // Extract highlighted dates from basicdata
+            const highlightedDates = Object.keys(parsedData.basicdata).map(date => ({
+              date,
+              value: parsedData.basicdata[date].length, // You can customize the value based on your requirement
+            }));
+  
+            setHighlightedDates(highlightedDates);
             setLoading(false);
           } else {
             console.error("Parsed data is missing expected properties");
@@ -114,9 +129,160 @@ const AttendanceDashboard = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
+  
+  const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
+    const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate));
+  
+    const daysInMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() + 1,
+      0
+    ).getDate();
+    const firstDayOfMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      1
+    ).getDay();
+  
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+  
+    const previousMonth = () => {
+      setCurrentMonth(
+        new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
+      );
+    };
+  
+    const nextMonth = () => {
+      setCurrentMonth(
+        new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
+      );
+    };
+  
+    const isHighlighted = (date) => {
+      return highlightedDates.some((d) => d.date === date);
+    };
+  
+    const getHighlightColor = (date) => {
+      const highlighted = highlightedDates.find((d) => d.date === date);
+      return highlighted
+        ? highlighted.value > 0
+          ? "green"
+          : theme.palette.error.main
+        : "transparent";
+    };
+  
+    return (
+      <Box
+      sx={{ height: "75%", width: "40%", marginLeft: '15px', marginTop: '-160px',minWidth:"360px",
+      backgroundColor: "white", boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)", borderRadius: "16px", padding: "24px",  }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+          
+        >
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+          >
+            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          </Typography>
+          <Box>
+            <Button onClick={previousMonth} sx={{ minWidth: "auto", p: 1 }}>
+              <ArrowBackIosNewIcon />
+            </Button>
+            <Button onClick={nextMonth} sx={{ minWidth: "auto", p: 1 }}>
+              <ArrowForwardIosIcon />
+            </Button>
+          </Box>
+        </Box>
+        <Grid container columns={7} sx={{ textAlign: "center" }}>
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+            <Grid item xs={1} key={day}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: theme.palette.text.secondary }}
+              >
+                {day}
+              </Typography>
+            </Grid>
+          ))}
+          {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+            <Grid item xs={1} key={`empty-${index}`} />
+          ))}
+          {Array.from({ length: daysInMonth }).map((_, index) => {
+            const date = `${currentMonth.getFullYear()}-${String(
+              currentMonth.getMonth() + 1
+            ).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`;
+            return (
+              <Grid item xs={1} key={date} sx={{ p: 1 }}>
+                <Button
+                  onClick={() => onDateChange(date)}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    backgroundColor:
+                      date === selectedDate
+                        ? theme.palette.primary.main
+                        : "transparent",
+                    color:
+                      date === selectedDate
+                        ? "white"
+                        : theme.palette.text.primary,
+                    "&:hover": {
+                      backgroundColor:
+                        date === selectedDate
+                          ? theme.palette.primary.dark
+                          : theme.palette.action.hover,
+                    },
+                    position: "relative",
+                  }}
+                >
+                  {index + 1}
+                  {isHighlighted(date) && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 2,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        backgroundColor: getHighlightColor(date),
+                      }}
+                    />
+                  )}
+                </Button>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Box>
+    );
+  };
+  
 
   const SummarySection = () =>
     loading ? (
@@ -264,11 +430,12 @@ const AttendanceDashboard = () => {
       <MotionCard
         sx={{
           ...glassStyle,
-          height: "100%",
+          height: "120%",
           width: "26%",
+          minWidth:"550px",
           position: "relative",
           marginLeft: "15px",
-          marginTop: "-120px",
+          marginTop: "-160px",
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -377,17 +544,19 @@ const AttendanceDashboard = () => {
       <MotionCard
         sx={{
           ...glassStyle,
-          height: "70%",
+          height: "75%",
           width: "17%",
-          marginLeft: "15px",
+          marginRight: "15px",
           marginTop: "10px",
           backgroundColor: "white",
+          overflow: "visible", // Allow the image to overflow outside
+          minWidth:"230px",
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <CardContent sx={{ p: 2 }}>
+<CardContent sx={{ p: 2 }}>
           <Box
             component="img"
             src={crown}
@@ -398,6 +567,7 @@ const AttendanceDashboard = () => {
             sx={{
               maxWidth: { xs: "60%", md: "60px" },
               position: "absolute",
+
               marginBottom: "20px",
               top: 0,
               left: "10px",
@@ -441,7 +611,7 @@ const AttendanceDashboard = () => {
             Upgrade to Premium
           </button>
         </CardContent>
-      </MotionCard>
+        </MotionCard>
     );
 
   const TimetableSection = () =>
@@ -539,9 +709,6 @@ const AttendanceDashboard = () => {
               >
                 Analysis Dashboard
               </Typography>
-              {/* <Typography variant="p" sx={{ fontWeight: 400,fontFamily:'sans-serif', color: 'black', mb: 2  }}>
-                Here you can view your attendance summary !
-              </Typography> */}
             </Box>
             <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
               <SummarySection />
@@ -556,21 +723,20 @@ const AttendanceDashboard = () => {
 
             <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
               <SubjectsSection />
-              <Aiassistance analysisData={analysisData} loading={loading} />
+              <Box>
+                <CustomCalendar
+                  selectedDate={selectedDate}
+                  onDateChange={(date) => setSelectedDate(date)}
+                  highlightedDates={highlightedDates}
+                />
+                <Aiassistance analysisData={analysisData} loading={loading} />
+              </Box>
               <PremiumSection />
             </Grid>
           </Grid>
         </Container>
       </Box>
     </ThemeProvider>
-
-    /* <Grid item xs={12} sx={{ marginBottom: "40px" }}>
-                <ClassScheduleSection
-                  analysisData={analysisData}
-                  loading={loading}
-                  theme={theme}
-                />
-              </Grid> */
   );
 };
 
