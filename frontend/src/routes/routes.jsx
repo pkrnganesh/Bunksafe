@@ -3,7 +3,7 @@ import Landing from "../pages/Landing";
 import Docs from "../pages/Documentation";
 import AnalyticsDashboard from "../pages/AnalysisResults";
 import UploadingData from "../pages/Uploading";
-import CGPACalculator from "../pages/CgpaCalculator";
+import EnhancedCGPACalculator from "../pages/CgpaCalculator";
 import React from "react";
 
 export function HomeRoutes() {
@@ -14,7 +14,7 @@ export function HomeRoutes() {
         <Route path="/docs" element={<Docs />} />
         <Route path="/uploading" element={<UploadingData />} />
         <Route path="/generation" element={<AnalyticsDashboard />} />
-        <Route path="/cgpa" element={<CGPACalculator />} />
+        <Route path="/cgpa" element={<EnhancedCGPACalculator />} />
       </Routes>
     </Router>
   );

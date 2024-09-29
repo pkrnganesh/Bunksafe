@@ -46,7 +46,7 @@ const gradeScales = {
   },
 };
 
-const EnhancedCGPACalculator = () => {
+const  EnhancedCGPACalculator = () => {
   const [subjects, setSubjects] = useState([
     { name: "Subject 1", grade: "A", credits: 3 },
     { name: "Subject 2", grade: "B", credits: 3 },
