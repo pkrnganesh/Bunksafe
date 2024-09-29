@@ -3,7 +3,7 @@ import Landing from "../pages/Landing";
 import Docs from "../pages/Documentation";
 import AnalyticsDashboard from "../pages/AnalysisResults";
 import UploadingData from "../pages/Uploading";
-import EnhancedCGPACalculator from "../pages/CgpaCalculator";
+import EnhancedCGPACalculator from "../pages/Calculator";
 import React from "react";
 
 export function HomeRoutes() {
