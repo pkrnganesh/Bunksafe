@@ -73,7 +73,8 @@ router.post('/basicanalysis', async (req, res) => {
         }); 
 
         workflowStatus = 'Thanks for waiting, Calendar is ready'; 
-        res.json({ 
+        res.json({
+            fromDate, toDate,
             Totaldays, 
             daysNeededToAttend, 
             daysCanSkip, 

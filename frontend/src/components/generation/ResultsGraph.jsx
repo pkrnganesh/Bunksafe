@@ -1,14 +1,12 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Box, Typography, Grid, Chip } from '@mui/material'; // Ensure you import these from MUI
-import { useTheme } from '@mui/material/styles'; // Import useTheme for consistent theming
+import React from "react";
+import { motion } from "framer-motion";
+import { Box, Typography } from "@mui/material";
 
 const CircularProgressChart = () => {
-  const theme = useTheme(); // Use theme for consistent styling
   const data = [
-    { name: 'Total Days', value: 20, color: '#FF9F9F' },
-    { name: 'Days to Attend', value: 15, color: '#7CD7FF' },
-    { name: 'Days Can Skip', value: 5, color: '#A5F3FC' },
+    { name: "Total Days", value: 40, color: "#00FFFF" },
+    { name: "Days to Attend", value: 35, color: "#FFD700" },
+    { name: "Days Can Skip", value: 5, color: "#FF7F50" },
   ];
 
   const totalDays = data.reduce((sum, item) => sum + item.value, 0);
@@ -43,16 +41,35 @@ const CircularProgressChart = () => {
 
   let cumulativePercentage = 0;
 
+  const LegendItem = ({ color, name, value }) => (
+    <motion.div
+      className="flex items-center mb-3"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 1 }}
+    >
+      <div
+        className="w-4 h-4 rounded-full mr-2"
+        style={{ backgroundColor: color }}
+      />
+      <Typography variant="body2" className="text-white" style={{ color }}>
+        {name}: <span style={{ fontWeight: "bold" }}>{value}</span>
+      </Typography>
+    </motion.div>
+  );
+
   return (
     <div className="flex flex-col items-center justify-center p-8 max-w-md mx-auto">
       <Box
         sx={{
-          background: "rgba(255, 255, 255, 0.6)", // Pale white background
-          borderRadius: "12px", // Rounded corners
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)", // Box shadow
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(10px)",
+          borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           height: "100%",
-          width: "100%", // Width similar to MotionCard
-          overflow: 'auto', // Overflow handling
+          width: "100%",
+          overflow: "auto",
+          padding: "20px",
         }}
       >
         <div className="relative">
@@ -74,7 +91,12 @@ const CircularProgressChart = () => {
             {data.map((segment, index) => {
               const startPercentage = cumulativePercentage;
               cumulativePercentage += (segment.value / totalDays) * 100;
-              return createArc(startPercentage, cumulativePercentage, segment.color, index);
+              return createArc(
+                startPercentage,
+                cumulativePercentage,
+                segment.color,
+                index
+              );
             })}
 
             <motion.text
@@ -82,54 +104,42 @@ const CircularProgressChart = () => {
               y="50%"
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="#333"
+              fill="white"
               fontSize="24"
               fontWeight="bold"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
             >
-              Total Days
-              <br />
-              {totalDays}
+              Analysis
+              <tspan x="50%" dy="1.2em" fontSize="18">
+                {totalDays}
+              </tspan>
             </motion.text>
           </svg>
         </div>
 
-        <div className="mt-6 space-y-3 w-full">
-          {data.map((item, index) => {
-            const percentage = ((item.value / totalDays) * 100).toFixed(1); // Calculate percentage
-            return (
-              <motion.div
+        <div className="mt-6">
+          {data.map((item, index) => (
+            <div className="flex items-center justify-between" key={index}>
+              <LegendItem
                 key={index}
-                className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg" // Updated styles
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1 + index * 0.2 }}
+                color="white"
+                name={item.name}
+                value={item.value}
+              />
+              <div
+                className="ml-4"
                 style={{
-                  borderRadius: '12px',
-                  padding : '10px',
-                  margin : '15px',
-                  backgroundColor: 'black',
-                  color: 'white',
+                  backgroundColor: item.color,
+                  color: "white",
+                  width: "15px",
+                  height: "15px",
+                  borderRadius: "25%",
                 }}
-              >
-                <div className="flex items-center">
-                  {/* Display color beside the text */}
-                  <div
-                    className="w-4 h-4 mr-3 rounded-full"
-                    
-                  ></div>
-                  <span className="text-900 font-semibold">
-                    {item.name} {item.value}
-                  </span>
-                </div>
-
-                {/* Display percentage */}
-                <span className="text-gray-600 font-semibold">{percentage}%</span>
-              </motion.div>
-            );
-          })}
+              />
+            </div>
+          ))}
         </div>
       </Box>
     </div>

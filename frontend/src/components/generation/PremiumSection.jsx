@@ -5,7 +5,6 @@ import crown from "../../images/crown.svg";
 import SkeletonCard from "./SkeletonCard";
 
 const glassStyle = {
-  background: "rgba(255, 255, 255, 0.8)",
   backdropFilter: "blur(10px)",
   borderRadius: "16px",
   border: "1px solid rgba(255, 255, 255, 0.18)",
@@ -27,12 +26,13 @@ const PremiumSection = ({ loading }) => {
         sx={{
           ...glassStyle,
           height: "75%",
-          width: "17%",
-          marginRight: "15px",
+          maxHeight: "400px",
+          width: "100%",
+          maxWidth: "310px",
           marginTop: "10px",
-          backgroundColor: "white",
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
           overflow: "visible",
-          minWidth: "230px",
+          position: "relative",
         }}
       >
         <CardContent sx={{ p: 2 }}>
@@ -51,7 +51,7 @@ const PremiumSection = ({ loading }) => {
           <Typography
             variant="h5"
             gutterBottom
-            sx={{ fontWeight: 600, color: "black", mb: 1 }}
+            sx={{ fontWeight: 600, color: "white", mb: 1 }}
           >
             Level-Up your Management with Premium
           </Typography>
@@ -61,7 +61,7 @@ const PremiumSection = ({ loading }) => {
             sx={{
               fontWeight: 300,
               fontFamily: "sans-serif",
-              color: "black",
+              color: "#f2f2f2",
               mb: 2,
             }}
           >

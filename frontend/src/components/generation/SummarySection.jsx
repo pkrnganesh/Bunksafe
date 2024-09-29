@@ -3,6 +3,8 @@ import React from "react";
 import { Card, CardContent, Typography, Box, Grid } from "@mui/material";
 import thinking from "../../images/thinking.svg";
 import SkeletonCard from "./SkeletonCard";
+import { motion } from 'framer-motion';
+
 
 const glassStyle = {
   background: "rgba(255, 255, 255, 0.8)",
@@ -23,19 +25,28 @@ const SummarySection = ({ analysisData, loading }) => {
         ...glassStyle,
         height: "56%",
         width: "26%",
+        minHeight: "310px",
         position: "relative",
-        background: "linear-gradient(to right, gold, white)",
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
         overflow: "visible",
       }}
     >
       <CardContent sx={{ p: 2 }}>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{ fontWeight: 600, color: "black", mb: 2, zIndex: 2 }}
-        >
-          Attendance Summary
-        </Typography>
+      <motion.div
+      initial={{ opacity: 0, y: -50 }}  // Start with opacity 0 and move up
+      animate={{ opacity: 1, y: 0 }}    // Animate to full opacity and its original position
+      transition={{ duration: 1, ease: "easeOut" }} // Add smooth easing and set duration
+    >
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{ fontWeight: 600, color: "white", mb: 2, zIndex: 2 }}
+      >
+        Attendance <br /> Summary
+      </Typography>
+    </motion.div>
+
 
         <Box
           component="img"
@@ -45,7 +56,7 @@ const SummarySection = ({ analysisData, loading }) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
           sx={{
-            maxWidth: { xs: "60%", md: "350px" },
+            maxWidth: { xs: "60%", md: "300px" },
             position: "absolute",
             marginBottom: "20px",
             right: -60,
@@ -54,28 +65,18 @@ const SummarySection = ({ analysisData, loading }) => {
             transform: "translateY(-20%)",
           }}
         />
-
-        <Grid container spacing={2}>
-          {analysisData && (
-            <>
-              <Grid item xs={12}>
-                {/* Existing content at the top */}
-              </Grid>
-            </>
-          )}
-        </Grid>
       </CardContent>
 
       <Box
         sx={{
           textAlign: "center",
-          p: 1.5,
-          borderRadius: "12px",
+          p: 2,
+          borderRadius: "16px",
           color: "white",
           transition: "all 0.3s ease",
           "&:hover": {
-            transform: "translateY(-3px)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            transform: "translateY(-5px) rotateX(5deg)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
           },
           display: "flex",
           justifyContent: "space-around",
@@ -86,67 +87,74 @@ const SummarySection = ({ analysisData, loading }) => {
           marginLeft: "-1%",
           marginBottom: "2%",
           width: "86%",
-          backgroundColor: "black",
-          height: "90px",
+          background: "white",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          height: "100px",
         }}
       >
-        <div>
-          <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 900, mb: 0.5, color: "white" }}
+        {[
+          {
+            label: "Total Days",
+            value: analysisData.Totaldays,
+            color: "yellow",
+            percentage: "100%",
+          },
+          {
+            label: "Days to Attend",
+            value: analysisData.daysNeededToAttend,
+            color: "green",
+            percentage: "75%",
+          },
+          {
+            label: "Days Can Skip",
+            value: analysisData.daysCanSkip,
+            color: "red",
+            percentage: "40%",
+          },
+        ].map((item, index) => (
+          <Box
+            key={index}
+            sx={{
+              borderRadius: "12px",
+              backdropFilter: "blur(5px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "baseline",
+              }}
             >
-              {analysisData.Totaldays}
-            </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 900,
+                  mb: 0.5,
+                  color: "black",
+                  textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                {item.value}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: item.color, ml: 1 }}
+              >
+                {item.percentage}
+              </Typography>
+            </Box>
             <Typography
               variant="body2"
-              sx={{ fontWeight: 500, color: "yellow" }}
+              sx={{ fontWeight: 500, color: "rgba(0,0,0,0.7)" }}
             >
-              100%
+              {item.label}
             </Typography>
           </Box>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            Total Days
-          </Typography>
-        </div>
-        <div>
-          <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 700, mb: 0.5, color: "white" }}
-            >
-              {analysisData.daysNeededToAttend}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "green" }}
-            >
-              75%
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            Days to Attend
-          </Typography>
-        </div>
-        <div>
-          <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 700, mb: 0.5, color: "white" }}
-            >
-              {analysisData.daysCanSkip}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "red" }}
-            >
-              40%
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            Days Can Skip
-          </Typography>
-        </div>
+        ))}
       </Box>
     </Card>
   );

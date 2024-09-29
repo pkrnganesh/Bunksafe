@@ -7,15 +7,16 @@ import PremiumSection from "../components/generation/PremiumSection";
 import SummarySection from "../components/generation/SummarySection";
 import SubjectsSection from "../components/generation/SubjectsSection";
 import TimetableSection from "../components/generation/TimetableSection";
+import AttendanceAnalysisReport from "../components/generation/ReportActions";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 import {
   Box,
   Grid,
   Typography,
-  useMediaQuery,
   Container,
+  CssBaseline,
 } from "@mui/material";
-
 
 const theme = createTheme({
   palette: {
@@ -58,7 +59,6 @@ const theme = createTheme({
 });
 
 const AttendanceDashboard = () => {
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
@@ -69,20 +69,20 @@ const AttendanceDashboard = () => {
   useEffect(() => {
     const fetchData = () => {
       const storedData = localStorage.getItem("analysisResponse");
-      console.log("Stored data:", storedData);
-
+ 
       if (storedData) {
         try {
           const parsedData = JSON.parse(storedData);
-          console.log("Parsed data:", parsedData);
-
+          setAnalysisData(parsedData);
+ 
           if (parsedData && parsedData.Totaldays) {
-            setAnalysisData(parsedData);
 
-            const highlightedDates = Object.keys(parsedData.basicdata).map(date => ({
-              date,
-              value: parsedData.basicdata[date].length,
-            }));
+            const highlightedDates = Object.keys(parsedData.basicdata).map(
+              (date) => ({
+                date,
+                value: parsedData.basicdata[date].length,
+              })
+            );
 
             setHighlightedDates(highlightedDates);
             setLoading(false);
@@ -103,46 +103,87 @@ const AttendanceDashboard = () => {
     fetchData();
   }, []);
 
+  const formatDateToMonthYear = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${date.toLocaleString("default", {
+      month: "long",
+    })} ${date.getFullYear()}`;
+  };
+
+  console.log(analysisData);
+
+
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box
         sx={{
           minHeight: "100vh",
-          background: "white",
+          width: "100vw",
+          background: "linear-gradient(135deg, #6e8efb, #a777e3)",
           overflowX: "hidden",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={isMobile ? 2 : 3}>
-            <Box>
+        <Container
+          maxWidth={false}
+          disableGutters
+          sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+        >
+          <Box sx={{ display:'flex',justifyContent:'space-between',margin:'30px' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, color: "white", mb: 2 }}
+            >
+              Analysis Dashboard
+            </Typography>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <AttendanceAnalysisReport analysisData={analysisData} />
+
+
+            {analysisData && (
               <Typography
-                variant="h6"
-                sx={{ fontWeight: 700, color: "black", mb: 2 }}
-              >
-                Analysis Dashboard
-              </Typography>
+              variant="body2" // You can also use a variant with smaller font size like "body2"
+              sx={{
+                fontSize: "0.875rem", // Set the font size explicitly (you can reduce further if needed)
+                fontWeight: 200,
+                color: "white",
+                mb: 2,
+                borderRadius: 8,
+                border: "1px solid white",
+                display: "flex",
+                alignItems: "center", // Align icon and text vertically
+                padding: "4px 8px" // Add padding if you want a bit more space inside the box
+              }}
+            >
+              <CalendarMonthIcon fontSize="small" />
+              {`${formatDateToMonthYear(analysisData.fromDate)} to ${formatDateToMonthYear(analysisData.toDate)}`}
+            </Typography>
+            
+            )}
             </Box>
-            <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
-              <SummarySection analysisData={analysisData} loading={loading} />
-              <TimetableSection analysisData={analysisData} loading={loading} />
-              <ResultsGraph
-                analysisData={analysisData}
-                loading={loading}
-                theme={theme}
-              />
-            </Grid>
-            <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
-              <SubjectsSection analysisData={analysisData} loading={loading} />
-              <Box>
-                <CustomCalendar
-                  selectedDate={selectedDate}
-                  onDateChange={(date) => setSelectedDate(date)}
-                  highlightedDates={highlightedDates}
-                />
-                <Aiassistance analysisData={analysisData} loading={loading} />
-              </Box>
-              <PremiumSection loading={loading} />
-            </Grid>
+          </Box>
+
+          <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
+            <SummarySection analysisData={analysisData} loading={loading} />
+            <TimetableSection analysisData={analysisData} loading={loading} />
+            <ResultsGraph
+              analysisData={analysisData}
+              loading={loading}
+              theme={theme}
+            />
+          </Grid>
+
+          <Grid sx={{ display: "flex", justifyContent: "space-evenly" }}>
+            <CustomCalendar
+              selectedDate={selectedDate}
+              onDateChange={(date) => setSelectedDate(date)}
+              highlightedDates={highlightedDates}
+            />
+            <SubjectsSection analysisData={analysisData} loading={loading} />
+            <PremiumSection loading={loading} />
           </Grid>
         </Container>
       </Box>

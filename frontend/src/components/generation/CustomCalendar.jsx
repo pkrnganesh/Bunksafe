@@ -4,6 +4,17 @@ import { Box, Typography, Button, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { blue } from "@mui/material/colors";
+
+
+const glassStyle = {
+  background: "rgba(255, 255, 255, 0.8)",
+  backdropFilter: "blur(10px)",
+  borderRadius: "16px",
+  border: "1px solid rgba(255, 255, 255, 0.18)",
+  padding: "24px",
+};
+
 const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
   const theme = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate));
@@ -52,15 +63,16 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
   return (
     <Box
       sx={{
-        height: "75%",
-        width: "40%",
-        marginLeft: '15px',
-        marginTop: '-160px',
-        minWidth: "360px",
-        backgroundColor: "white",
+        height: "56%",
+        width: "26%",
+        marginTop: '-110px',
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
         boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
         borderRadius: "16px",
-        padding: "24px",
+        padding: "20px",
+        position: "relative",
+        overflow: "visible",
       }}
     >
       <Box
@@ -73,7 +85,7 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
       >
         <Typography
           variant="h4"
-          sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+          sx={{ fontWeight: 600, color: 'white' }}
         >
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </Typography>
@@ -86,12 +98,13 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
           </Button>
         </Box>
       </Box>
-      <Grid container columns={7} sx={{ textAlign: "center" }}>
+      <Grid container columns={7} sx={{ textAlign: "center",backgroundColor:'white',borderRadius:'15px',padding: "10px",
+ }}>
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
           <Grid item xs={1} key={day}>
             <Typography
               variant="body2"
-              sx={{ fontWeight: 600, color: theme.palette.text.secondary }}
+              sx={{ fontWeight: 600, color: blue[500] ,marginRight:'-30px'}}
             >
               {day}
             </Typography>
@@ -109,13 +122,11 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
               <Button
                 onClick={() => onDateChange(date)}
                 sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  backgroundColor:
-                    date === selectedDate
-                      ? theme.palette.primary.main
+                  backgroundColor
+                    : date === selectedDate
+                      ? theme.palette.action.hover
                       : "transparent",
+                  borderRadius: "30%",
                   color:
                     date === selectedDate
                       ? "white"
