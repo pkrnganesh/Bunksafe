@@ -104,7 +104,7 @@ const CustomCalendar = ({ selectedDate, onDateChange, highlightedDates }) => {
           <Grid item xs={1} key={day}>
             <Typography
               variant="body2"
-              sx={{ fontWeight: 600, color: blue[500] ,marginRight:'-30px'}}
+              sx={{ fontWeight: 600, color: "#540a4c",marginRight:'-30px'}}
             >
               {day}
             </Typography>

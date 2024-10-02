@@ -7,7 +7,7 @@ import PremiumSection from "../components/generation/PremiumSection";
 import SummarySection from "../components/generation/SummarySection";
 import SubjectsSection from "../components/generation/SubjectsSection";
 import TimetableSection from "../components/generation/TimetableSection";
-import AttendanceAnalysisReport from "../components/generation/ReportActions";
+import ActionSpeedDial from "../components/Cgpa/ActionSpeedDial"
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 import {
@@ -120,7 +120,7 @@ const AttendanceDashboard = () => {
         sx={{
           minHeight: "100vh",
           width: "100vw",
-          background: "linear-gradient(135deg, #6e8efb, #a777e3)",
+          background: "black",
           overflowX: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -140,7 +140,6 @@ const AttendanceDashboard = () => {
             </Typography>
             
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <AttendanceAnalysisReport analysisData={analysisData} />
 
 
             {analysisData && (
@@ -185,6 +184,7 @@ const AttendanceDashboard = () => {
             <SubjectsSection analysisData={analysisData} loading={loading} />
             <PremiumSection loading={loading} />
           </Grid>
+          <ActionSpeedDial />
         </Container>
       </Box>
     </ThemeProvider>

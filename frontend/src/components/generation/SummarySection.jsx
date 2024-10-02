@@ -110,7 +110,7 @@ const SummarySection = ({ analysisData, loading }) => {
             label: "Days Can Skip",
             value: analysisData.daysCanSkip,
             color: "red",
-            percentage: "40%",
+            percentage: "25%",
           },
         ].map((item, index) => (
           <Box

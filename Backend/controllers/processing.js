@@ -12,15 +12,13 @@ const { ClassificationText } = require("../crud/textClassification");
 const { calculateAttendanceRequirements, createCalendar } = require("../crud/AnalysisGeneration"); 
 const { calculateValidDays, countDaysOfWeek, calculateDaysNeededToAttend, calculateDaysCanSkip } = require("../crud/filteringDays"); 
 
-// Middleware 
 router.use(fileUpload()); 
 
 dotenv.config(); 
 
 let workflowStatus = 'Processing'; 
 
-// Initialize memory cache with expiration 
-const memoryCache = new NodeCache({ stdTTL: 3600 });  // Cache expiration time set to 1 hour 
+const memoryCache = new NodeCache({ stdTTL: 3600 });
 
 // Route to get the current status 
 router.get('/status', (req, res) => { 
@@ -54,14 +52,13 @@ router.post('/basicanalysis', async (req, res) => {
         const countDaysOfWeekdata = countDaysOfWeek(validdates); 
         const daysNeededToAttend = calculateDaysNeededToAttend(validdates, percentage); 
         const daysCanSkip = calculateDaysCanSkip(validdates, percentage); 
-        const Totaldays = daysNeededToAttend + daysCanSkip; 
+        const Totaldays = daysNeededToAttend + daysCanSkip;
 
         const SubjectCountsdata = ClassificationText(JSON.stringify(countDaysOfWeekdata), DaywiseSubjectsdata); 
         const AttendanceRequirements = calculateAttendanceRequirements({ SubjectCountsdata }, percentage); 
 
         const basicdata = createCalendar({ AttendanceRequirements, DaywiseSubjectsdata, validdates }); 
 
-        // Store the result in cache 
         memoryCache.set(cacheKey, { 
             Totaldays, 
             daysNeededToAttend, 
