@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dotenv = require("dotenv");
-const { incrementUserCount } = require("../config/firebase");
+const { incrementUserCount, storeAnonymousData,fetchAnonymousData } = require("../config/firebase");
 
 // Middleware
 dotenv.config();
@@ -9,7 +9,6 @@ dotenv.config();
 // Create an endpoint to increment the count and save IP address
 router.get('/increment-count', async (req, res) => {
   const ipAddress = req.ip; // Capture the IP address of the user
-  console.log("ipAddress");
 
   try {
     const newCount = await incrementUserCount(ipAddress);
@@ -17,6 +16,56 @@ router.get('/increment-count', async (req, res) => {
   } catch (e) {
     console.error('Error incrementing count:', e);
     res.status(500).send('Error incrementing count');
+  }
+});
+
+// Create an endpoint to store data in the anonymous_store collection
+router.post('/storeData', async (req, res) => {
+  const { id, dataValue } = req.body; // Destructure id and dataValue from request body
+
+  if (!id || !dataValue) {
+    return res.status(400).send('Missing id or dataValue');
+  }
+
+  try {
+    const data = await storeAnonymousData(id, dataValue);
+    res.status(200).send(`Data stored for id: ${id}`);
+  } catch (e) {
+    console.error('Error storing data:', e);
+    res.status(500).send('Error storing data');
+  }
+});
+
+router.get('/fetchData/:id', async (req, res) => {
+  const { id } = req.params; // Get id from URL params
+
+  try {
+    const data = await fetchAnonymousData(id);
+    res.status(200).json(data); // Return the fetched data as JSON
+  } catch (e) {
+    console.error('Error fetching data:', e);
+    res.status(500).send('Error fetching data');
+  }
+});
+
+router.get('/downloadData/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const data = await fetchAnonymousData(id);
+
+    // Prepare the content for the .txt file
+    const fileContent = `ID: ${id}\nData: ${data.dataValue}`;
+
+    // Set the response headers to force a file download
+    res.setHeader('Content-Disposition', `attachment; filename=${id}.txt`);
+    res.setHeader('Content-Type', 'text/plain');
+
+    // Send the file content directly
+    res.send(fileContent);
+  } catch (e) {
+    console.error('Error fetching data:', e);
+    res.status(500).send('Error fetching data');
   }
 });
 

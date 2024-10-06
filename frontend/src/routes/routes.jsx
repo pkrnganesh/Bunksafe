@@ -4,6 +4,7 @@ import Docs from "../pages/Documentation";
 import AnalyticsDashboard from "../pages/AnalysisResults";
 import UploadingData from "../pages/Uploading";
 import EnhancedCGPACalculator from "../pages/Calculator";
+import AnonymousNotepad from "../pages/AnonymousNotepad"
 import React from "react";
 
 export function HomeRoutes() {
@@ -15,6 +16,8 @@ export function HomeRoutes() {
         <Route path="/uploading" element={<UploadingData />} />
         <Route path="/generation" element={<AnalyticsDashboard />} />
         <Route path="/cgpa" element={<EnhancedCGPACalculator />} />
+        <Route path="/note" element={<AnonymousNotepad />} />
+
       </Routes>
     </Router>
   );
