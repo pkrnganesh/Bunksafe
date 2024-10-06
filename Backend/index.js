@@ -15,7 +15,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow only these origins
+  origin: 'https://bunksafe.vercel.app', // Allow only these origins
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
