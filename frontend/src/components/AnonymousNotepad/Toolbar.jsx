@@ -117,6 +117,7 @@ const Toolbar = ({ content, setContent, showAlertMessage, handleLogout, setIsLoa
             <ExitToApp sx={{ mr: 1 }} /> Logout
           </MenuItem>
         </Menu>
+        
       </MuiToolbar>
     </StyledAppBar>
   );

@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const Processing = require('./controllers/processing');
 const user = require('./controllers/incrementUserCount');
 const  attendanceManagementAdvisor  = require('./controllers/ai_chat');
+const incrementUserCount = require('./controllers/incrementUserCount');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -15,7 +16,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: 'https://bunksafe.vercel.app', // Allow only these origins
+  origin: ['https://bunksafe.vercel.app', 'http://localhost:3000'], // Allow only these origins
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
@@ -42,6 +43,7 @@ app.use((err, req, res, next) => {
 app.use('/process', Processing);
 app.use('/user', user);
 app.use('/ai', attendanceManagementAdvisor);
+app.use('/incrementUserCount', incrementUserCount);
 
 // Timeout middleware
 app.use((req, res, next) => {

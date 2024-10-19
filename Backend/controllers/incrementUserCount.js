@@ -1,4 +1,5 @@
 const express = require("express");
+const { JSDOM } = require('jsdom');
 const router = express.Router();
 const dotenv = require("dotenv");
 const { incrementUserCount, storeAnonymousData,fetchAnonymousData } = require("../config/firebase");
@@ -48,14 +49,42 @@ router.get('/fetchData/:id', async (req, res) => {
   }
 });
 
+
 router.get('/downloadData/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
     const data = await fetchAnonymousData(id);
 
+    // Parse the HTML content
+    const dom = new JSDOM(data.dataValue);
+    const document = dom.window.document;
+
+    // Function to recursively process nodes and preserve formatting
+    function processNode(node) {
+      if (node.nodeType === dom.window.Node.TEXT_NODE) {
+        return node.textContent.trim();
+      } else if (node.nodeType === dom.window.Node.ELEMENT_NODE) {
+        let content = Array.from(node.childNodes).map(processNode).join('').trim();
+        if (node.nodeName === 'P') {
+          return content + '\n';
+        } else if (node.nodeName === 'STRONG') {
+          return `*${content}*`;  // Surround with asterisks to indicate bold
+        } else {
+          return content;
+        }
+      }
+      return '';
+    }
+
+    // Process the body and get formatted content
+    let formattedContent = processNode(document.body);
+
+    // Remove excessive newlines
+    formattedContent = formattedContent.replace(/\n{3,}/g, '\n\n');
+
     // Prepare the content for the .txt file
-    const fileContent = `ID: ${id}\nData: ${data.dataValue}`;
+    const fileContent = `ID: ${id}\nData:\n${formattedContent.trim()}`;
 
     // Set the response headers to force a file download
     res.setHeader('Content-Disposition', `attachment; filename=${id}.txt`);

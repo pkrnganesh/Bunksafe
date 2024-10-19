@@ -10,25 +10,24 @@ import {
   Container,
   Paper,
   Grid,
-  useMediaQuery
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { LockOpen, Visibility, VisibilityOff, Security } from '@mui/icons-material';
 import CircularProgress from '@mui/material/CircularProgress';
+import FetchData from '../../api/useFetchStoredNoteData';
 
-const AuthComponent = ({ setIsCreated, showAlertMessage, isLoading, setIsLoading }) => {
-  const [password, setPassword] = useState('');
+const AuthComponent = ({ setIsCreated, showAlertMessage, isLoading, setIsLoading, setPassword, setContent }) => {
+  const [localPassword, setLocalPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  
   const handleCreate = () => {
-    if (password) {
+    if (localPassword) {
       setIsLoading(true);
       setTimeout(() => {
         setIsCreated(true);
+        setPassword(localPassword); // Update parent password
+        setContent(null);
         showAlertMessage('Document created successfully!', 'success');
         setIsLoading(false);
       }, 1500);
@@ -37,21 +36,34 @@ const AuthComponent = ({ setIsCreated, showAlertMessage, isLoading, setIsLoading
     }
   };
 
-  const handleCheck = () => {
+  const handleCheck = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      if (checkPassword === 'password123') {
+  
+    try {
+      // Fetch data using the provided password
+      const data = await FetchData(checkPassword);
+  
+      // If the data exists, update the editor content and set the password
+      if (data && data.dataValue) {
         setIsCreated(true);
+        setPassword(checkPassword); // Update parent password
+        setContent(data.dataValue); // Load the content into the editor
         showAlertMessage('Document accessed successfully!', 'success');
       } else {
+        // If no data is found, show an error message
         showAlertMessage('Incorrect password. Please try again.', 'error');
       }
-      setIsLoading(false);
-    }, 1500);
+    } catch (error) {
+      // Handle any errors that occur during the fetch operation
+      showAlertMessage('An error occurred. Please try again.', 'error');
+    }
+  
+    setIsLoading(false);
   };
+  
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh',display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Container maxWidth="xl" sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 4 }}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={6}>
@@ -89,8 +101,8 @@ const AuthComponent = ({ setIsCreated, showAlertMessage, isLoading, setIsLoading
                     type={showPassword ? 'text' : 'password'}
                     label="Set Password"
                     variant="outlined"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={localPassword}
+                    onChange={(e) => setLocalPassword(e.target.value)}
                     InputProps={{
                       endAdornment: (
                         <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
@@ -142,7 +154,6 @@ const AuthComponent = ({ setIsCreated, showAlertMessage, isLoading, setIsLoading
           </Grid>
         </Grid>
       </Container>
-     
     </Box>
   );
 };
