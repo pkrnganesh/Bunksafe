@@ -49,6 +49,8 @@ const AnonymousNotepad = () => {
               showAlertMessage={showAlertMessage}
               handleLogout={handleLogout}
             />
+           
+            <Editor content={content} setContent={setContent} />
             <SecureNotepad
               content={content}
               password={password}
@@ -56,7 +58,6 @@ const AnonymousNotepad = () => {
               isLoading={isLoading}
               setIsLoading={setIsLoading}
             />
-            <Editor content={content} setContent={setContent} />
           </Box>
         )}
       </Paper>
