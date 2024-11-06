@@ -262,7 +262,7 @@ const ExcuseGeneratorPage = () => {
               ))}
             </Stepper>
             
-            <Card elevation={3} sx={{ 
+            <Card elevation={1} sx={{ 
               background: 'rgba(255, 255, 255, 0.8)', 
               backdropFilter: 'blur(10px)',
               borderRadius: '16px',

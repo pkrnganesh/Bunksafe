@@ -52,10 +52,26 @@ const AnimatedShape = styled(motion.div)(({ theme }) => ({
 const Features = () => {
 
   const steps = [
-    { number: 1, title: 'Input Timetable', description: 'Easily enter your semester timetable and attendance requirements using our user-friendly interface.' },
-    { number: 2, title: 'Track Attendance', description: 'Monitor your attendance in real-time with our advanced tracking system.' },
-    { number: 3, title: 'Get Reminders', description: 'Receive personalized reminders to help you stay on top of your attendance goals.' },
-    { number: 4, title: 'Optimize Schedule', description: 'Adjust your schedule dynamically to ensure you meet your attendance targets effortlessly.' },
+    {
+      number: 1,
+      title: 'Attendance Analytics',
+      description: 'Advanced analytics to track your attendance patterns, predict attendance rates, and visualize your presence across different subjects.'
+    },
+    {
+      number: 2,
+      title: 'CGPA Calculator',
+      description: 'Calculate your CGPA easily by entering your grades. Get insights into your academic performance and track your progress over semesters.'
+    },
+    {
+      number: 3,
+      title: 'Anonymous Notepad',
+      description: 'Securely store and share text data with generated links. Download your notes directly through browser or terminal, maintaining privacy.'
+    },
+    {
+      number: 4,
+      title: 'Smart Excuse Generator',
+      description: 'Generate contextual and believable excuses based on specific situations. Perfect for those unexpected absences!'
+    }
   ];
 
   const shapes = [
@@ -106,10 +122,11 @@ const Features = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Typography variant="h2" gutterBottom fontWeight="bold" sx={{ color: '#333', mb: 2 }}>
-              How Bunksafe Works
+            What BunkSafe Provides
             </Typography>
             <Typography variant="h5" sx={{ color: '#666', mb: 6 }}>
-              Revolutionizing timetable analysis and scheduling with cutting-edge algorithms.
+            Your all-in-one companion for academic life management and organization.
+      
             </Typography>
           </motion.div>
           <Grid container spacing={4}>

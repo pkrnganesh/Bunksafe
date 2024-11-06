@@ -148,9 +148,9 @@ const ExcuseTemplateGallery = ({ onSelectTemplate }) => {
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {!isMobile && (
           <Paper 
-            elevation={0} 
+            elevation={2} 
             sx={{ 
-              width: 280, 
+              width: 250, 
               borderRight: 1, 
               borderColor: 'divider',
               backgroundColor: alpha(theme.palette.background.paper, 0.7),
