@@ -14,6 +14,7 @@ import FAQ from '../components/Landing/FAQ';
 import Team from '../components/Landing/Team';
 import Footer from '../components/Landing/Footer';
 import UsedBy from '../components/Landing/UsedBy.jsx';
+import CustomCard from '../components/Landing/Buttons.jsx';
 
 function Landing() {
   const [darkMode, setDarkMode] = useState(false);
@@ -32,6 +33,7 @@ function Landing() {
                 <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
                 <Hero />
                 <UsedBy />
+                <CustomCard />
                 <Features />
                 <Pricing />
                 <FAQ />
