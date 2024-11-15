@@ -5,6 +5,7 @@ const Processing = require('./controllers/processing');
 const user = require('./controllers/incrementUserCount');
 const  attendanceManagementAdvisor  = require('./controllers/ai_chat');
 const incrementUserCount = require('./controllers/incrementUserCount');
+const downloadfile =require('./controllers/downloadfile');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -44,6 +45,7 @@ app.use('/process', Processing);
 app.use('/user', user);
 app.use('/ai', attendanceManagementAdvisor);
 app.use('/incrementUserCount', incrementUserCount);
+app.use('/', downloadfile);
 
 // Timeout middleware
 app.use((req, res, next) => {

@@ -89,16 +89,15 @@ const Hero = () => {
                 transition={{ duration: 1.5 }}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily: 'Playfair Display' }}>
-                Attendance
-                Management System                </Typography>
+                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'unset' }}>
+                Bunk Safe             </Typography>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', maxWidth: '80%' ,fontFamily:'monospace' }}>
+                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', maxWidth: '80%' ,fontFamily:'' }}>
                   {text}
                 </Typography>
                 <CustomButton /> {/* Replace the existing button with your custom button */}

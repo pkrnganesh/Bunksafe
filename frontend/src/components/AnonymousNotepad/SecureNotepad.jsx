@@ -36,7 +36,7 @@ const SecureNotepad = ({ content, password, showAlertMessage }) => {
 
   
   const handleSave = () => {
-    const secureLink = 'https://attendance-analysis-1.onrender.com/incrementUserCount/downloadData/' + password;
+    const secureLink = 'https://attendance-analysis-1.onrender.com/' + password;
     setGeneratedLink(secureLink);
     setShowLinkDialog(true);
     showAlertMessage('Content saved successfully!', 'success');

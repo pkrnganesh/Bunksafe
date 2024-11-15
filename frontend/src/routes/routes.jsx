@@ -6,6 +6,7 @@ import UploadingData from "../pages/Uploading";
 import EnhancedCGPACalculator from "../pages/Calculator";
 import AnonymousNotepad from "../pages/AnonymousNotepad"
 import ExcuseOMatic from "../pages/ExcuseOMatic";
+import LandingPage from "../pages/LandingPage";
 import React from "react";
 
 export function HomeRoutes() {
@@ -13,6 +14,7 @@ export function HomeRoutes() {
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route path="/docs" element={<Docs />} />
         <Route path="/uploading" element={<UploadingData />} />
         <Route path="/generation" element={<AnalyticsDashboard />} />

@@ -1,5 +1,4 @@
-// App.js or parent component
-import React, { useState, Suspense } from 'react';
+ import React, { useState, Suspense } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Container } from '@mui/material';
 import { ParallaxProvider } from 'react-scroll-parallax';
@@ -8,14 +7,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { lightTheme, darkTheme } from '../components/Landing/theme';
 import Header from '../components/Landing/Header';
 import Hero from '../components/Landing/Hero';
+import Herosection from './LandingPage.jsx';
 import Features from '../components/Landing/Features';
 import Pricing from '../components/Landing/Pricing';
 import FAQ from '../components/Landing/FAQ';
 import Team from '../components/Landing/Team';
 import Footer from '../components/Landing/Footer';
 import UsedBy from '../components/Landing/UsedBy.jsx';
-import CustomCard from '../components/Landing/Buttons.jsx';
-
+import DropdownTreeMenu from '../components/Landing/DropdownTreeMenu.jsx';
+ 
 function Landing() {
   const [darkMode, setDarkMode] = useState(false);
   const theme = darkMode ? darkTheme : lightTheme;
@@ -32,9 +32,10 @@ function Landing() {
               <Suspense fallback={<div>Loading...</div>}>
                 <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
                 <Hero />
+                {/* <Herosection/> */}
+                <DropdownTreeMenu />
                 <UsedBy />
-                <CustomCard />
-                <Features />
+                 <Features />
                 <Pricing />
                 <FAQ />
                 <Team />
