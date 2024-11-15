@@ -75,7 +75,7 @@ const ProgressContent = () => {
         }
         return Math.min(oldProgress + 50, 100); // Change the progress increment if needed
       });
-    }, 500); // Adjust the interval timing here
+    }, 1500); // Adjust the interval timing here
 
     return () => {
       clearInterval(timer); // Clear interval on component unmount
