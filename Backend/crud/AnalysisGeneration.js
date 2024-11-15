@@ -98,6 +98,10 @@ function createCalendar(input) {
   // Step 1: Initialize distribution
   const distribution = {};
   for (const [subject, req] of Object.entries(subjectRequirements)) {
+    if (typeof req.asperpercentage !== 'number' || typeof req.minimum40 !== 'number') {
+      console.error(`Missing or invalid properties for subject '${subject}' in subjectRequirements`);
+      continue;
+    }
     distribution[subject] = {
       remaining: req.asperpercentage,
       minimum: Math.max(req.minimum40, Math.min(req.asperpercentage, req.minimum40))
@@ -117,7 +121,7 @@ function createCalendar(input) {
 
     for (const classInfo of dayClasses) {
       const subject = classInfo.subject.replace(' ', '_');
-      if (distribution[subject].remaining > 0 && totalAssignedClasses < totalAsPerPercentage) {
+      if (distribution[subject] && distribution[subject].remaining > 0 && totalAssignedClasses < totalAsPerPercentage) {
         calendar[date].push(subject);
         distribution[subject].remaining--;
         distribution[subject].minimum = Math.max(0, distribution[subject].minimum - 1);
@@ -134,7 +138,7 @@ function createCalendar(input) {
   const subjects = Object.keys(distribution);
   for (const date of validDates) {
     for (const subject of subjects) {
-      if (distribution[subject].minimum > 0 && totalAssignedClasses < totalAsPerPercentage) {
+      if (distribution[subject] && distribution[subject].minimum > 0 && totalAssignedClasses < totalAsPerPercentage) {
         if (!calendar[date].includes(subject)) {
           calendar[date].push(subject);
           distribution[subject].minimum--;
@@ -152,7 +156,7 @@ function createCalendar(input) {
     let assigned = false;
     for (const date of validDates) {
       for (const subject of subjects) {
-        if (distribution[subject].remaining > 0 && !calendar[date].includes(subject)) {
+        if (distribution[subject] && distribution[subject].remaining > 0 && !calendar[date].includes(subject)) {
           calendar[date].push(subject);
           distribution[subject].remaining--;
           totalAssignedClasses++;
@@ -171,5 +175,6 @@ function createCalendar(input) {
 
   return calendar;
 }
+
 
 module.exports = {calculateAttendanceRequirements,distributeAttendance,createCalendar };
