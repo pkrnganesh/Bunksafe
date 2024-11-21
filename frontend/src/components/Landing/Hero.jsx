@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import referenceImage from './index_banner.svg';
 import CustomButton from './CustomButton'; // Import your custom button component
 
 const FullWidthBox = styled(Box)(({ theme }) => ({
@@ -76,8 +75,8 @@ const Hero = () => {
   return (
     <FullWidthBox>
       <ContentWrapper maxWidth="xl">
-        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" justifyContent="space-between">
-          <Box maxWidth={{ xs: '100%', md: '50%' }} mb={{ xs: 4, md: 0 }}>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Box maxWidth={{ xs: '100%', md: '80%' }} mb={{ xs: 4, md: 0 }} textAlign="center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -89,34 +88,25 @@ const Hero = () => {
                 transition={{ duration: 1.5 }}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'unset' }}>
-                Bunk Safe             </Typography>
+                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'Bodoni Moda' }}>
+                Master the art of missing
+             </Typography>
+             <Typography variant="h1" component="h1" sx={{ color: 'gray', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'Bodoni Moda' }}>
+             all in one place
+             </Typography>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', maxWidth: '80%' ,fontFamily:'' }}>
+                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', margin: '0 auto', maxWidth: '80%', fontFamily:'' }}>
                   {text}
                 </Typography>
                 <CustomButton /> {/* Replace the existing button with your custom button */}
               </motion.div>
             </motion.div>
           </Box>
-          <Box
-            component={motion.img}
-            src={referenceImage}
-            alt="Person using the app"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            sx={{
-              maxWidth: { xs: '100%', md: '45%' },
-              borderRadius: '15px',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-            }}
-          />
         </Box>
       </ContentWrapper>
       {symbols.map((symbol, index) => (
