@@ -8,6 +8,8 @@ import {
   Paper,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import BunkInLogo from './BunkInLogo ';
+
 
 // SVG Icons
 const HeartIcon = () => (
@@ -36,11 +38,10 @@ const LinkedInIcon = () => (
 
 
 const FooterPaper = styled(Paper)(({ theme }) => ({
-  background: "#F5F7F8",
+  background: "white",
   transform: "translateY(-20px)",
   padding: 0, // Remove padding
   margin: 0, // Remove margin
-  borderTop: "1px solid rgba(0, 0, 0, 0.1)",
   position: "relative",
   zIndex: 1,
   width: "100%",
@@ -64,9 +65,10 @@ const DonateButton = styled(Button)(({ theme }) => ({
 }));
 
 const FooterLink = styled(Link)(({ theme }) => ({
-  color: "#6B7280",
+  color: "black",
   textDecoration: "none",
   display: "block",
+  textAlign: "left",
   marginBottom: theme.spacing(1),
   "&:hover": {
     color: "#374151",
@@ -74,8 +76,9 @@ const FooterLink = styled(Link)(({ theme }) => ({
 }));
 
 const FooterHeading = styled(Typography)(({ theme }) => ({
-  color: "#FF3366",
+  color: "gray",
   fontWeight: "bold",
+  textAlign: "left",
   marginBottom: theme.spacing(2),
 }));
 
@@ -89,7 +92,7 @@ const Footer = () => {
   return (
     <FooterPaper elevation={0}>
       <Container maxWidth="lg">
-        <Grid container spacing={4} textAlign="center">
+        <Grid container spacing={4} textAlign="left">
           <Grid
             item
             xs={12}
@@ -102,9 +105,10 @@ const Footer = () => {
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems: 'left',
               justifyContent: 'center',
               padding: theme => theme.spacing(3),
+              mr:35
             }}
           >
             <Typography variant="h6" fontWeight="bold">
@@ -157,6 +161,7 @@ const Footer = () => {
             <socialIcon as={LinkedInIcon} />
           </Grid>
         </Grid>
+        <BunkInLogo />
       </Container>
     </FooterPaper>
   );
