@@ -48,6 +48,7 @@ const FooterPaper = styled(Paper)(({ theme }) => ({
   right: "0",
   marginLeft: "auto",
   marginRight: "auto",
+  marginTop: "40px",  
 }));
 
 const DonateButton = styled(Button)(({ theme }) => ({

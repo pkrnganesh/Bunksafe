@@ -1,150 +1,130 @@
-// components/Hero.js
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import React from 'react';
+import { Box, Typography, Container, keyframes } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import CustomButton from './CustomButton'; // Import your custom button component
+ 
 
-const FullWidthBox = styled(Box)(({ theme }) => ({
-  width: '100vw',
-  position: 'relative',
-  left: '50%',
-  right: '50%',
-  marginLeft: '-50vw',
-  marginRight: '-50vw',
-  background: 'linear-gradient(135deg, #42daf5 100%,#FFD700 0%)',
-  overflow: 'hidden',
-}));
-
-const ContentWrapper = styled(Container)(({ theme }) => ({
-  position: 'relative',
-  zIndex: 1,
-  padding: theme.spacing(10, 2),
-  [theme.breakpoints.up('md')]: {
-    padding: theme.spacing(15, 4),
-  },
-}));
-
-const FloatingSymbol = styled(motion.div)(({ theme }) => ({
-  position: 'absolute',
-  color: 'rgba(255, 255, 255, 0.2)',
-  fontSize: '2rem',
-  fontWeight: 'bold',
-}));
-
-const SvgCurve = styled('div')({
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
+const StyledBox = styled(Box)(({ theme }) => ({
   width: '100%',
-  height: '150px', // Adjust height as needed
+  minHeight: '100vh',
+  backgroundColor: 'white',
+  position: 'relative',
   overflow: 'hidden',
-  lineHeight: 0,
-  transform: 'translateY(1px)', // Adjust to smooth out transition
-  '& svg': {
-    position: 'relative',
-    display: 'block',
-    width: 'calc(100% + 1.3px)',
-    height: '100%', // Ensure the curve fills the height properly
-  },
-  '& .shape-fill': {
-    fill: '#FFFFFF', // Curve color, you can customize this
-  },
+  paddingTop: theme.spacing(10),
+}));
+
+const borderMove = keyframes`
+0% {
+  background-position: 0% 50%;
+}
+50% {
+  background-position: 100% 50%;
+}
+100% {
+  background-position: 0% 50%;
+}
+`;
+
+const AnimatedContainer = styled(Box)({
+position: 'relative',
+display: 'inline-block',
+padding: '2px',
+borderRadius: '50px',
+'&::before': {
+  content: '""',
+  position: 'absolute',
+  inset: 0,
+  borderRadius: '50px',
+  padding: '2px',
+  background: 'linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ff00ff, #ffff00, #00ffff)',
+  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+  WebkitMaskComposite: 'xor',
+  maskComposite: 'exclude',
+  backgroundSize: '300% 300%',
+  animation: `${borderMove} 3s linear infinite`
+}
 });
 
-const symbols = ['+', '-', '×', '÷', '=', '∑', '∫', 'π', '√', '∞'];
+const Label = styled(Box)(({ theme }) => ({
+padding: theme.spacing(1, 3),
+borderRadius: '50px',
+backgroundColor: theme.palette.background.paper,
+color: theme.palette.text.primary,
+fontSize: '0.875rem',
+fontWeight: 500
+}));
 
-const Hero = () => {
-  const [text, setText] = useState('');
-  const fullText = "Ouur user-friendly platform automates attendance tracking, provides detailed analytics, and generates insightful reports.Start your free trial today!";
-  useEffect(() => {
-    let index = 0;
-    const typingInterval = setInterval(() => {
-      if (index < fullText.length) {
-        setText((prev) => prev + fullText.charAt(index)); // Use charAt to avoid undefined
-        index++;
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 50);
-  
-    return () => clearInterval(typingInterval);
-  }, []);
+const BlueBadge = styled(motion.div)(({ theme }) => ({
+  display: 'inline-block',
+  backgroundColor: '#007AFF',
+  border: '4px solid rgb(96, 173, 255)',
+  color: 'white',
+  padding: theme.spacing(0.75, 2),
+  borderRadius: theme.spacing(7),
+  margin: theme.spacing(0, 1),
+  fontSize: '0.9em',
+  transformOrigin: 'center bottom',
+}));
+
+const   Hero = () => {
   
 
   return (
-    <FullWidthBox>
-      <ContentWrapper maxWidth="xl">
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <Box maxWidth={{ xs: '100%', md: '80%' }} mb={{ xs: 4, md: 0 }} textAlign="center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+    <StyledBox>
+      <Container maxWidth="" sx={{ textAlign: 'center',mt: 10 }}>
+      <AnimatedContainer>
+    <Label>
+      For students who love living on the edge →
+    </Label>
+  </AnimatedContainer>
+
+        <Box sx={{ maxWidth: 'lg', mx: 'auto', px: 4 }}>
+          <Typography variant="h1" sx={{ 
+            fontSize: { xs: '3.5rem', md: '5rem' }, 
+            fontWeight: 900, 
+            lineHeight: 1.2,
+            mb: 5
+          }}>
+            The smarter way to
+            <BlueBadge
+               initial="initial"
+              animate="stamp"
+              whileHover={{
+                rotate: 3,
+                y: -5,
+                transition: { duration: 0.2 }
+              }}
             >
-              <motion.div
-                initial={{ perspective: 800, rotateX: 90 }}
-                animate={{ perspective: 800, rotateX: 0 }}
-                transition={{ duration: 1.5 }}
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <Typography variant="h1" component="h1" sx={{ color: 'white', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'Bodoni Moda' }}>
-                Master the art of missing
-             </Typography>
-             <Typography variant="h1" component="h1" sx={{ color: 'gray', fontWeight: 900, mb: 2, fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }, lineHeight: 1.2, fontFamily:'Bodoni Moda' }}>
-             all in one place
-             </Typography>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                <Typography variant="body1" sx={{ color: 'black', mb: 3, fontSize: '1.2rem', margin: '0 auto', maxWidth: '80%', fontFamily:'' }}>
-                  {text}
-                </Typography>
-                <CustomButton /> {/* Replace the existing button with your custom button */}
-              </motion.div>
-            </motion.div>
-          </Box>
+              <span role="img" aria-label="sparkle" style={{ color: '#FFD700', marginRight: 8 }}>
+                ✨
+              </span>
+              Bunk Classes
+            </BlueBadge>
+          </Typography>
+
+          <Typography variant="h5" sx={{ 
+            color: 'black',
+            maxWidth: '1000px',
+            fontFamily: "Helvetica",
+            mx: 'auto',
+            mb: 4,
+            mt: 2,
+          }}>
+             We've got your back! 
+             Transform from a random class-skipper into a strategic absence artist! 
+            Share anonymous notes,calculate grades, all while maintaining your reputation as the 
+            "mysteriously" student.
+            <br />          <br />
+            <br />  <br />          <br />
+            <br />  <br />          <br />
+            <br />    
+          </Typography>
+
+        
+
         </Box>
-      </ContentWrapper>
-      {symbols.map((symbol, index) => (
-        <FloatingSymbol
-          key={index}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0.2, 0.5, 0.2],
-            scale: [1, 1.2, 1],
-            x: [0, 10, 0],
-            y: [0, 15, 0],
-          }}
-          transition={{
-            duration: 3 + index,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-          style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-          }}
-        >
-          {symbol}
-        </FloatingSymbol>
-      ))}
-      <SvgCurve>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,0 C150,50 350,0 600,50 C850,100 1050,50 1200,0 L1200,120 L0,120 Z"
-            className="shape-fill"
-          />
-        </svg>
-      </SvgCurve>
-    </FullWidthBox>
+      </Container>
+    </StyledBox>
   );
 };
 

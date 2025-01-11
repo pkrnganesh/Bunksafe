@@ -22,11 +22,6 @@ const TeamMemberCard = styled(motion.div)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-  transition: 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
-  '&:hover': {
-    transform: 'translateY(-15px)',
-    boxShadow: '0 20px 45px rgba(0, 0, 0, 0.15)',
-  },
 }));
 
 const SocialIcons = styled(Box)({
@@ -76,9 +71,9 @@ const Team = () => {
         variant="h2"
         gutterBottom
         sx={{
-          color: '#6e8efb',
           fontWeight: '600',
           textAlign: 'left',
+          fontFamily: 'Georgia, serif',
           mb: 6, // Reduced margin
           fontSize: { xs: '2rem', md: '2.5rem' }, // Reduced font size
           letterSpacing: '1px',
@@ -104,8 +99,7 @@ const Team = () => {
                     width: 150, // Reduced size
                     height: 150, // Reduced size
                     mx: 'auto',
-                    // Removed borderRadius to make it rectangular
-                  }}
+                   }}
                 />
               </AvatarWrapper>
               <Box>

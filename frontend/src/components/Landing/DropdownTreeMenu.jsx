@@ -1,110 +1,110 @@
 import React, { useState } from 'react';
-import { Box, Button, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Globe, 
+  Settings, 
+  MessageCircle, 
+  Briefcase, 
+  HelpCircle 
+} from 'lucide-react';
 
-const DropdownTreeMenu = () => {
-  const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+const CircularNavMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const options = [
-    {
-      label: 'Product Features',
-      items: [
-        { label: 'Task Management' },
-        { label: 'Collaboration' },
-        { label: 'Reporting' },
-      ],
+  const menuItems = [
+    { 
+      icon: Globe, 
+      label: 'Explore', 
+      color: 'bg-teal-500',
+      angle: 0 
     },
-    {
-      label: 'Pricing',
-      items: [
-        { label: 'Free' },
-        { label: 'Pro' },
-        { label: 'Enterprise' },
-      ],
+    { 
+      icon: Briefcase, 
+      label: 'Projects', 
+      color: 'bg-indigo-500',
+      angle: 72 
     },
-    {
-      label: 'Support',
-      items: [
-        { label: 'Documentation' },
-        { label: 'Contact Us' },
-        { label: 'FAQ' },
-      ],
+    { 
+      icon: MessageCircle, 
+      label: 'Connect', 
+      color: 'bg-pink-500',
+      angle: 144 
     },
+    // { 
+    //   icon: Settings, 
+    //   label: 'Settings', 
+    //   color: 'bg-orange-500',
+    //   angle: 216 
+    // },
+    // { 
+    //   icon: HelpCircle, 
+    //   label: 'Support', 
+    //   color: 'bg-purple-500',
+    //   angle: 288 
+    // }
   ];
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option.label);
-    setOpen((prevOpen) => !prevOpen);
+  const calculatePosition = (angle, radius = 120) => {
+    const radian = angle * Math.PI / 180;
+    return {
+      transform: `rotate(${angle}deg) translate(${radius}px) rotate(-${angle}deg)`
+    };
   };
 
   return (
-    <Box>
-      <Button
-        variant="contained"
-        onClick={() => setOpen((prevOpen) => !prevOpen)}
-        endIcon={
-          <motion.div animate={{ rotate: open ? 180 : 0 }}>
-            {open ? <ChevronDown /> : <ChevronRight />}
-          </motion.div>
-        }
+    <div className="relative flex items-center justify-center min-h-[300px]">
+      <motion.button 
+        onClick={() => setIsOpen(!isOpen)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="z-50 bg-gradient-to-br from-blue-600 to-purple-700 text-white px-8 py-4 rounded-full shadow-2xl hover:shadow-xl transition-all"
       >
-        Get free demo
-      </Button>
+        {isOpen ? 'Close Menu' : 'Open Menu'}
+      </motion.button>
+
       <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Box mt={2}>
-              <List>
-                {options.map((option, index) => (
-                  <ListItem
-                    key={index}
-                    onClick={() => handleOptionClick(option)}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <ListItemText>
-                      <Typography
-                        variant="body1"
-                        color={selectedOption === option.label ? 'primary' : 'inherit'}
-                      >
-                        {option.label}
-                      </Typography>
-                    </ListItemText>
-                    {option.items.length > 0 && (
-                      <Box ml={2}>
-                        {open && selectedOption === option.label ? (
-                          <ChevronDown size={20} />
-                        ) : (
-                          <ChevronRight size={20} />
-                        )}
-                      </Box>
-                    )}
-                  </ListItem>
-                ))}
-              </List>
-              {selectedOption && (
-                <List>
-                  {options.find((option) => option.label === selectedOption).items.map((item, index) => (
-                    <ListItem key={index} sx={{ pl: 4 }}>
-                      <ListItemText>
-                        <Typography variant="body2">{item.label}</Typography>
-                      </ListItemText>
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </Box>
-          </motion.div>
+        {isOpen && (
+          <div className="absolute">
+            {menuItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0,
+                  rotate: 0 
+                }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1,
+                  rotate: item.angle 
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 0,
+                  rotate: 0 
+                }}
+                style={calculatePosition(item.angle)}
+                className={`absolute w-20 h-20 rounded-full flex items-center justify-center ${item.color} shadow-lg cursor-pointer`}
+                transition={{ 
+                  type: 'spring',
+                  stiffness: 400,
+                  damping: 20,
+                  delay: index * 0.1
+                }}
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="text-center text-white flex flex-col items-center">
+                  <item.icon size={32} strokeWidth={2} />
+                  <span className="text-xs mt-1 font-medium">{item.label}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
       </AnimatePresence>
-    </Box>
+    </div>
   );
 };
 
-export default DropdownTreeMenu;
+export default CircularNavMenu;

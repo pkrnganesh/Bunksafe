@@ -100,7 +100,7 @@ const UploadData = () => {
         clearInterval(interval);
         return prev;
       });
-    }, 1000);
+    }, 4000);
   
     try {
       const response = await GenerateAnalysis({
