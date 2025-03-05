@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { createClient } = require('@supabase/supabase-js');
 const Processing = require('./controllers/processing');
 const user = require('./controllers/incrementUserCount');
-const  attendanceManagementAdvisor  = require('./controllers/ai_chat');
+const attendanceManagementAdvisor = require('./controllers/ai_chat');
 const incrementUserCount = require('./controllers/incrementUserCount');
-const downloadfile =require('./controllers/downloadfile');
+const downloadfile = require('./controllers/downloadfile');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -31,6 +32,38 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Supabase client setup
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+// Authentication middleware
+const authenticateUser = async (req, res, next) => {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getUser(authorization);
+    if (error) {
+      console.error(error);
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!data.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    req.user = data.user;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+};
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error occurred:', err.stack);
@@ -40,12 +73,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Using the routes
-app.use('/process', Processing);
-app.use('/user', user);
-app.use('/ai', attendanceManagementAdvisor);
-app.use('/incrementUserCount', incrementUserCount);
-app.use('/', downloadfile);
+// Using the routes with authentication
+app.use('/process', authenticateUser, Processing);
+app.use('/user', authenticateUser, user);
+app.use('/ai', authenticateUser, attendanceManagementAdvisor);
+app.use('/incrementUserCount', authenticateUser, incrementUserCount);
+app.use('/', authenticateUser, downloadfile);
 
 // Timeout middleware
 app.use((req, res, next) => {
