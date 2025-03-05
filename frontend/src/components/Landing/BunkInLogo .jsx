@@ -3,8 +3,8 @@ import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const GradientTypography = styled(Typography)(({ theme }) => ({
-  fontSize: '180px',
-  fontWeight: 'bold',
+  fontSize: '200px',
+  fontWeight: 900,
   letterSpacing: '0.1em',
   background: 'linear-gradient(135deg, #C471ED 0%, #f3f4f6 100%)',
   WebkitBackgroundClip: 'text',

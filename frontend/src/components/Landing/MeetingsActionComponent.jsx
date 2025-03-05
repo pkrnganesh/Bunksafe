@@ -61,9 +61,7 @@ const MeetingsActionComponent = () => {
     "What's their budget?",
     'List their objections',
     'Schedule meeting',
-    "What did they say about next week's plan?",
-    'Write a blog post',
-    'How much have they raised?',
+   
   ];
 
   const handleSuggestionClick = (suggestion) => {

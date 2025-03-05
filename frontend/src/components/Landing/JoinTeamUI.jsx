@@ -1,576 +1,236 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Container,
-  Paper,
-  Chip,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  Tooltip,
-  Alert,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Coffee, Code } from "@mui/icons-material";
+import React, { useState, useRef, useEffect } from "react";
+import { MailOutline } from "@mui/icons-material";
+import { Box, Typography, Container } from '@mui/material';
 
-const JoinTeamUI = () => {
-  const [activeStep, setActiveStep] = useState(1);
-  const [formData, setFormData] = useState({
-    email: "",
-    description: "",
-    expertise: [],
-    services: [],
-    categories: [],
-  });
+const JoinT = () => {
+  const [email, setEmail] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const hiddenInputRef = useRef(null);
+  const textPathRef = useRef(null);
 
-  const services = [
-    {
-      title: "Workshops & analysis",
-      description:
-        "This is a standard part of every project. It allows us to onboard and provide most value.",
-    },
-    {
-      title: "User research",
-      description:
-        "When you want to test your hypotheses or product live with real users.",
-    },
-    {
-      title: "User experience design",
-      description:
-        "When you want to solve your user's problems and create an engaging experience.",
-    },
-  ];
-
-  const [selectedCategories, setSelectedCategories] = React.useState([]);
-  const [selectedStatements, setSelectedStatements] = React.useState([]);
-
-  const categories = [
-    "Technology",
-    "HR-Tech",
-    "CRM",
-    "Automation",
-    "Developer tools",
-    "Operations",
-    "Data Analytics",
-    "Sales",
-    "Project Management",
-    "Finance",
-  ];
-
-  const [errors, setErrors] = useState({});
-
-  // Fun validation messages
-  const validateField = (name, value) => {
-    switch (name) {
-      case "email":
-        if (!value) return "Even superheroes need emails! 📧";
-        if (!/\S+@\S+\.\S+/.test(value))
-          return "This email looks like it's wearing a disguise! 🎭";
-        return "";
-      case "description":
-        if (!value)
-          return "Tell us your story! Even Batman had an origin story 🦇";
-        if (value.length < 10)
-          return "A bit shy? We need more than a tweet! 🐤";
-        return "";
-      case "codeName":
-        if (!value) return "Every legend needs a code name! 🦸‍♂️";
-        return "";
-      case "superpower":
-        if (!value) return "Don't be modest, everyone has a superpower! ✨";
-        return "";
-      case "favLanguage":
-        if (!value) return "Python? JavaScript? Binary? We won't judge! 🤖";
-        return "";
-      case "coffeePerDay":
-        if (value && isNaN(value))
-          return "That's not a number... had too much coffee? ☕";
-        return "";
-      default:
-        return "";
-    }
+  // Handle input changes and update both hidden input and visible curved text
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    const error = validateField(name, value);
-    setErrors((prev) => ({
-      ...prev,
-      [name]: error,
-    }));
-  };
-
-  const toggleCategory = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const toggleStatement = (statement) => {
-    setSelectedStatements((prev) => {
-      if (prev.includes(statement)) {
-        return prev.filter((s) => s !== statement);
-      }
-      if (prev.length < 3) {
-        return [...prev, statement];
-      }
-      return prev; // Prevent selecting more than three
-    });
-  };
-
-  const handleNext = () => setActiveStep((prev) => Math.min(prev + 1, 4));
-  const handleBack = () => setActiveStep((prev) => Math.max(prev - 1, 1));
-
-  const renderStepContent = () => {
-    switch (activeStep) {
-      case 1:
-        return (
-          <Box
-            sx={{
-              minWidth: "500px",
-              mb: -10,
-            }}
-          >
-            
-
-            <Typography
-              variant="h4"
-              sx={{
-                color: "#1E293B",
-                fontWeight: 600,
-                fontSize: "28px",
-                mb: 2,
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              Tell us about yourself
-            </Typography>
-
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
-              sx={{ mb: 3 }}
-              InputProps={{
-                placeholder: "bruce.wayne@wayne.enterprises",
-              }}
-            />
-
-            <TextField
-              fullWidth
-              label="Your Origin Story"
-              name="description"
-              multiline
-              rows={7}
-              value={formData.description}
-              onChange={handleChange}
-              error={!!errors.description}
-              helperText={errors.description}
-              sx={{ mb: 3 }}
-              InputProps={{
-                placeholder: "Once upon a time, in a coffee-filled room...",
-              }}
-            />
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Tooltip title="What makes you unique?">
-                <TextField
-                  fullWidth
-                  label="Superpower"
-                  name="superpower"
-                  value={formData.superpower}
-                  onChange={handleChange}
-                  error={!!errors.superpower}
-                  helperText={errors.superpower}
-                  InputProps={{
-                    startAdornment: (
-                      <Code sx={{ mr: 1, color: "action.active" }} />
-                    ),
-                  }}
-                />
-              </Tooltip>
-
-              <Tooltip title="Fuel measurement is important!">
-                <TextField
-                  fullWidth
-                  label="Coffee Cups Per Day"
-                  name="coffeePerDay"
-                  type="number"
-                  value={formData.coffeePerDay}
-                  onChange={handleChange}
-                  error={!!errors.coffeePerDay}
-                  helperText={errors.coffeePerDay}
-                  InputProps={{
-                    startAdornment: (
-                      <Coffee sx={{ mr: 1, color: "action.active" }} />
-                    ),
-                    inputProps: { min: 0, max: 99 },
-                  }}
-                />
-              </Tooltip>
-            </Box>
-
-            {Object.values(errors).some((error) => error) && (
-              <Alert severity="info" sx={{ mt: 2 }}>
-                Almost there! Fix these tiny glitches and you'll be ready to
-                join the team! 🚀
-              </Alert>
-            )}
-          </Box>
-        );
-      case 2:
-        return (
-          <Box sx={{ minWidth: "500px", mb: -15 }}>
-           
-
-            <Typography
-              variant="h4"
-              sx={{
-                color: "#1E293B",
-                fontWeight: 600,
-                fontSize: "28px",
-                mb: 2,
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              What services can we support you with?_
-            </Typography>
-
-            {services.map((service, idx) => (
-              <Box
-                key={idx}
-                sx={{
-                  p: 5,
-                  mb: 2,
-                  borderRadius: 2,
-                  border: "1px solid #E2E8F0",
-                  cursor: "pointer",
-                  height: "100px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-
-                  "&:hover": { borderColor: "#0EA5E9" },
-                }}
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formData.services.includes(service.title)}
-                      onChange={(e) => {
-                        const newServices = e.target.checked
-                          ? [...formData.services, service.title]
-                          : formData.services.filter(
-                              (s) => s !== service.title
-                            );
-                        setFormData({ ...formData, services: newServices });
-                      }}
-                    />
-                  }
-                  label={
-                    <Box sx={{ ml: 2 }}>
-                      <Typography sx={{ mt: 1, mb: 0.5 }}>
-                        {service.title}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        {service.description}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </Box>
-            ))}
-          </Box>
-        );
-      case 3:
-        return (
-          <Box sx={{ minWidth: "500px" }}>
-           
-
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 600,
-                fontSize: "28px",
-                mb: 1,
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              Tell us about your product_
-            </Typography>
-
-            <Typography sx={{ color: "#64748B", mb: 4 }}>
-              Select all statements or categories that best describe your
-              product. We will suggest additional options based on your answers.
-            </Typography>
-
-            {/* Categories Selection */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" gutterBottom>
-                Which categories best describe your app?
-              </Typography>
-              <Grid container spacing={1}>
-                {categories.map((category) => (
-                  <Grid item key={category}>
-                    <Chip
-                      label={category}
-                      onClick={() => toggleCategory(category)}
-                      variant={
-                        selectedCategories.includes(category)
-                          ? "filled"
-                          : "outlined"
-                      }
-                      color={
-                        selectedCategories.includes(category)
-                          ? "primary"
-                          : "default"
-                      }
-                      sx={{ cursor: "pointer" }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-
-            {/* Statements Selection */}
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                Select any statements that are true for your app
-              </Typography>
-              <Grid container spacing={2}>
-                {[0, 1, 2].map((index) => (
-                  <Grid item xs={12} sm={4} key={index}>
-                    <Paper
-                      onClick={
-                        selectedCategories[index]
-                          ? () => toggleStatement(selectedCategories[index])
-                          : undefined
-                      }
-                      variant="outlined"
-                      sx={{
-                        p: 2,
-                        textAlign: "center",
-                        cursor: selectedCategories[index]
-                          ? "pointer"
-                          : "default",
-                        border: "2px dashed",
-                        borderColor: selectedStatements.includes(
-                          selectedCategories[index]
-                        )
-                          ? "primary.main"
-                          : "grey.400",
-                        backgroundColor: selectedStatements.includes(
-                          selectedCategories[index]
-                        )
-                          ? "primary.light"
-                          : "transparent",
-                        color: selectedCategories[index]
-                          ? "text.primary"
-                          : "text.disabled",
-                        "&:hover": {
-                          borderColor: selectedCategories[index]
-                            ? "primary.main"
-                            : "grey.400",
-                        },
-                      }}
-                    >
-                      {selectedCategories[index] || ""}
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          </Box>
-        );
-      case 4:
-        return (
-          <Box sx={{ minWidth: "500px" }}>
-           
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 600,
-                fontSize: "28px",
-                mb: 4,
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              Review your application
-            </Typography>
-            <Box sx={{ p: 3, border: '1px solid #E2E8F0', borderRadius: 2 }}>
-              {/* Personal Info */}
-              <Typography variant="h6" gutterBottom>Personal Information</Typography>
-              <Typography>Email: {formData.email}</Typography>
-              <Typography>Story: {formData.description}</Typography>
-              <Typography>Superpower: {formData.superpower}</Typography>
-              <Typography>Coffee Consumption: {formData.coffeePerDay} cups/day</Typography>
-
-              {/* Services */}
-              <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>Selected Services</Typography>
-              {formData.services.map((service, idx) => (
-                <Typography key={idx}>• {service}</Typography>
-              ))}
-
-              {/* Product Info */}
-              <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>Product Categories</Typography>
-              {selectedCategories.map((category, idx) => (
-                <Chip key={idx} label={category} sx={{ m: 0.5 }} />
-              ))}
-
-              <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>Selected Statements</Typography>
-              {selectedStatements.map((statement, idx) => (
-                <Typography key={idx}>• {statement}</Typography>
-              ))}
-            </Box>
-
-          </Box>
-        );
-      default:
-        return null;
+  // Focus the hidden input when clicking on the wrapper
+  const handleWrapperClick = () => {
+    if (hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
     }
   };
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        border: "1px solidrgb(255, 200, 0)",
-        borderRadius: 12,
-        minHeight: "500px",
-        backgroundColor: "#004d40",
-      }}
-    >
-      <Box sx={{ p: 4, width: "50%", minWidth: "500px", mt: 15 }}>
-        <Typography
-          variant="h2"
+    <Box sx={{ 
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#fff'
+        }}>
+      <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+        <Typography 
+          variant="h2" 
           component="h1"
-          sx={{
-            mb: 3,
-            fontWeight: 700,
-            color: "black",
-            fontSize: { xs: "2rem", md: "3rem" },
+          sx={{ 
+            fontWeight: 'bold',
+            mb: 2,
+            color: '#111827'
           }}
         >
-          Join the Dream Team! 🚀
+          Build the Future Together
         </Typography>
 
-        <Typography
+        <Typography 
           variant="h5"
-          sx={{
-            color: "text.secondary",
-            mb: 4,
-            lineHeight: 1.6,
+          sx={{ 
+            color: '#6b7280',
+            mb: 4 
           }}
         >
-          We're excited to learn more about you and help you achieve your
-          wildest coding dreams!
+          Connect, collaborate, and create with developers worldwide. Turn this Innovative idea into impactful open source solution.
         </Typography>
-      </Box>
 
-      <Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            width: "100%",
-            minWidth: "500px",
-            p: 8,
-            mt: -2,
+        <style>
+          {`
+            .input-container {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              position: relative;
+            }
 
-            height: "700px",
-          }}
-        >
-          <Box>
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                backgroundColor: "white",
-                height: "625px",
-                mt: -2,
-                mr: -7,
-                borderRadius: 12,
-                p: 4,
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "left",
-                  alignItems: "center",
-                }}
-              >
-                {activeStep > 1 && (
-                  <Button
-                    onClick={handleBack}
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      minWidth: "48px",
-                      width: "58px",
-                      height: "28px",
-                      borderRadius: "10%",
-                      padding: 0,
-                      mt: -2,
-                      mr: 2,
-                      color: "white",
-                      backgroundColor: "#005d40",
-                    }}
-                  />
-                )}
-                <Typography
-                  variant="p"
-                  sx={{
-                    fontWeight: 200,
-                    fontSize: "18px",
-                    mb: 2,
+            .email-wrapper {
+              position: relative;
+              width: 456px;
+              height: 109px;
+              cursor: text;
+            }
 
-                    color: "#64748B",
-                    fontFamily: "Inter, sans-serif",
-                  }}
-                >
-                  Step {activeStep} of 4
-                </Typography>
-              </Box>
-              {renderStepContent()}
-              <Button
-                onClick={handleNext}
-                endIcon={activeStep !== 4 && "Next Step"}
-                sx={{
-                  minWidth: "98px",
-                  borderRadius: "3%",
-                  color: "white",
-                  padding: 1,
-                  backgroundColor: "#004d40",
-                  width: "100%",
-                  boxShadow: "none",
-                  mt: 2,
-                  mr: -10,
-                  mb: -35,
-                  onHover: {
-                    backgroundColor: "transparent",
-                  },
-                }}
-              >
-                {activeStep === 4 ? "" : ""}
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+            .inputFocus, .curvedInputBg {
+              position: absolute;
+              width: 100%;
+              height: auto;
+              top: 0;
+              left: 0;
+            }
+
+            .hiddenInput {
+              position: absolute;
+              opacity: 0;
+              pointer-events: none;
+            }
+
+            .curved-text-container {
+              position: absolute;
+              width: 70%;
+              height: 40px;
+              top: 30%;
+              left: 15%;
+              z-index: 2;
+            }
+
+            .curved-text {
+              width: 100%;
+              height: 100%;
+            }
+
+            .curved-text text {
+              font-size: 16px;
+              fill: #333;
+            }
+
+            .placeholder-text {
+              fill: #888;
+              font-family: Arial, sans-serif;
+            }
+
+            .input-text {
+              fill: #000;
+              font-family: Arial, sans-serif;
+            }
+
+            .submitButton {
+              cursor: pointer;
+              width: 137px;
+              height: 68px;
+              position: absolute;
+              right: 10px;
+              bottom: 26px;
+              transition: 0.3s ease-in-out;
+              z-index: 3;
+            }
+
+            .submitButton:hover {
+              transform: scale(1.05);
+            }
+
+            .submitButton text {
+              font-size: 16px;
+              fill: white;
+              font-family: Arial, sans-serif;
+              font-weight: bold;
+            }
+
+            .submitButton path {
+              fill: #1463FF;
+            }
+
+            .mailIcon {
+              position: absolute;
+              left: 26px;
+              top: 30%;
+              color: #1463FF;
+              z-index: 2;
+            }
+          `}
+        </style>
+
+        <form action="" method="GET" onSubmit={(e) => e.preventDefault()}>
+          <div className="input-container">
+            {/* Email Input Wrapper */}
+            <div className="email-wrapper" onClick={handleWrapperClick}>
+              {/* Background and Border */}
+              <svg className="inputFocus" viewBox="0 0 456 109" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M8.43237 15.6418L8.43368 15.6329C9.13435 10.8624 11.6904 6.56142 15.5459 3.66587C19.4004 0.77108 24.2419 -0.484754 29.0174 0.171545C161.062 18.2015 294.944 18.2017 426.988 0.172129C431.765 -0.488186 436.609 0.767202 440.464 3.66448C444.32 6.56264 446.874 10.8684 447.567 15.642L447.569 15.6507L455.81 72.9492C456.155 75.3147 456.029 77.7252 455.439 80.0419C454.85 82.3586 453.807 84.5357 452.373 86.4479C450.938 88.3601 449.139 89.9697 447.08 91.1839C445.02 92.3981 442.741 93.1929 440.374 93.5225L440.361 93.5243C299.448 112.831 156.562 112.831 15.6493 93.5243L15.6414 93.5232C13.2722 93.1954 10.9914 92.4019 8.9304 91.1885C6.86936 89.9751 5.06885 88.3658 3.6326 86.4534C2.19635 84.541 1.15274 82.3632 0.561897 80.0457C-0.0284018 77.7303 -0.155133 75.321 0.188963 72.9565C0.189283 72.9543 0.189603 72.9521 0.189923 72.9499L8.43237 15.6418Z"
+                  fill="#C2C6FF" fillOpacity="0.5"
+                />
+              </svg>
+
+              <svg className="curvedInputBg" viewBox="0 0 447 99" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M9.3651 11.5007C9.83594 8.29498 11.5535 5.40494 14.1441 3.45936C16.7347 1.51379 19.9887 0.670093 23.1982 1.11185C155.784 19.216 290.216 19.216 422.802 1.11185C426.011 0.6675 429.265 1.51042 431.855 3.4567C434.444 5.40298 436.159 8.29462 436.625 11.5007L444.868 68.812C445.099 70.3946 445.015 72.0073 444.62 73.5572C444.225 75.1071 443.528 76.5636 442.568 77.8429C441.608 79.1222 440.405 80.199 439.028 81.0112C437.65 81.8235 436.125 82.3551 434.541 82.5756C294.169 101.808 151.831 101.808 11.4589 82.5756C9.87405 82.3563 8.34829 81.8255 6.96952 81.0138C5.59076 80.2021 4.38624 79.1255 3.42538 77.8461C2.46453 76.5667 1.76634 75.1098 1.37104 73.5592C0.975749 72.0087 0.891171 70.3953 1.12218 68.812L9.3651 11.5007Z"
+                  fill="white" 
+                  stroke="#333FFF"
+                />
+              </svg>
+
+              {/* Mail Icon */}
+              <MailOutline className="mailIcon" fontSize="large" />
+
+              {/* Hidden Input Field for Form Submission */}
+              <input
+                type="email"
+                name="email"
+                className="hiddenInput"
+                value={email}
+                onChange={handleInputChange}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                ref={hiddenInputRef}
+                required
+              />
+
+              {/* Curved Text Display */}
+              <div className="curved-text-container">
+                <svg className="curved-text" viewBox="0 0 320 40" preserveAspectRatio="none">
+                  <defs>
+                    {/* Define a gentle curve for the text to follow */}
+                    <path id="textPath" d="M0,20 Q160,30 320,20" fill="none" />
+                  </defs>
+                  
+                  {/* Display placeholder text when empty */}
+                  {!email && !isFocused && (
+                    <text className="placeholder-text">
+                      <textPath href="#textPath" ref={textPathRef} startOffset="5%">
+                        Your email address
+                      </textPath>
+                    </text>
+                  )}
+                  
+                  {/* Display actual input text */}
+                  {email && (
+                    <text className="input-text">
+                      <textPath href="#textPath" startOffset="5%">
+                        {email}
+                      </textPath>
+                    </text>
+                  )}
+                </svg>
+              </div>
+
+              {/* Get Started Button */}
+              <svg className="submitButton" viewBox="0 0 137 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M128.82 4.83682C128.507 2.66273 126.499 1.14832 124.322 1.4379C86.7692 6.4322 49.0939 9.97774 11.2959 12.0745C9.38473 12.1805 7.81325 13.6216 7.5475 15.5172L0.919677 62.7932C0.571779 65.2747 2.56518 67.4617 5.06786 67.3366C47.5125 65.2148 89.8474 61.3479 132.073 55.736C134.275 55.4432 135.812 53.4068 135.495 51.2074L128.82 4.83682Z"
+                  fill="#1463FF"
+                />
+                <text x="25" y="35" fontSize="16" fill="white" fontFamily="Arial" fontWeight="bold">
+                  Get Started
+                </text>
+              </svg>
+            </div>
+          </div>
+        </form>
+      </Container>
+    </Box>
   );
 };
-export default JoinTeamUI;
+
+export default JoinT;

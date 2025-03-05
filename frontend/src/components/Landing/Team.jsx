@@ -45,17 +45,17 @@ const AvatarWrapper = styled(motion.div)({
 const teamMembers = [
   {
     name: 'Swapanth Vakapalli',
-    role: 'Founder & UI/UX Designer',
-    avatar: require('../../images/founders/3.svg').default,
+    role: 'SDE & UI/UX Designer',
+    avatar: require('../../images/founders/31.svg').default,
   },
   {
     name: 'Krishna Vamsi',
-    role: 'Co-Founder & SDE',
+    role: 'SDE',
     avatar: require('../../images/founders/4.svg').default,
   },
   {
     name: 'Ram Ganesh ',
-    role: 'Co-Founder & Tech Lead',
+    role: 'Tech Member',
     avatar: require('../../images/founders/5.svg').default,
   },
 ];

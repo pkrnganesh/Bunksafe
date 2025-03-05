@@ -43,8 +43,8 @@ function Landing() {
                  <UsedBy />
                 <MerlinHero />
                 <SecondFeature />
-                 <Features />
                 <MeetingsActionComponent />
+                 <Features />
                 <JoinTeamUI />
                 <Pricing />
                 <FAQ />

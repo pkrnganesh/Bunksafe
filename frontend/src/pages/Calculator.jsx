@@ -15,7 +15,6 @@ const CGPACalculator = () => {
     { name: 'Subject 2', grade: 'B', credits: 3 },
   ]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const [goalCGPA, setGoalCGPA] = useState(8.5);
   const [calculatorType, setCalculatorType] = useState('CGPA');
   const [gradeScale, setGradeScale] = useState(10);
   const [cgpaHistory, setCGPAHistory] = useState([]);

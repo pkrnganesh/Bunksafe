@@ -52,7 +52,7 @@ const MerlinHero = () => {
             width: 'fit-content'
             }}
           >
-            Merlin Chrome Extension
+            BunkSafe Perimun 
           </Typography>
           
           <Typography 
@@ -66,7 +66,7 @@ const MerlinHero = () => {
 
             }}
           >
-            One-click answers in realtime
+            One-click insights in realtime
           </Typography>
           </Box>
 
@@ -80,14 +80,14 @@ const MerlinHero = () => {
             fontSize: { xs: '1.25rem', md: '1.5rem' }
             }}
           >
-            Get context from wherever you are, and just ask with one click.
+            Get summaries,deep-info and insights on attendance where you sturggle to find them.
           </Typography>
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <StyledButton 
             endIcon={<ArrowOutwardIcon />}
             >
-            Get the extension
+            Get the Reports
             </StyledButton>
           </motion.div>
           </Box>
