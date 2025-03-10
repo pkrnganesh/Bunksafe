@@ -46,7 +46,7 @@ const teamMembers = [
   {
     name: 'Swapanth Vakapalli',
     role: 'SDE & UI/UX Designer',
-    avatar: require('../../images/founders/31.svg').default,
+    avatar: require('../../images/founders/3.svg').default,
   },
   {
     name: 'Krishna Vamsi',

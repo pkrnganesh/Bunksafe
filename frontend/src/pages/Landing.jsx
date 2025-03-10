@@ -80,7 +80,7 @@ function Landing() {
                 <JoinTeamUI />
                 <Pricing />
                 <FAQ />
-                <Team />
+                {/* <Team /> */}
                 <ReviewCarousel />
                 <OpenSourceSection />
                 <Footer />

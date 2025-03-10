@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Globe, 
-  Settings, 
   MessageCircle, 
   Briefcase, 
-  HelpCircle 
 } from 'lucide-react';
 
 const CircularNavMenu = () => {
