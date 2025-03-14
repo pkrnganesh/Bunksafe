@@ -13,6 +13,7 @@ import SecondFeature from '../components/Landing/SecondFeature';
 import Features from '../components/Landing/Features';
 import MeetingsActionComponent from '../components/Landing/MeetingsActionComponent';
 import JoinTeamUI from '../components/Landing/JoinTeamUI';
+import AIAddComponent from '../components/Landing/AIChatComponent';
 import Pricing from '../components/Landing/Pricing';
 import FAQ from '../components/Landing/FAQ';
 import Team from '../components/Landing/Team';
@@ -75,7 +76,7 @@ function Landing() {
                 <UsedBy />
                 <MerlinHero />
                 <SecondFeature />
-                <MeetingsActionComponent />
+                <AIAddComponent />
                  <Features />
                 <JoinTeamUI />
                 <Pricing />
