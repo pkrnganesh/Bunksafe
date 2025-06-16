@@ -6,8 +6,12 @@ import {
   Link,
   Button,
   Paper,
+  Box,
+  Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import BunkInLogo from './BunkInLogo ';
+
 
 // SVG Icons
 const HeartIcon = () => (
@@ -36,26 +40,22 @@ const LinkedInIcon = () => (
 
 
 const FooterPaper = styled(Paper)(({ theme }) => ({
-  background: "#F5F7F8",
-  transform: "translateY(-20px)",
-  padding: 0, // Remove padding
-  margin: 0, // Remove margin
-  borderTop: "1px solid rgba(0, 0, 0, 0.1)",
-  position: "relative",
-  zIndex: 1,
+  background: "white",
+  padding: theme.spacing(6, 0),
   width: "100%",
-  left: "0",
-  right: "0",
-  marginLeft: "auto",
-  marginRight: "auto",
+  borderTop: '1px solid rgba(0, 0, 0, 0.1)',
 }));
 
 const DonateButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#1E2330",
   color: "#ffffff",
   borderRadius: "8px",
-  padding: "10px 20px",
+  padding: "10px 24px",
+  textTransform: 'none',
+  fontSize: '16px',
+  fontWeight: 500,
   display: "flex",
+  gap: '8px',
   alignItems: "center",
   "&:hover": {
     backgroundColor: "#2C3340",
@@ -63,103 +63,108 @@ const DonateButton = styled(Button)(({ theme }) => ({
 }));
 
 const FooterLink = styled(Link)(({ theme }) => ({
-  color: "#6B7280",
+  color: "#1A1D1F",
   textDecoration: "none",
   display: "block",
-  marginBottom: theme.spacing(1),
+  fontSize: '15px',
+  fontWeight: 500,
+  lineHeight: '24px',
+  marginBottom: theme.spacing(1.5),
+  transition: 'color 0.2s ease',
   "&:hover": {
-    color: "#374151",
+    color: "#C471ED",
   },
 }));
 
 const FooterHeading = styled(Typography)(({ theme }) => ({
-  color: "#FF3366",
-  fontWeight: "bold",
-  marginBottom: theme.spacing(2),
+  color: "#6E7491",
+  fontSize: '16px',
+  fontWeight: 400,
+  marginBottom: theme.spacing(2.5),
 }));
 
-const SocialIcon = styled("img")(({ theme }) => ({
-  width: "24px",
-  height: "24px",
-  marginRight: theme.spacing(1),
+const SocialIconsContainer = styled(Stack)(({ theme }) => ({
+  flexDirection: 'row',
+  gap: theme.spacing(2),
+  marginTop: theme.spacing(1),
 }));
 
 const Footer = () => {
   return (
     <FooterPaper elevation={0}>
       <Container maxWidth="lg">
-        <Grid container spacing={4} textAlign="center">
+        <Grid container spacing={8}>
           <Grid
             item
             xs={12}
-            sm={6}
             md={3}
-            sx={{
-              backgroundImage:
-                "linear-gradient(-75deg,  #C471ED 10%, white 100%)",
-              borderRadius: "10px",
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: theme => theme.spacing(3),
-            }}
+            
           >
-            <Typography variant="h6" fontWeight="bold">
+<Box sx={{
+              background: "linear-gradient(135deg, #C471ED 0%, rgba(196, 113, 237, 0.1) 100%)",
+              borderRadius: "12px",
+              padding: theme => theme.spacing(4),
+            }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 600,
+                fontSize: '20px',
+                marginBottom: 2,
+                color: '#1A1D1F'
+              }}
+            >
               Support Our Development
             </Typography>
-            <Typography variant="body2" color="textSecondary" mb={2}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                marginBottom: 3,
+                color: '#6E7491',
+                lineHeight: '24px'
+              }}
+            >
               Contribute to our development efforts to enhance the attendance analytics platform and make it better for everyone.
             </Typography>
             <DonateButton variant="contained">
               Donate Now <HeartIcon />
             </DonateButton>
+            </Box>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FooterHeading variant="subtitle1">Resources</FooterHeading>
-            <FooterLink href="#" variant="body2">
-              Attendance Tips
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              How to Use the Dashboard
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              Student Engagement Strategies
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              FAQs
-            </FooterLink>
+
+          <Grid item xs={'12'} sm={6} md={3}>
+            <FooterHeading>Resources</FooterHeading>
+            <FooterLink href="#">Attendance Tips</FooterLink>
+            <FooterLink href="#">How to Use the Dashboard</FooterLink>
+            <FooterLink href="#">Student Engagement Strategies</FooterLink>
+            <FooterLink href="#">FAQs</FooterLink>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FooterHeading variant="subtitle1">Company</FooterHeading>
-            <FooterLink href="#" variant="body2">
-              About Us
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              Careers
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              Blog
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              Contact
-            </FooterLink>
-            <FooterLink href="#" variant="body2">
-              Privacy Policy
-            </FooterLink>
+
+          <Grid item xs={'12'} sm={6} md={3}>
+            <FooterHeading>Company</FooterHeading>
+            <FooterLink href="#">About Us</FooterLink>
+            <FooterLink href="#">Careers</FooterLink>
+            <FooterLink href="#">Blog</FooterLink>
+            <FooterLink href="#">Contact</FooterLink>
+            <FooterLink href="#">Privacy Policy</FooterLink>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <FooterHeading variant="subtitle1">Follow Us</FooterHeading>  
-            <SocialIcon as={TwitterIcon} />
-            <SocialIcon as={GitHubIcon} />
-            <socialIcon as={LinkedInIcon} />
+
+          <Grid item xs={'12'} md={3}>
+            <FooterHeading>Follow Us</FooterHeading>
+            <SocialIconsContainer>
+              <TwitterIcon />
+              <GitHubIcon />
+              <LinkedInIcon />
+            </SocialIconsContainer>
           </Grid>
         </Grid>
+
+        <Box sx={{ marginTop: -1 }}>
+          <BunkInLogo />
+        </Box>
       </Container>
     </FooterPaper>
   );
-}
+};
 
 export default Footer;
-

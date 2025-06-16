@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Typography, Grid, useTheme, useMediaQuery, IconButton, Skeleton } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery, IconButton, Skeleton, Box } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { styled } from '@mui/system';
 import '@fontsource/poppins';
@@ -31,7 +31,7 @@ const ImageCard = styled(motion.div)(({ theme }) => ({
   borderRadius: '8px',
   padding: theme.spacing(1.5),
   boxShadow: '0 1px 5px rgba(0, 0, 0, 0.1)',
-  height: '150px',
+  height: '100%',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -68,7 +68,33 @@ const FAQ = () => {
   }, []);
 
   return (
-    <Container initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+
+        <Container initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+           <Box sx={{ textAlign: 'center', my: 6, px: 2 }}>
+    <Typography
+      component="h1"
+      sx={{
+        fontFamily: '"Poppins", sans-serif',
+        fontSize: { xs: '2.5rem', md: '3.5rem' },
+        fontWeight: 700,
+        color: '#000',
+        mb: 2
+      }}
+    >
+      Want to know more?
+    </Typography>
+    <Typography
+      variant="h6"
+      sx={{
+        fontFamily: '"Poppins", sans-serif',
+        color: 'rgba(0, 0, 0, 0.6)',
+        fontWeight: 400,
+        fontSize: { xs: '1rem', md: '1.25rem' }
+      }}
+    >
+      Here is a list of commonly asked questions, and their answers.
+    </Typography>
+  </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           {faqData.map((item, index) => (
@@ -96,12 +122,7 @@ const FAQ = () => {
           ))}
         </Grid>
         <Grid item xs={12} md={6} sx={{ textAlign: 'right' }}>
-          <Typography variant="h4" gutterBottom sx={{ color: '#6e8efb', fontWeight: 'bold' }}>
-            Frequently Asked Questions
-          </Typography>
-          <Typography variant="subtitle1" sx={{ color: '#666', mb: 2 }}>
-          Find answers to common questions about AttendMaster and learn how to make the most of our features.
-          </Typography>
+          
           <AnimatePresence mode="wait">
             <ImageCard
               key={selectedQuestion}

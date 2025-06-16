@@ -1,4 +1,3 @@
-// GenerateAnalysisButton.js
 import React from "react";
 import { Button, Box, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";

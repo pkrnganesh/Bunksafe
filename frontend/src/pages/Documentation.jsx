@@ -7,7 +7,7 @@ import Sidebar from '../components/Documentation/Sidebar';
 import Content from '../components/Documentation/Content';
 import ScrollTop from '../components/Documentation/ScrollTop';
 import { sections, createThemeCallback } from '../utils/utils';
-const Documentation = () => {
+const Docs = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -64,4 +64,4 @@ const Documentation = () => {
   );
 };
 
-export default Documentation;
+export default Docs;

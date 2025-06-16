@@ -1,164 +1,142 @@
 import React from 'react';
-import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
-import { styled } from '@mui/system';
-import thought from './thought.svg';
-import { motion } from 'framer-motion';
+import {
+  Box,
+  Typography,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  styled
+} from '@mui/material';
+import LanguageIcon from '@mui/icons-material/Language';
+import AppleIcon from '@mui/icons-material/Apple';
+import AndroidIcon from '@mui/icons-material/Android';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 
-const StyledCard = styled(motion(Card))(({ theme }) => ({
-  backgroundColor: '#ffffff',
-  borderRadius: '20px',
-  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+// Styled components
+const ComponentWrapper = styled(Paper)({
+  border: '1px solid #E0E0E0',
+  borderRadius: '24px',
   overflow: 'hidden',
-  transition: 'all 0.3s ease-in-out',
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-}));
+  boxShadow: 'none'
+});
 
-const NumberCircle = styled(Box)(({ theme }) => ({
-  width: '60px',
-  height: '60px',
-  borderRadius: '50%',
-  background: 'linear-gradient(135deg, #6e8efb, #a777e3)',
-  color: 'white',
+const PurpleSection = styled(Box)({
+  backgroundColor: '#E6E6FA', // Light purple color
+  padding: '2rem',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontWeight: 'bold',
-  fontSize: '1.5rem',
-  marginBottom: theme.spacing(2),
-  boxShadow: '0 4px 20px rgba(110, 142, 251, 0.3)',
-}));
-
-const Background = styled(Box)({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: 'white', // Update the background color to white
-  zIndex: -1,
+  height: '100%',
+  minHeight: '500px'
 });
 
-const AnimatedShape = styled(motion.div)(({ theme }) => ({
-  position: 'absolute',
-  backgroundColor: 'rgba(110, 142, 251, 0.1)',
-  borderRadius: '50%',
-}));
+const DeviceImage = styled('img')({
+  maxWidth: '100%',
+  height: 'auto',
+  transform: 'perspective(1000px) rotateY(-15deg)',
+});
 
+const PlatformButton = styled(Button)({
+  backgroundColor: '#fff',
+  color: '#000',
+  textTransform: 'none',
+  borderRadius: '20px',
+  padding: '8px 16px',
+  margin: '8px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  fontWeight: 500,
+  '&:hover': {
+    backgroundColor: '#f5f5f5',
+  }
+});
 
+const StartButton = styled(Button)({
+  backgroundColor: '#000',
+  color: '#fff',
+  textTransform: 'none',
+  borderRadius: '20px',
+  padding: '10px 20px',
+  marginTop: '24px',
+  fontWeight: 500,
+  '&:hover': {
+    backgroundColor: '#333',
+  }
+});
 
-
-const Features = () => {
-
-  const steps = [
-    { number: 1, title: 'Input Timetable', description: 'Easily enter your semester timetable and attendance requirements using our user-friendly interface.' },
-    { number: 2, title: 'Track Attendance', description: 'Monitor your attendance in real-time with our advanced tracking system.' },
-    { number: 3, title: 'Get Reminders', description: 'Receive personalized reminders to help you stay on top of your attendance goals.' },
-    { number: 4, title: 'Optimize Schedule', description: 'Adjust your schedule dynamically to ensure you meet your attendance targets effortlessly.' },
-  ];
-
-  const shapes = [
-    { size: 300, left: '-5%', top: '20%' },
-    { size: 200, right: '-5%', bottom: '10%' },
-    { size: 150, left: '50%', top: '-5%' },
-  ];
-
+const MerlinDevices = () => {
   return (
-    <Box sx={{ 
-      position: 'relative',
-      overflow: 'hidden',
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      py: 10,
-      px: 4,
-    }}>
-      <Background />
-      {shapes.map((shape, index) => (
-        <AnimatedShape
-          key={index}
-          style={{
-            width: shape.size,
-            height: shape.size,
-            left: shape.left,
-            right: shape.right,
-            top: shape.top,
-            bottom: shape.bottom,
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-      <Grid container spacing={6} alignItems="center">
-       
-        <Grid item xs={12} md={7}>
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <Typography variant="h2" gutterBottom fontWeight="bold" sx={{ color: '#333', mb: 2 }}>
-              How Bunksafe Works
-            </Typography>
-            <Typography variant="h5" sx={{ color: '#666', mb: 6 }}>
-              Revolutionizing timetable analysis and scheduling with cutting-edge algorithms.
-            </Typography>
-          </motion.div>
-          <Grid container spacing={4}>
-            {steps.map((step, index) => (
-              <Grid item xs={12} sm={6} key={step.number}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-                >
-                  <StyledCard
-                    whileHover={{ 
-                      scale: 1.05,
-                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                      <NumberCircle>{step.number}</NumberCircle>
-                      <Typography variant="h5" gutterBottom fontWeight="bold" color="#333">
-                        {step.title}
-                      </Typography>
-                      <Typography variant="body1" color="#666" sx={{ mt: 'auto' }}>
-                        {step.description}
-                      </Typography>
-                    </CardContent>
-                  </StyledCard>
-                </motion.div>
-              </Grid>
-            ))}
+    <Container maxWidth="lg" sx={{ py: 8 }}>
+      <ComponentWrapper>
+        <Grid container>
+          {/* Left side with image */}
+          <Grid item xs={12} md={6}>
+            <PurpleSection>
+              <DeviceImage
+                src="/path-to-your-device-image.png"
+                alt="Merlin on devices"
+              />
+            </PurpleSection>
+          </Grid>
+
+          {/* Right side with content */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ p: { xs: 4, md: 6 } }}>
+              <Typography 
+                variant="h2" 
+                component="h1" 
+                sx={{
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  fontWeight: 700,
+                  mb: 3,
+                  fontFamily: "'Crimson Text', serif",
+                  letterSpacing: '-0.02em'
+                }}
+              >
+                On all your devices
+              </Typography>
+
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  color: '#666', 
+                  mb: 4, 
+                  lineHeight: 1.6,
+                  fontWeight: 400,
+                  fontSize: '1.1rem'
+                }}
+              >
+                Work with Merlin across all devices with synced history, access to your custom prompts and chatbots and all the great Merlin magic - effortlessly!
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                <PlatformButton startIcon={<LanguageIcon />}>
+                  Web app
+                </PlatformButton>
+                <PlatformButton startIcon={<ExtensionIcon />}>
+                  Chrome extension
+                </PlatformButton>
+                <PlatformButton startIcon={<AppleIcon />}>
+                  iOS app
+                </PlatformButton>
+                <PlatformButton startIcon={<AndroidIcon />}>
+                  Android app
+                </PlatformButton>
+              </Box>
+
+              <StartButton
+                endIcon={<ArrowOutwardIcon />}
+                variant="contained"
+              >
+                Start using Merlin
+              </StartButton>
+            </Box>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={5}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Box 
-              component="img" 
-              src={thought}
-              alt="Bunksafe Logo" 
-              sx={{ width: '100%', height: 'auto', maxWidth: 500, mx: 'auto', display: 'block' }}
-            />
-          </motion.div>
-        </Grid>
-      </Grid>
-    </Box>
+      </ComponentWrapper>
+    </Container>
   );
 };
 
-export default Features;
+export default MerlinDevices;
