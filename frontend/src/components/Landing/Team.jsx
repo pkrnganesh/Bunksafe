@@ -22,6 +22,11 @@ const TeamMemberCard = styled(motion.div)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
+  transition: 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
+  '&:hover': {
+    transform: 'translateY(-15px)',
+    boxShadow: '0 20px 45px rgba(0, 0, 0, 0.15)',
+  },
 }));
 
 const SocialIcons = styled(Box)({
@@ -45,17 +50,17 @@ const AvatarWrapper = styled(motion.div)({
 const teamMembers = [
   {
     name: 'Swapanth Vakapalli',
-    role: 'SDE & UI/UX Designer',
+    role: 'Founder & UI/UX Designer',
     avatar: require('../../images/founders/3.svg').default,
   },
   {
     name: 'Krishna Vamsi',
-    role: 'SDE',
+    role: 'Co-Founder & SDE',
     avatar: require('../../images/founders/4.svg').default,
   },
   {
     name: 'Ram Ganesh ',
-    role: 'Tech Member',
+    role: 'Co-Founder & Tech Lead',
     avatar: require('../../images/founders/5.svg').default,
   },
 ];
@@ -71,9 +76,9 @@ const Team = () => {
         variant="h2"
         gutterBottom
         sx={{
+          color: '#6e8efb',
           fontWeight: '600',
           textAlign: 'left',
-          fontFamily: 'Georgia, serif',
           mb: 6, // Reduced margin
           fontSize: { xs: '2rem', md: '2.5rem' }, // Reduced font size
           letterSpacing: '1px',
@@ -99,7 +104,8 @@ const Team = () => {
                     width: 150, // Reduced size
                     height: 150, // Reduced size
                     mx: 'auto',
-                   }}
+                    // Removed borderRadius to make it rectangular
+                  }}
                 />
               </AvatarWrapper>
               <Box>

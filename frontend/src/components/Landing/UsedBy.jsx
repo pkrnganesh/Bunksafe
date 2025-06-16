@@ -53,7 +53,6 @@ const UsedBy = () => {
       sx={{
         padding: "40px 20px",
         textAlign: "center",
-        mt: "40px",
       }}
     >
       <Typography

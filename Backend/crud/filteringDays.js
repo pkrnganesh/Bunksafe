@@ -60,6 +60,7 @@ const countDaysOfWeek = (input) => {
       console.error(`Error processing date ${dateStr}: ${error.message}`);
     }
   });
+  console.log("Number of Days of Week", dayCounts);
   return dayCounts;
 };
 

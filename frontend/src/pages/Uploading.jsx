@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import {
-  Container, Box, useMediaQuery
-} from "@mui/material";
+   Container, Box, useMediaQuery
+  } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { CloudUpload, DataUsage, CalendarToday, AssessmentOutlined, DoneAll } from "@mui/icons-material";
@@ -12,10 +12,12 @@ import SvgCurve from "../components/uploading/SvgCurve";
 import UploadForm from "../components/uploading/UploadForm";
 import AlertSnackbar from "../components/uploading/AlertSnackbar";
 import ProgressContent from "../components/uploading/ProgressContent";
-import { GenerateAnalysis } from "../api/Generation";
+import { Generateanalysis } from "../api/Generation";
 
 const timetableImage = require("../images/timetable.svg");
 const timetableImage2 = require("../images/timetable2.svg");
+
+
 
 const UploadData = () => {
   const [attendanceRequirement, setAttendanceRequirement] = useState(75);
@@ -73,7 +75,7 @@ const UploadData = () => {
     }, 100);
   };
 
-  const handleGenerateAnalysis = async () => {
+  const handleGenerateAnalysis = () => {
     if (!attendanceFile) {
       showAlert("Please upload a timetable file.");
       return;
@@ -90,10 +92,10 @@ const UploadData = () => {
       showAlert("Please enter the attendance requirement.");
       return;
     }
-  
+
     setIsGeneratingAnalysis(true);
     setShowProgressBar(true);
-  
+    
     const interval = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev < steps.length - 1) return prev + 1;
@@ -101,37 +103,21 @@ const UploadData = () => {
         return prev;
       });
     }, 4000);
-  
-    try {
-      const response = await GenerateAnalysis({
+
+    setTimeout(() => {
+      Generateanalysis({
         file: attendanceFile,
         percentage: attendanceRequirement,
         fromDate,
         toDate,
       });
-  
-      // Store the response in localStorage (or sessionStorage)
-      localStorage.setItem('analysisResponse', JSON.stringify(response));
-  
       setIsGeneratingAnalysis(false);
       setShowProgressBar(false);
       setCurrentStep(0);
       showAlert("Analysis generated successfully!", "success");
-  
-      // Navigate to /generation page
-      window.location.href = '/generation'; // Alternatively, use React Router's navigate
-  
-    } catch (error) {
-      console.error("Error generating analysis:", error);
-      showAlert("Error generating analysis. Please try again.", "error");
-    } finally {
       clearInterval(interval);
-      setIsGeneratingAnalysis(false);
-      setShowProgressBar(false);
-      setCurrentStep(0);
-    }
+    }, 20000);
   };
-  
 
   const handleCancelAnalysis = () => {
     setIsGeneratingAnalysis(false);
@@ -149,6 +135,7 @@ const UploadData = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
+            
           </motion.div>
           {showProgressBar ? (
             <ProgressContent

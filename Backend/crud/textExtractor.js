@@ -1,44 +1,49 @@
+const fs = require('fs');
+const path = require('path');
 const Tesseract = require('tesseract.js');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
-// Extract text from image file buffer
-const extractTextFromImage = (fileBuffer) => {
+const extractTextFromImage = (imagePath) => {
     return Tesseract.recognize(
-        fileBuffer,
+        imagePath,
         'eng',
-        {}
-    ).then(({ data: { text } }) => text);
+        {
+           
+        }
+    ).then(({ data: { text } }) => {
+        return text;
+    });
 };
 
-// Extract text from PDF file buffer
-const extractTextFromPDF = (fileBuffer) => {
-    return pdfParse(fileBuffer).then(data => data.text);
+const extractTextFromPDF = (pdfPath) => {
+    const dataBuffer = fs.readFileSync(pdfPath);
+    return pdfParse(dataBuffer).then(data => {
+        return data.text;
+    });
 };
 
-// Extract text from DOC file buffer
-const extractTextFromDoc = (fileBuffer) => {
-    return mammoth.extractRawText({ buffer: fileBuffer })
-        .then(result => result.value);
+const extractTextFromDoc = (docPath) => {
+    return mammoth.extractRawText({ path: docPath })
+        .then(result => {
+            return result.value;
+        });
 };
 
-const extractText = (file) => {
-    const fileExt = file.name.split('.').pop().toLowerCase();
-    const fileBuffer = file.data; // Buffer from the uploaded file
-
+const extractText = (filePath) => {
+    const fileExt = path.extname(filePath).toLowerCase();
     switch (fileExt) {
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-            return extractTextFromImage(fileBuffer);
-        case 'pdf':
-            return extractTextFromPDF(fileBuffer);
-        case 'doc':
-        case 'docx':
-            return extractTextFromDoc(fileBuffer);
+        case '.jpg':
+        case '.jpeg':
+        case '.png':
+            return extractTextFromImage(filePath);
+        case '.pdf':
+            return extractTextFromPDF(filePath);
+        case '.doc':
+        case '.docx':
+            return extractTextFromDoc(filePath);
         default:
             return Promise.reject(new Error('Unsupported file type'));
     }
 };
-
 module.exports = { extractText };

@@ -64,23 +64,17 @@ const ProgressContent = () => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         if (oldProgress === 100) {
-          if (activeStep < steps.length - 1) {
-            // Move to the next step
-            setActiveStep((prevStep) => prevStep + 1);
-          } else {
-            // Stop when all steps are completed
-            clearInterval(timer);
-          }
+          setActiveStep((prevStep) => (prevStep + 1) % steps.length);
           return 0;
         }
-        return Math.min(oldProgress + 50, 100); // Change the progress increment if needed
+        return Math.min(oldProgress + 25, 100);
       });
-    }, 1500); // Adjust the interval timing here
+    }, 1000);
 
     return () => {
-      clearInterval(timer); // Clear interval on component unmount
+      clearInterval(timer);
     };
-  }, [activeStep]); // Re-run the effect only when the activeStep changes
+  }, []);
 
   const renderStep = (step, index) => {
     let status = 'next';

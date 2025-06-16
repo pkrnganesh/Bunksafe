@@ -47,45 +47,5 @@ async function incrementUserCount(ipAddress) {
   }
 }
 
-
-async function storeAnonymousData(id, dataValue) {
-  // Ensure the dataValue is within the limit
-  if (dataValue.length > 30000) {
-    throw new Error("Data value exceeds the 30,000 characters limit.");
-  }
-
-  const docRef = doc(db, "anonymous_store", id); 
-
-  try {
-    await setDoc(docRef, {
-      id: id,
-      dataValue: dataValue
-    });
-    console.log("Data stored successfully!");
-    return { id, dataValue };
-  } catch (e) {
-    console.error("Error storing data: ", e);
-    throw e;
-  }
-}
-
-async function fetchAnonymousData(id) {
-  const docRef = doc(db, "anonymous_store", id);
-
-  try {
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      return docSnap.data();
-    } else {
-      console.log("No such document!");
-      throw new Error("Document not found");
-    }
-  } catch (e) {
-    console.error("Error fetching document: ", e);
-    throw e;
-  }
-}
-
-module.exports = { incrementUserCount, storeAnonymousData, fetchAnonymousData };
+// Export the incrementUserCount function for use in other parts of your application
+module.exports = { incrementUserCount };
